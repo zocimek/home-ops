@@ -1,0 +1,14 @@
+---
+originRequest:
+  originServerName: external.pospiech.dev
+
+ingress:
+  - hostname: "*.pospiech.dev"
+    service: &svc https://cilium-gateway-external.kube-system.svc.cluster.local
+  - hostname: "pospiech.dev"
+    service: *svc
+  - hostname: "prywatna-notatka.pl"
+    service: *svc
+  - hostname: "*.prywatna-notatka.pl"
+    service: *svc
+  - service: http_status:403

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: ceph-ext
+ namespace: default
+ labels:
+   app: nginx
+spec:
+ storageClassName: ceph-filesystem
+ accessModes:
+ - ReadWriteMany
+ resources:
+   requests:
+    storage: 3Gi 

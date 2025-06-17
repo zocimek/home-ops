@@ -1,8 +1,11 @@
 {
     "editor.bracketPairColorization.enabled": true,
     "files.associations": {
-        "**/*.json5": "json5"
+        "**/*.json5": "json5",
+        "kubernetes/**/*.sops.toml": "plaintext"
     },
+    "prettier.configPath": ".prettierrc.yaml",
+    "prettier.ignorePath": ".prettierignore",
     "files.trimTrailingWhitespace": true,
     "sops.defaults.ageKeyFile": "age.key",
     "vs-kubernetes": {

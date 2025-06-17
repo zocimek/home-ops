@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rook-csi-cephfs-node
+  namespace: rook-ceph
+type: kubernetes.io/rook
+data:
+  adminID: ENC[AES256_GCM,data:3bqLWsDcqKTabYyr5nHtxvUEHRE=,iv:N2hCktrg+OrNNUnenz0FxMggk2WRlT4PVC5za35q2IU=,tag:LZkSICqTdY3SjVPjS1DGKA==,type:str]
+  adminKey: ENC[AES256_GCM,data:TOQfQppA4uXAQMY6CLV8MJluKNRNlRvYB4WKyZKQy0uPJ2jHfJ7U36EWOnAb4hW91iZErxGPVrI=,iv:dY5s+2kH4mexo/1qwyI6Uj9IjX/gC4qWnuz4Kb/pBak=,tag:mx1ILSKptOxZfdIwg0+7gg==,type:str]
+sops:
+  age:
+    - recipient: age1h2p8ckzxnxj7gvav9remh2nrgw6tfrgna0a62en5j8tglvuca9vq7uajxz
+      enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBhbit3YndEZzRJNC9aUG1r
+        ZzZFaGwrVG9Jcmx1QUJVbHE0MmUvNldleTIwCko2YnVrSlFEeTZzYWFJbzROdzd1
+        S1hiNFVLQTJtb2xSdmx5Qk1qdWZ4ZVkKLS0tIDB3akVSS09ramthelluMXd5dndS
+        YnoyR1Z0THozMi9IUDBKSVBmMFZmSzQKOLmzzNQkCpxeQCe08fwnGg4gIaRSWeC/
+        uUIl3uZPrBtdbgeehgnuy08wwjshfA8kZcrjuLRYYPoycz2c7sbMPA==
+        -----END AGE ENCRYPTED FILE-----
+  lastmodified: "2025-06-20T12:04:17Z"
+  mac: ENC[AES256_GCM,data:wASBgEiB8BN8pA/sLfAnW58NS/cgl1q9zQJBZdsz2Cu5pSLIgjS2vQr8CiE8bXYIyD55J7XCbUbpw+koQZn2j5dxq7ltCkkQvFMfixx15VXpa6KRY+0jtUBxUqAqs4cCA6kGesV3G24gmduXR2a0o063V9YcUUdITEfBLADrWjU=,iv:aMp/UeN0Hrd/FHkD+i4Sartit73LL1H5cZoHpJLyO78=,tag:DeXx5FxIGkvmpkPX+duK7Q==,type:str]
+  encrypted_regex: ^(data|stringData)$
+  mac_only_encrypted: true
+  version: 3.10.2

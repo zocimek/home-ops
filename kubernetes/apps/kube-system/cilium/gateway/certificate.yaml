@@ -1,0 +1,29 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: pospiech-dev
+spec:
+  secretName: pospiech-dev-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: pospiech.dev
+  dnsNames: ["pospiech.dev", "*.pospiech.dev"]
+
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: prywatna-notatka-pl
+spec:
+  secretName: prywatna-notatka-pl-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: prywatna-notatka.pl
+  dnsNames: ["prywatna-notatka.pl", "*.prywatna-notatka.pl"]

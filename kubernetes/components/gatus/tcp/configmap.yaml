@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "${APP}-gatus-ep"
+  labels:
+    gatus.io/enabled: "true"
+data:
+  config.yaml: |
+    endpoints:
+      - name: "${APP}-dns"
+        group: ${GATUS_GROUP:-guarded}
+        url: 1.1.1.1
+        interval: 1m
+        ui:
+          hide-hostname: true
+          hide-url: true
+        dns:
+          query-name: "${GATUS_SUBDOMAIN:-${APP}}${GATUS_DOMAIN:-.pospiech.dev}"
+          query-type: A
+        conditions:
+          - "len([BODY]) == 0"
+        alerts:
+          - type: pushover
+
+      - name: "${APP}"
+        group: ${GATUS_GROUP:-infrastructure}
+        url: "tcp://${GATUS_SUBDOMAIN:-${APP}}${GATUS_DOMAIN:-.pospiech.dev}:${GATUS_PORT:-80}"
+        interval: 1m
+        client:
+          dns-resolver: tcp://192.168.100.1:53
+        ui:
+          hide-hostname: true
+          hide-url: true
+        conditions:
+          - "[CONNECTED] == true"
+        alerts:
+          - type: pushover

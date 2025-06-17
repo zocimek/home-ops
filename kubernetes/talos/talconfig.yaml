@@ -1,0 +1,299 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
+---
+clusterName: &clusterName home-ops
+
+# renovate: depName=ghcr.io/siderolabs/installer datasource=docker
+talosVersion: v1.10.4
+# renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
+kubernetesVersion: v1.33.1
+
+endpoint: https://k8s.pospiech.local:6443
+
+additionalApiServerCertSans: &sans
+  - "127.0.0.1"
+  - "10.0.42.21"
+  - "k8s.pospiech.local"
+additionalMachineCertSans: *sans
+
+clusterPodNets: ["10.42.0.0/16"]
+clusterSvcNets: ["10.43.0.0/16"]
+
+# Disable built-in CNI to use Cilium
+cniConfig:
+  name: none
+
+nodes:
+  # - hostname: "k8s-1.pospiech.local"
+  #   # hostname: "zordon.pospiech.local"
+  #   ipAddress: "10.0.42.6"
+  #   installDisk: "/dev/sda"
+  #   # installDiskSelector:
+  #   #   model: SSDPR-CX400*
+  #   machineSpec:
+  #     secureboot: false
+  #   talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
+  #   controlPlane: true
+  #   # nodeLabels:
+  #   #   intel.feature.node.kubernetes.io/gpu: "true"
+  #   networkInterfaces:
+  #     - deviceSelector:
+  #         hardwareAddr: "bc:24:11:b3:1b:01"
+  #         # hardwareAddr: "1c:bf:ce:26:00:92" # zordon
+  #       dhcp: true
+  #       mtu: 9000
+  #       # vlans:
+  #       #   - &vlan100 { vlanId: 100, dhcp: false, mtu: 9000 }
+  #       vip:
+  #         ip: "10.0.42.21"
+  # - hostname: "k8s-2.pospiech.local"
+  #   # hostname: "kakashi.pospiech.local"
+  #   ipAddress: "10.0.42.7"
+  #   installDisk: "/dev/sda"
+  #   # installDiskSelector:
+  #   #   model: SSDPR-CX400*
+  #   machineSpec:
+  #     secureboot: false
+  #   talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
+  #   controlPlane: true
+  #   # nodeLabels:
+  #   #   intel.feature.node.kubernetes.io/gpu: "true"
+  #   networkInterfaces:
+  #     - deviceSelector:
+  #         hardwareAddr: "bc:24:11:b3:1b:02"
+  #         # hardwareAddr: "1c:bf:ce:26:00:77" # kakashi
+  #       dhcp: true
+  #       # addresses:
+  #       #   - "10.0.42.7/24"
+  #       routes:
+  #         - network: "0.0.0.0/0"
+  #           gateway: "10.0.42.1"
+  #       mtu: 9000
+  #       vip:
+  #         ip: "10.0.42.21"
+  #       # vlans:
+  #       #   - *vlan100
+  # - hostname: "k8s-3.pospiech.local"
+  #   # hostname: kirito.pospiech.local
+  #   ipAddress: "10.0.42.8"
+  #   installDisk: "/dev/sda"
+  #   # installDiskSelector:
+  #   #   model: SSDPR-CX400*
+  #   machineSpec:
+  #     secureboot: false
+  #   talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
+  #   controlPlane: true
+  #   # nodeLabels:
+  #   #   intel.feature.node.kubernetes.io/gpu: "true"
+  #   networkInterfaces:
+  #     - deviceSelector:
+  #         hardwareAddr: "bc:24:11:b3:1b:03"
+  #         # hardwareAddr: "00:e0:4c:68:01:1d" # kirito
+
+  #       dhcp: true
+  #       # addresses:
+  #       #   - "10.0.42.8/24"
+  #       routes:
+  #         - network: "0.0.0.0/0"
+  #           gateway: "10.0.42.1"
+  #       mtu: 9000
+        # vip:
+        #   ip: "10.0.42.21"
+  #       # vlans:
+  #       #   - *vlan100
+
+  - hostname: goku.pospiech.internal
+    ipAddress: "10.0.42.9"
+    installDiskSelector:
+      model: SSDPR-PX500*
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
+    controlPlane: true
+    nodeLabels:
+      intel.feature.node.kubernetes.io/gpu: "true"
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "58:47:ca:7d:51:87"
+        dhcp: true
+        mtu: 9000
+        vip:
+          ip: "10.0.42.21"
+        # vlans:
+        #   - *vlan100
+        #   - *vlan666
+
+# # Global patches
+# patches:
+#   - "@./patches/global/machine-files.yaml"
+#   - "@./patches/global/machine-kubelet.yaml"
+#   - "@./patches/global/machine-network.yaml"
+#   - "@./patches/global/machine-sysctls.yaml"
+#   - "@./patches/global/machine-time.yaml"
+
+patches:
+  # Configure containerd
+  - |-
+    machine:
+      files:
+        - op: create
+          path: /etc/cri/conf.d/20-customization.part
+          content: |
+            [plugins]
+              [plugins."io.containerd.grpc.v1.cri"]
+                enable_unprivileged_ports = true
+                enable_unprivileged_icmp = true
+            [plugins."io.containerd.grpc.v1.cri".containerd]
+              discard_unpacked_layers = false
+            [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+              discard_unpacked_layers = false
+
+  # Disable search domain everywhere
+  - |-
+    machine:
+      network:
+        disableSearchDomain: true
+
+  # Enable host dns
+  - |-
+    machine:
+      features:
+        hostDNS:
+          enabled: true
+          resolveMemberNames: true
+          forwardKubeDNSToHost: false
+
+  # Mount openebs-hostpath in kubelet
+  - |-
+    machine:
+      kubelet:
+        extraMounts:
+          - destination: /var/mnt/extra
+            type: bind
+            source: /var/mnt/extra
+            options:
+              - rbind
+              - rshared
+              - rw
+
+  # Configure kubelet
+  - |-
+    machine:
+      kubelet:
+        extraConfig:
+          maxPods: 150
+        nodeIP:
+          validSubnets:
+              - 10.0.42.0/24
+
+  # Configure NFS mount options
+  - |
+    machine:
+      files:
+        - op: overwrite
+          path: /etc/nfsmount.conf
+          permissions: 0o644
+          content: |
+            [ NFSMount_Global_Options ]
+            nfsvers=4.1
+            hard=True
+            noatime=True
+            nconnect=16
+
+  # Configure static host entries
+  - |-
+    machine:
+      network:
+        nameservers:
+        - 10.0.42.1
+        extraHostEntries:
+          - ip: 10.0.42.21
+            aliases:
+              - k8s.pospiech.local
+
+  # Configure custom sysctls
+  - |-
+    machine:
+      sysctls:
+        fs.inotify.max_user_instances: 8192    # Watchdog
+        fs.inotify.max_user_watches: 1048576   # Watchdog
+        user.max_user_namespaces: 11255        # User namespaces
+        net.core.rmem_max: 67108864            # Cloudflared / QUIC
+        net.core.wmem_max: 67108864            # Cloudflared / QUIC
+        net.ipv4.tcp_fastopen: 3               # Send and accept data in the opening SYN packet
+        vm.nr_hugepages: 1024                  # PostgreSQL
+
+  # Configure udev rules
+  - |-
+    machine:
+      udev:
+        rules:
+          # Intel GPU
+          - SUBSYSTEM=="drm", KERNEL=="renderD*", GROUP="44", MODE="0660"
+
+# Controller patches
+controlPlane:
+  nodeLabels:
+    topology.kubernetes.io/region: *clusterName
+    topology.kubernetes.io/zone: m
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/gasket-driver
+          - siderolabs/i915
+          - siderolabs/intel-ucode
+          - siderolabs/thunderbolt
+  patches:
+    # Configure etcd
+    - |-
+      cluster:
+        etcd:
+          advertisedSubnets:
+            - 10.0.42.0/24
+    # Configure cluster
+    - |-
+      cluster:
+        allowSchedulingOnControlPlanes: true
+        coreDNS:
+            disabled: true
+        proxy:
+          disabled: true
+        scheduler:
+          config:
+            apiVersion: kubescheduler.config.k8s.io/v1
+            kind: KubeSchedulerConfiguration
+            profiles:
+              - schedulerName: default-scheduler
+                pluginConfig:
+                  - name: PodTopologySpread
+                    args:
+                      defaultingType: List
+                      defaultConstraints:
+                        - maxSkew: 1
+                          topologyKey: kubernetes.io/hostname
+                          whenUnsatisfiable: ScheduleAnyway
+
+    # Disable default API server admission plugins.
+    - |-
+      - op: remove
+        path: /cluster/apiServer/admissionControl
+
+    # Enable K8s Talos API Access
+    - |-
+      machine:
+        features:
+          kubernetesTalosAPIAccess:
+            enabled: true
+            allowedRoles:
+              - os:admin
+            allowedKubernetesNamespaces:
+              - actions-runner-system
+              - system-upgrade
+
+    # Enable MutatingAdmissionPolicy
+    - |-
+      cluster:
+        apiServer:
+          extraArgs:
+            runtime-config: admissionregistration.k8s.io/v1alpha1=true
+            feature-gates: MutatingAdmissionPolicy=true

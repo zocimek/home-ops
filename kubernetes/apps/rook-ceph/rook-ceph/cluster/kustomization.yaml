@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./helmrelease.yaml
+  # - ./cephfs.storageclass.yaml
+  # - ./ceph-block.storageclass.yaml
+  # - ./rook-ceph-mon-endpoints.yaml
+  # - ./rook-ceph-mon.sops.yaml
+  # - ./rook-csi-cephfs-node.sops.yaml
+  # - ./rook-csi-cephfs-provisioner.sops.yaml
+  # - ./rook-csi-rbd-node.sops.yaml
+  # - ./rook-csi-rbd-provisioner.sops.yaml
