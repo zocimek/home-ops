@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/rook
+metadata:
+  name: rook-ceph-mon
+  namespace: rook-ceph
+data:
+  admin-secret: ENC[AES256_GCM,data:AxmZNk3z2930P7jDIaRZHA==,iv:Sxhxw6ZeIQa7+AsNYbCaBVquw6OZYdHCwKavRzaXIEw=,tag:c+Hmhu576IUtZYBnC4Qi5Q==,type:str]
+  ceph-secret: ENC[AES256_GCM,data:o2mxmDj9TXh0t1ItlIo8DZcTTreLzjuS1FlDWTyEnlL+kl2zNW2HMR+bX6J8mtbSdmXC5rCWdRo=,iv:4kjl5X2086eMUH6Bl9/CCYytW2iwtSFFPzw8Tbv4oyw=,tag:7k6mqerxLr+DpfTzwUByxg==,type:str]
+  ceph-username: ENC[AES256_GCM,data:iueMlo90ifzfzc6EAsi0fkumS9plJcoSImHFlQ==,iv:Fo1G5s9xG3D5epgNbJJA+hpwgEPDcvqQbWJahaqBEuw=,tag:YisDvPqhP8QBqaPue97YPA==,type:str]
+  cluster-name: ENC[AES256_GCM,data:h8hcIzkUDdlVl5Ug,iv:OXUsz1ZA4qkN65hYVFLUQ0C+1772QZhxrBUY+djGHfY=,tag:gpnYOLHBUINte2AW+hv11g==,type:str]
+  fsid: ENC[AES256_GCM,data:GYJnvsZMCuaZEgxSGsKxX5MIkPq7rlriuDKtOq9f1dzqTydHKh/pNS1mA8mqCT4s,iv:u/Ki/83RyPdFKjiMdZ3bc9anrY6CVz/GwFwAv1P1vdI=,tag:dMDjIDCT0rymPum/qqONKg==,type:str]
+  mon-secret: ENC[AES256_GCM,data:d+JF1YcltbCETKFrb55oGg==,iv:pjax0IhM/oKBJk9iUivHqr2QsQ0rx8/SWDNmhL3fApA=,tag:21v5JlVo9np75MC2Dlvz/A==,type:str]
+sops:
+  age:
+    - recipient: age1h2p8ckzxnxj7gvav9remh2nrgw6tfrgna0a62en5j8tglvuca9vq7uajxz
+      enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBwUlgvdnc3dThqeWpDVDdi
+        eGI0a3FTMllVT2F0WTE4dnN1eUptV0R5cHpnCkNMbHk5SEV1THFNK2dmVmtZaytU
+        NG1yRGFtSXkyd3d2WXFNbUZzZHRoaGMKLS0tIGFDdU52SUhURFVKdkNEU3h2Rjc1
+        K3V4ZTl3QTNmd0NMc3JoTExlU1Q1MjQKqFJ1UIpvvsK3N6/3YMvi/U+xXt2K/o/1
+        HYXXO5r2Kbm6MHAHXlVp8JaolH+Y/+GAo0errE/DqTeWBmCBqb2sww==
+        -----END AGE ENCRYPTED FILE-----
+  lastmodified: "2025-06-20T12:04:09Z"
+  mac: ENC[AES256_GCM,data:+nziQupLhwGTmAmEuyEKsepYx6KcG2nxQA/Q4DS63TtnNpEdwZcwYpHHqDXYaCb2SEeO7HStZpul1UrHMRiGaq7DcCvmY7r8aacMIGBF/0DvWof4wmjdeBSTUY7yGOvVxGUelZdb6ZX14JgcMkE6PAuhhZVLLkyzSZ0TQBAACaU=,iv:LFK0WtlpM6MhWZu68yfzAjuSUzwcQceaCM1ZJZd3K0Y=,tag:Fy6PZfcc8eg/xiqW7zdw4w==,type:str]
+  encrypted_regex: ^(data|stringData)$
+  mac_only_encrypted: true
+  version: 3.10.2

@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rook-ceph-mon-endpoints
+  namespace: rook-ceph
+data:
+  data: zordon=192.168.100.2:6789,kakashi=192.168.100.3:6789,kirito=192.168.100.4:6789
+  mapping: "{}"
+  maxMonId: "2"

@@ -1,0 +1,130 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app cryptgeon
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    controllers:
+      cryptgeon:
+        replicas: 1
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
+
+        pod:
+          securityContext:
+            runAsUser: 568
+            runAsGroup: 568
+            runAsNonRoot: true
+            fsGroup: 568
+            fsGroupChangePolicy: "OnRootMismatch"
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: cryptgeon
+
+        containers:
+          app:
+            image:
+              repository: zocimek/cryptgeon
+              # yamllint disable-line rule:line-length
+              tag: latest@sha256:e27fce18d6f3abc2756804d18c6baf497efd14ff5b8bb3a8a414a283e5248366
+
+            env:
+              REDIS: redis://dragonfly.database.svc.cluster.local:6379/3
+              SIZE_LIMIT: 50 MiB
+              MAX_VIEWS: 5
+              MAX_EXPIRATION: 10080
+              ALLOW_ADVANCED: true
+              # THEME_IMAGE: https://cdn2.hubspot.net/hubfs/53/image8-2.jpg
+              # yamllint disable-line rule:line-length
+              THEME_PAGE_TITLE: "Prywatne notatki dla każdego - prywatna-notatka.pl"
+              # THEME_TEXT: "prywatna-notatka.pl"
+              VERBOSITY: trace
+
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/live
+                    port: &port 8000
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/live
+                    port: *port
+                  failureThreshold: 30
+                  periodSeconds: 10
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 128Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+
+    service:
+      app:
+        controller: cryptgeon
+        ports:
+          http:
+            port: *port
+
+    route:
+      app:
+        hostnames:
+          - "prywatna-notatka.pl"
+        parentRefs:
+          - name: external
+            namespace: kube-system
+            sectionName: privnote-https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+            filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  add:
+                    - name: Cache-Control
+                      value: no-cache
+                    - name: Pragma
+                      value: no-cache
+                    - name: X-Frame-Options
+                      value: SAMEORIGIN
+                    - name: X-XSS-Protection
+                      value: "1; mode=block"
+

@@ -1,0 +1,205 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: home-assistant
+  namespace: default
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+
+  values:
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+        fsGroupChangePolicy: "OnRootMismatch"
+
+    controllers:
+      home-assistant:
+        annotations:
+          reloader.stakater.com/auto: "true"
+
+        initContainers:
+          update-ssh-perms:
+            image:
+              repository: alpine
+              tag: latest
+            command:
+              - /bin/sh
+            args:
+              - -c
+              - |
+                  cp /ssh-secret/id_rsa /ssh/id_rsa
+                  chmod 0600 /ssh/id_rsa
+
+
+        pod:
+          hostNetwork: true
+          nodeSelector:
+            kubernetes.io/arch: amd64
+
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-assistant/home-assistant
+              tag: "2025.5.3"
+            env:
+              TZ: Europe/Warsaw
+
+            envFrom:
+              - secretRef:
+                  name: hass-db-secret
+
+            probes:
+              liveness:
+                enabled: false
+              readiness:
+                enabled: false
+              startup:
+                enabled: false
+
+          code:
+            dependsOn: app
+            image:
+              repository: ghcr.io/coder/code-server
+              tag: 4.100.3
+            args:
+              - --auth
+              - "none"
+              - --user-data-dir
+              - "/config/.vscode"
+              - --extensions-dir
+              - "/config/.vscode"
+              - --port
+              - "8081"
+              - "/config"
+
+    service:
+      app:
+        controller: home-assistant
+
+        annotations:
+          lbipam.cilium.io/sharing-key: "10.0.42.105"
+          lbipam.cilium.io/ips: 10.0.42.105
+
+        type: LoadBalancer
+        externalTrafficPolicy: Cluster
+
+        ports:
+          http:
+            port: 8123
+            enabled: true
+
+          matter:
+            port: 5580
+            enabled: true
+
+          homebridge:
+            enabled: true
+            port: 21065
+
+          homebridge-udp:
+            enabled: true
+            port: 5353
+
+          coiot:
+            enabled: true
+            port: 5683
+            protocol: UDP
+
+      code:
+        controller: home-assistant
+        ports:
+          http:
+            port: 8081
+
+    route:
+      app:
+        # kind: TLSRoute
+        hostnames:
+          - "home.pospiech.dev"
+        parentRefs:
+          - name: external
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: 8123
+      internal:
+        # kind: TLSRoute
+        hostnames:
+          - "hass-svc.pospiech.dev"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: 8123
+
+      code:
+        hostnames:
+          - "hass-code.pospiech.dev"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: code
+                port: 8081
+    rawResources: {}
+
+    persistence:
+      config:
+        enabled: true
+        type: persistentVolumeClaim
+        existingClaim: home-assistant
+        globalMounts:
+          - path: /config
+
+      backup:
+        enabled: true
+        type: nfs
+        server: nfs.homelab.pospiech.dev
+        path: /volume1/apps/backups/home-assistant
+        globalMounts:
+          - path: /config/backups
+
+      ssh-secret:
+        enabled: true
+        type: secret
+        name: hass-ssh-config
+        defaultMode: 384
+
+      ssh:
+        type: emptyDir
+        enabled: true
+
+      tls:
+        type: secret
+        name: hass-tls
+        advancedMounts:
+          home-assistant:
+            app:
+              - path: /tls

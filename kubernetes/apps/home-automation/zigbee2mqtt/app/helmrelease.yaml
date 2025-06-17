@@ -1,0 +1,143 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: zigbee2mqtt
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    defaultPodOptions:
+      # securityContext:
+      #   runAsNonRoot: true
+      #   runAsUser: 1000
+      #   runAsGroup: 1000
+      #   fsGroup: 1000
+      #   fsGroupChangePolicy: OnRootMismatch
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: feature.node.kubernetes.io/zigbee-controller
+                    operator: In
+                    values:
+                      - "true"
+
+    controllers:
+      zigbee2mqtt:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/koenkk/zigbee2mqtt
+              # yamllint disable-line rule:line-length
+              tag: 2.4.0@sha256:dd7479e5416c4b95725333d0a69ff504bcbda9a7a3431e5d5dd1e27c16465cdd
+            env:
+              TZ: Europe/Warsaw
+              ZIGBEE2MQTT_DATA: /config
+              ZIGBEE2MQTT_CONFIG_ADVANCED_LAST_SEEN: ISO_8601
+              ZIGBEE2MQTT_CONFIG_ADVANCED_LOG_LEVEL: info # debug
+              ZIGBEE2MQTT_CONFIG_ADVANCED_LOG_OUTPUT: '["console"]'
+              ZIGBEE2MQTT_CONFIG_AVAILABILITY_ACTIVE_TIMEOUT: 60
+              ZIGBEE2MQTT_CONFIG_AVAILABILITY_PASSIVE_TIMEOUT: 2000
+              ZIGBEE2MQTT_CONFIG_DEVICE_OPTIONS_RETAIN: "true"
+              ZIGBEE2MQTT_CONFIG_FRONTEND_ENABLED: "true"
+              ZIGBEE2MQTT_CONFIG_FRONTEND_PACKAGE: "zigbee2mqtt-windfront"
+              ZIGBEE2MQTT_CONFIG_FRONTEND_PORT: &port 80
+              ZIGBEE2MQTT_CONFIG_FRONTEND_URL: https://zigbee.pospiech.dev
+              ZIGBEE2MQTT_CONFIG_HOMEASSISTANT_ENABLED: true
+              ZIGBEE2MQTT_CONFIG_HOMEASSISTANT_DISCOVERY_TOPIC: homeassistant
+              # yamllint disable-line rule:line-length
+              ZIGBEE2MQTT_CONFIG_HOMEASSISTANT_STATUS_TOPIC: homeassistant/status
+              ZIGBEE2MQTT_CONFIG_MQTT_INCLUDE_DEVICE_INFORMATION: "true"
+              ZIGBEE2MQTT_CONFIG_MQTT_KEEPALIVE: 60
+              ZIGBEE2MQTT_CONFIG_MQTT_REJECT_UNAUTHORIZED: "true"
+              ZIGBEE2MQTT_CONFIG_MQTT_SERVER: mqtt://mqtt.pospiech.dev
+              ZIGBEE2MQTT_CONFIG_MQTT_VERSION: 5
+              ZIGBEE2MQTT_CONFIG_PERMIT_JOIN: "false"
+              ZIGBEE2MQTT_CONFIG_BASE_TOPIC: zigbee2mqtt
+
+              ZIGBEE2MQTT_CONFIG_ADVANCED_LEGACY_API: "false"
+              ZIGBEE2MQTT_CONFIG_ADVANCED_LEGACY_AVAILABILITY_PAYLOAD: "false"
+              ZIGBEE2MQTT_CONFIG_DEVICE_OPTIONS_LEGACY: "false"
+
+              ZIGBEE2MQTT_CONFIG_SERIAL_BAUDRATE: 115200
+              # yamllint disable-line rule:line-length
+              ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2452113-if00
+              ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER: deconz
+
+            envFrom:
+              - secretRef:
+                  name: zigbee2mqtt-secret
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1Gi
+
+            securityContext:
+              privileged: true
+              # allowPrivilegeEscalation: false
+              # readOnlyRootFilesystem: true
+              # capabilities: { drop: ["ALL"] }
+            # resources: {}
+              # requests:
+              #   cpu: 10m
+              # limits:
+              #   memory: 512Mi
+
+    service:
+      app:
+        controller: zigbee2mqtt
+        ports:
+          http:
+            port: *port
+
+    route:
+      app:
+        annotations:
+          hajimari.io/icon: mdi:zigbee
+        hostnames:
+          - "zigbee.pospiech.dev"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+
+    persistence:
+      config:
+        existingClaim: zigbee2mqtt
+      usb:
+        type: hostPath
+        # yamllint disable-line rule:line-length
+        hostPath: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2452113-if00

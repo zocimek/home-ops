@@ -1,0 +1,126 @@
+---
+web:
+  port: ${WEB_PORT}
+storage:
+  type: postgres
+  path: ${DATABASE_URL}
+  caching: true
+metrics: true
+debug: true
+ui:
+  title: Status | Gatus
+  header: Status
+
+alerting:
+  pushover:
+    application-token: ${CUSTOM_PUSHOVER_TOKEN}
+    user-key: ${CUSTOM_PUSHOVER_USER_KEY}
+    default-alert:
+      description: healthcheck failed
+      send-on-resolved: true
+      failure-threshold: 3
+      success-threshold: 5
+
+connectivity:
+  checker:
+    target: 1.1.1.1:53
+    interval: 1m
+
+# default-mx: &defaultMx
+#   group: mail
+#   interval: 30m
+#   ui:
+#     hide-hostname: true
+#     hide-url: true
+#   client:
+#     timeout: 5s
+#   conditions:
+#     - "[CONNECTED] == true"
+#     - "[CERTIFICATE_EXPIRATION] > 48h"
+
+endpoints:
+  - name: flux-webhook
+    group: external
+    url: https://flux-webhook.pospiech.dev
+    interval: 1m
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 404"
+
+  - name: max-speed.com.pl (blog)
+    group: maxspeed
+    url: https://max-speed.com.pl
+    interval: 30s
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: pushover
+
+  - name: max-speed.com.pl (app)
+    group: maxspeed
+    url: https://app.max-speed.com.pl
+    interval: 30s
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: pushover
+
+  - name: max-speed.com.pl (demo)
+    group: maxspeed
+    url: https://demo.max-speed.com.pl
+    interval: 30s
+    ui:
+      hide-hostname: true
+      hide-url: true
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: pushover
+
+  - name: poetica.pl (Homepage)
+    group: poetica.pl
+    url: https://poetica.pl
+    interval: 30s
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: pushover
+
+  - name: poetica.pl (API)
+    group: poetica.pl
+    url: https://poetica.pl/api/v1/content?limit=10
+    interval: 30s
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: pushover
+
+  - name: status
+    group: external
+    url: https://status.pospiech.dev
+    interval: 1m
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 200"
+    alerts:
+      - type: pushover
+
+  # - name: SMTP
+  #   url: "starttls://mx.emeraldit.pl:587"
+  #   <<: *defaultMx
+
+  # - name: IMAP
+  #   url: "tls://mx.emeraldit.pl:993"
+  #   <<: *defaultMx

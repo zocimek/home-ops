@@ -1,31 +1,69 @@
 ---
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
-version: '3'
+version: "3"
 
 tasks:
 
-  talos:
-    desc: Bootstrap the Talos cluster
-    dir: '{{.TALOS_DIR}}'
-    cmds:
-      - '[ -f talsecret.sops.yaml ] || talhelper gensecret | sops --filename-override talos/talsecret.sops.yaml --encrypt /dev/stdin > talsecret.sops.yaml'
-      - talhelper genconfig
-      - talhelper gencommand apply --extra-flags="--insecure" | bash
-      - until talhelper gencommand bootstrap | bash; do sleep 10; done
-      - until talhelper gencommand kubeconfig --extra-flags="{{.ROOT_DIR}} --force" | bash; do sleep 10; done
+  secrets:
+    desc: Create talos secrets in 1password
     preconditions:
-      - test -f {{.ROOT_DIR}}/.sops.yaml
-      - test -f {{.SOPS_AGE_KEY_FILE}}
-      - test -f {{.TALOS_DIR}}/talconfig.yaml
-      - which talhelper talosctl sops
+      - which yq talhelper op
+    cmds:
+      - |
+        export $(talhelper gensecret | yq --input-format yaml --output-format shell | sed -E "s/^([a-zA-Z_][a-zA-Z0-9_]*)='(.*)'$/\1=\2/");
+        op item delete --vault="Kubernetes" talos || true # ignore item deletion
+        op item create --category=PASSWORD --title='talos' --vault='Kubernetes' --generate-password='64,letters,digits,symbols' \
+          Secrets.cluster_id[password]="$cluster_id" \
+          Secrets.cluster_secret[password]="$cluster_secret" \
+          Secrets.secrets_bootstraptoken[password]="$secrets_bootstraptoken" \
+          Secrets.secrets_secretboxencryptionsecret[password]="$secrets_secretboxencryptionsecret" \
+          Secrets.trustdinfo_token[password]="$trustdinfo_token" \
+          Secrets.certs_etcd_crt[password]="$certs_etcd_crt" \
+          Secrets.certs_etcd_key[password]="$certs_etcd_key" \
+          Secrets.certs_k8s_crt[password]="$certs_k8s_crt" \
+          Secrets.certs_k8s_key[password]="$certs_k8s_key" \
+          Secrets.certs_k8saggregator_crt[password]="$certs_k8saggregator_crt" \
+          Secrets.certs_k8saggregator_key[password]="$certs_k8saggregator_key" \
+          Secrets.certs_k8sserviceaccount_key[password]="$certs_k8sserviceaccount_key" \
+          Secrets.certs_os_crt[password]="$certs_os_crt" \
+          Secrets.certs_os_key[password]="$certs_os_key"
+
+  talos:
+    desc: Bootstrap Talos
+    vars:
+      TALOS_CONTROLLER:
+        sh: talosctl config info --output json | jq --raw-output '.endpoints[]' | shuf -n 1
+    preconditions:
+      - which op test talhelper
+      - test -f {{.KUBERNETES_DIR}}/talos/talsecret.yaml
+      - test -f {{.KUBERNETES_DIR}}/talos/talconfig.yaml
+      - test -f {{.KUBERNETES_DIR}}/talos/talhelper-secrets.env
+      - op user get --me
+    cmds:
+      - task: :talos:apply-clusterconfig
+        vars:
+          INSECURE: "true"
+      - until talosctl --nodes {{.TALOS_CONTROLLER}} bootstrap; do sleep 5; done
+      - talosctl kubeconfig --nodes {{.TALOS_CONTROLLER}} --force --force-context-name "home-ops" "${KUBECONFIG}"
 
   apps:
-    desc: Bootstrap apps into the Talos cluster
-    cmd: bash {{.SCRIPTS_DIR}}/bootstrap-apps.sh
+    desc: Bootstrap Apps
+    prompt: Bootstrap apps into Talos cluster?
     preconditions:
-      - msg: Unsupported bash version, run `brew install bash` to upgrade
-        sh: '{{if eq OS "darwin"}}test -f /opt/homebrew/bin/bash || test -f /usr/local/bin/bash{{end}}'
-      - test -f {{.KUBECONFIG}}
-      - test -f {{.ROOT_DIR}}/.sops.yaml
-      - test -f {{.SCRIPTS_DIR}}/bootstrap-apps.sh
-      - test -f {{.SOPS_AGE_KEY_FILE}}
+      - which op helmfile kubectl
+      - test -f "${TALOSCONFIG}"
+      - test -f {{.KUBERNETES_DIR}}/bootstrap/helmfile.yaml
+      - test -f {{.KUBERNETES_DIR}}/bootstrap/bootstrap.env
+      - test -f {{.KUBERNETES_DIR}}/bootstrap/templates/resources.yaml.j2
+      # - test -f {{.KUBERNETES_DIR}}/bootstrap/templates/wipe-rook.yaml.gotmpl
+      - op user get --me
+      - talosctl config info
+    env:
+      NODE_COUNT:
+        sh: talosctl config info --output json | jq --raw-output '.nodes | length'
+      # ROOK_DISK: nvme-Samsung_SSD_990_PRO_1TB
+    cmds:
+      - kubectl wait nodes --for=condition=Ready=True --all --timeout=10s || until kubectl wait nodes --for=condition=Ready=False --all --timeout=10m; do sleep 5; done
+      - minijinja-cli "{{.KUBERNETES_DIR}}/bootstrap/templates/resources.yaml.j2" | op inject 2>/dev/null | kubectl apply --server-side --filename -
+      - helmfile --quiet --file {{.KUBERNETES_DIR}}/bootstrap/helmfile.yaml sync --hide-notes
+      # - helmfile --quiet --file {{.KUBERNETES_DIR}}/bootstrap/helmfile.yaml destroy --selector name=wipe-rook

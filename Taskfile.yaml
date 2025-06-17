@@ -20,6 +20,8 @@ env:
 
 includes:
   bootstrap: .taskfiles/bootstrap
+  k8s: .taskfiles/k8s/Taskfile.yaml
+  sops: .taskfiles/sops/Taskfile.yaml
   talos: .taskfiles/talos
   template: .taskfiles/template
 

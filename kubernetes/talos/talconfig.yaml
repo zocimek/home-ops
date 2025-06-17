@@ -1,0 +1,97 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
+---
+clusterName: home-ops
+
+# renovate: depName=ghcr.io/siderolabs/installer datasource=docker
+talosVersion: v1.10.4
+# renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
+kubernetesVersion: v1.33.1
+
+endpoint: https://k8s.pospiech.local:6443
+
+additionalApiServerCertSans: &sans
+  - "127.0.0.1"
+  - "10.0.42.21"
+  - "k8s.pospiech.local"
+additionalMachineCertSans: *sans
+
+clusterPodNets: ["10.42.0.0/16"]
+clusterSvcNets: ["10.43.0.0/16"]
+
+# Disable built-in CNI to use Cilium
+cniConfig:
+  name: none
+
+nodes:
+  - hostname: "k8s-1.pospiech.local"
+    ipAddress: "10.0.42.6"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:b3:1b:01"
+        dhcp: false
+        addresses:
+          - "10.0.42.6/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.0.42.1"
+        mtu: 9000
+        vip:
+          ip: "10.0.42.21"
+  - hostname: "k8s-2.pospiech.local"
+    ipAddress: "10.0.42.7"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:b3:1b:02"
+        dhcp: false
+        addresses:
+          - "10.0.42.7/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.0.42.1"
+        mtu: 9000
+        vip:
+          ip: "10.0.42.21"
+  - hostname: "k8s-3.pospiech.local"
+    ipAddress: "10.0.42.8"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:b3:1b:03"
+        dhcp: false
+        addresses:
+          - "10.0.42.8/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.0.42.1"
+        mtu: 9000
+        vip:
+          ip: "10.0.42.21"
+
+# Global patches
+patches:
+  - "@./patches/global/machine-files.yaml"
+  - "@./patches/global/machine-kubelet.yaml"
+  - "@./patches/global/machine-network.yaml"
+  - "@./patches/global/machine-sysctls.yaml"
+  - "@./patches/global/machine-time.yaml"
+
+# Controller patches
+controlPlane:
+  patches:
+    - "@./patches/controller/admission-controller-patch.yaml"
+    - "@./patches/controller/cluster.yaml"
+

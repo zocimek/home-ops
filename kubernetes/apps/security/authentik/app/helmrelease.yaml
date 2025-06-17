@@ -1,0 +1,187 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app authentik
+  namespace: *app
+spec:
+  interval: 5m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  values:
+    controllers:
+      authentik:
+        type: deployment
+        replicas: 1
+        strategy: RollingUpdate
+        rollingUpdate:
+          unavailable: "90%"
+        pod:
+          topologySpreadConstraints:
+            - &tsc
+              maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
+                  app.kubernetes.io/component: *app
+        containers:
+          main:
+            image: &img
+              repository: ghcr.io/goauthentik/server
+              tag: 2025.6.1
+            args: [server]
+            env: &env
+              TZ: "Europe/Warsaw"
+              AUTHENTIK_REDIS__HOST: dragonfly.database.svc.cluster.local
+              AUTHENTIK_REDIS__DB: "4"
+              AUTHENTIK_SESSION_STORAGE: "db"
+              AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
+              AUTHENTIK_ERROR_REPORTING__SEND_PII: "false"
+              AUTHENTIK_OUTPOSTS__DISCOVER: "false"
+            envFrom: &envFrom
+              - secretRef:
+                  name: authentik-secret
+              - secretRef:
+                  name: authentik-db-secret
+            securityContext: &sc
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: "30m"
+                memory: "600Mi"
+              limits:
+                cpu: "1000m"
+                memory: "2Gi"
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /-/health/live/
+                    port: &port 9000
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /-/health/live/
+                    port: *port
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              startup: *probe
+      worker:
+        type: deployment
+        replicas: 1
+        pod:
+          topologySpreadConstraints:
+            - <<: *tsc
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
+                  app.kubernetes.io/component: worker
+        containers:
+          main:
+            image: *img
+            args: [worker]
+            env: *env
+            envFrom: *envFrom
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: "20m"
+                memory: "512Mi"
+              limits:
+                cpu: "1000m"
+                memory: "2Gi"
+            probes:
+              liveness: &workerProbe
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - ak
+                      - healthcheck
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *workerProbe
+              startup: *workerProbe
+
+    service:
+      authentik:
+        controller: authentik
+        ports:
+          http: &port
+            port: 9000
+            protocol: HTTP
+            appProtocol: http
+          http-80:
+            <<: *port
+            port: 80
+            targetPort: 9000
+          metrics:
+            <<: *port
+            port: 9300
+
+    route:
+      main:
+        hostnames:
+          - "auth.pospiech.dev"
+          - "sso.pospiech.dev"
+        parentRefs:
+          - name: external
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: authentik
+                port: 9000
+
+    persistence:
+      # tls:
+      #   type: secret
+      #   name: authentik-tls
+      #   defaultMode: 0400
+      #   globalMounts:
+      #     - path: "/certs/auth.pospiech.dev-k8s"
+      tmp:
+        type: emptyDir
+        medium: Memory
+        globalMounts:
+          - path: "/media/public"
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: &uid 1000
+        runAsGroup: *uid
+        fsGroup: *uid
+        fsGroupChangePolicy: Always
+        seccompProfile: { type: "RuntimeDefault" }
+
+    serviceMonitor:
+      authentik:
+        serviceName: authentik
+        endpoints:
+          - port: metrics
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 30s

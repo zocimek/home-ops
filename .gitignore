@@ -1,4 +1,5 @@
 # Secrets
+.sopsrc
 *.pub
 *.key
 *.decrypted~*.yaml
