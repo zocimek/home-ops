@@ -181,8 +181,8 @@ spec:
       backup:
         enabled: true
         type: nfs
-        server: nfs.homelab.pospiech.dev
-        path: /volume1/apps/backups/home-assistant
+        server: nas01.pospiech.dev
+        path: /mnt/data/backups/apps/home-assistant
         globalMounts:
           - path: /config/backups
 

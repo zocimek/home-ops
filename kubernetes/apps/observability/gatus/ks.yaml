@@ -12,6 +12,8 @@ spec:
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
+    - name: crunchy-postgres-operator-cluster
+      namespace: database
   interval: 1h
   path: ./kubernetes/apps/observability/gatus/app
   postBuild:

@@ -41,6 +41,8 @@ spec:
   wait: true
   dependsOn:
     - name: crunchy-postgres-operator
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
   postBuild:
     substitute:
       APP: postgres
