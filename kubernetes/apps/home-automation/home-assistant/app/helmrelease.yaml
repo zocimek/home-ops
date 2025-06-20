@@ -182,7 +182,7 @@ spec:
         enabled: true
         type: nfs
         server: nas01.pospiech.dev
-        path: /mnt/data/backups/apps/home-assistant
+        path: /mnt/data/backup/apps/home-assistant
         globalMounts:
           - path: /config/backups
 
