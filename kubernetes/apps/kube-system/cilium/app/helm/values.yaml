@@ -7,6 +7,8 @@ bpf:
   # tproxy: true
   # Ref: https://github.com/siderolabs/talos/issues/10002
   hostLegacyRouting: true
+bgpControlPlane:
+  enabled: true
 cluster:
   id: 1
   name: home-ops
@@ -43,7 +45,7 @@ k8sServicePort: 7445
 kubeProxyReplacement: true
 kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
 l2announcements:
-  enabled: true
+  enabled: false
 loadBalancer:
   algorithm: maglev
   mode: "dsr"
