@@ -1,9 +1,15 @@
 ---
 autoDirectNodeRoutes: true
 bpf:
+  datapathMode: netkit
   masquerade: true
+  preallocateMaps: true
+  # tproxy: true
   # Ref: https://github.com/siderolabs/talos/issues/10002
   hostLegacyRouting: true
+cluster:
+  id: 1
+  name: home-ops
 cni:
   # Required for pairing with Multus CNI
   exclusive: false
@@ -15,6 +21,7 @@ cgroup:
 # devices: eno+ eth+
 dashboards:
   enabled: true
+enableRuntimeDeviceDetection: true
 endpointRoutes:
   enabled: true
 envoy:
@@ -24,6 +31,8 @@ envoy:
        enabled: true
 gatewayAPI:
   enabled: true
+  enableAlpn: true
+  xffNumTrustedHops: 1
 hubble:
   enabled: false
 ipam:
@@ -75,5 +84,5 @@ securityContext:
       - NET_ADMIN
       - SYS_ADMIN
       - SYS_RESOURCE
-socketLB:
-  hostNamespaceOnly: true
+# socketLB:
+#   hostNamespaceOnly: true
