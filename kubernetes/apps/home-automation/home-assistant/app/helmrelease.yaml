@@ -50,12 +50,6 @@ spec:
                   cp /ssh-secret/id_rsa /ssh/id_rsa
                   chmod 0600 /ssh/id_rsa
 
-
-        pod:
-          hostNetwork: true
-          nodeSelector:
-            kubernetes.io/arch: amd64
-
         containers:
           app:
             image:
