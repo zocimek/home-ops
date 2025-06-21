@@ -36,7 +36,12 @@ spec:
       home-assistant:
         annotations:
           reloader.stakater.com/auto: "true"
-
+          k8s.v1.cni.cncf.io/networks: |
+            [{
+              "name": "multus-iot",
+              "namespace": "networking",
+              "ips": ["192.168.100.105/24"]
+            }]
         initContainers:
           update-ssh-perms:
             image:
