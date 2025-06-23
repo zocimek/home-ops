@@ -3,17 +3,28 @@ apiVersion: postgres-operator.crunchydata.com/v1beta1
 kind: PostgresCluster
 metadata:
   name: &name postgres
+  labels:
+    crunchy-users.henrywhitaker3.github.com/watch: "true"
+  annotations:
+    crunchy-users.henrywhitaker3.github.com/superuser: "postgres"
+    crunchy-users.henrywhitaker3.github.com/extensions: |
+      [
+        {
+          "database": "immich",
+          "extension": "vchord"
+        },
+        {
+          "database": "immich",
+          "extension": "earthdistance",
+          "cascade": true
+        }
+      ]
 spec:
   postgresVersion: 16
 
   # https://github.com/chkpwd/cdpgvecto.rs/pkgs/container/cdpgvecto.rs
   # https://github.com/1Solon/Home-Server-Configuration/blob/main/kubernetes/infra/databases/postgres/clusters/vector-cluster.yaml
-  image: ghcr.io/chkpwd/cdpgvecto.rs:ubi8-16.4-0-v0.3.0
-
-  metadata:
-    labels:
-      crunchy-userinit.ramblurr.github.com/enabled: "true"
-      crunchy-userinit.ramblurr.github.com/superuser: "postgres"
+  image: ghcr.io/drag0n141/cdpgvectorchord:0.4.2@sha256:76586888ced37296509120e10bbf7f0cd04f5ca23dd418915fe5284d3585bc05
 
   service:
     type: LoadBalancer
@@ -29,9 +40,9 @@ spec:
         synchronous_commit: "on"
         # remove below shared libraries during major upgrades
         parameters:
-          shared_preload_libraries: "vectors.so"
-          search_path: '"$user", public, vectors'
           max_connections: 500
+          shared_preload_libraries: "vchord.so"
+          search_path: '"$user", public, vectors"'
 
         pg_hba:
           - hostnossl all all 10.42.0.0/16 md5  # Needed because dbman does not support SSL yet
@@ -119,6 +130,7 @@ spec:
     - name: immich
       databases:
         - immich
+      options: SUPERUSER
       password:
         type: AlphaNumeric
     - name: lldap
@@ -246,7 +258,7 @@ spec:
             # incremental: "0 2-23 * * *"  # Every hour except 01:00
 
         - name: repo2  # B2
-          s3:
+          s3: &b2
             bucket: "zocimek-hl-pg-backup"
             endpoint: "s3.us-west-001.backblazeb2.com"
             region: "us-west-001"
@@ -263,8 +275,9 @@ spec:
         name: "repo1"
         s3: *minio
       options:
-        options:
-          - --set=20250617-085218F_20250619-210002I
+        - --type=immediate
+      # options:
+      #   - --set=20250617-085218F_20250619-210002I
 
   proxy:
     pgBouncer:
