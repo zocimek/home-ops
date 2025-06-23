@@ -263,7 +263,8 @@ spec:
         name: "repo1"
         s3: *minio
       options:
-        restore-target: "20250617-085218F_20250619-210002I"
+        options:
+          - --set=20250617-085218F_20250619-210002I
 
   proxy:
     pgBouncer:
