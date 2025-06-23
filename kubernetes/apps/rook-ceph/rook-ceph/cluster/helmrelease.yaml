@@ -109,6 +109,9 @@ spec:
         deviceFilter: nvme0n1
         config:
           osdsPerDevice: "1"
+      mon:
+        count: 1
+        allowMultiplePerNode: true
     cephBlockPools:
       - name: ceph-block
         spec:
