@@ -40,7 +40,7 @@ spec:
           app:
             image:
               repository: ghcr.io/immich-app/immich-server
-              tag: v1.134.0
+              tag: &version v1.135.0
 
             envFrom: &envFrom
               - secretRef:
@@ -65,7 +65,7 @@ spec:
           app:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
-              tag: v1.134.0
+              tag: *version
 
             envFrom: *envFrom
 
