@@ -1,0 +1,121 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app outline
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      outline:
+        replicas: 1
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
+
+        containers:
+          app:
+            image:
+              repository: docker.io/outlinewiki/outline
+              tag: 0.84.0
+            env:
+              # temporary workaround?
+              # MAXIMUM_IMPORT_SIZE: 5120000
+              #
+              # AWS_S3_ACL: private
+              # AWS_S3_FORCE_PATH_STYLE: "true"
+              # AWS_S3_UPLOAD_BUCKET_NAME: zocimek-hl-docs
+              FILE_STORAGE: local
+              FILE_STORAGE_UPLOAD_MAX_SIZE: "26214400"
+              FILE_STORAGE_IMPORT_MAX_SIZE: 5120000
+
+              ENABLE_UPDATES: "false"
+              
+              OIDC_AUTH_URI: "https://auth.pospiech.dev/application/o/authorize/"
+              OIDC_CLIENT_ID: outline
+              OIDC_DISPLAY_NAME: SSO
+              OIDC_SCOPES: "openid offline_access profile email"
+              OIDC_TOKEN_URI: "https://auth.pospiech.dev/application/o/token/"
+              OIDC_USERINFO_URI: "https://auth.pospiech.dev/application/o/userinfo/"
+              OIDC_LOGOUT_URI: "https://auth.pospiech.dev/application/o/outline/end-session/"
+
+              OIDC_USERNAME_CLAIM: preferred_username
+              PGSSLMODE: disable
+              PORT: 80
+              REDIS_URL: redis://dragonfly.database.svc.cluster.local:6379/5?pool_size=20&idle_timeout=180s
+              URL: "https://docs.pospiech.dev"
+              WEB_CONCURRENCY: 10
+            
+            envFrom:
+              - secretRef:
+                  name: outline-secret
+              - secretRef:
+                  name: outline-db-secret
+
+            command: ["/bin/sh", "-c", "yarn db:migrate --env=production-ssl-disabled && yarn start --env=production-ssl-disabled"]
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+            resources:
+              requests:
+                cpu: 10m
+                memory: 250Mi
+              limits:
+                memory: 750Mi
+        pod:
+          securityContext:
+            fsGroup: 1001
+            runAsUser: 1001
+            runAsGroup: 1001
+            fsGroupChangePolicy: "OnRootMismatch"
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
+    service:
+      app:
+        controller: outline
+        ports:
+          http:
+            port: &port 80
+
+    route:
+      app:
+        annotations:
+          hajimari.io/icon: mdi:notebook-edit-outline
+        hostnames:
+          - "docs.pospiech.dev"
+        parentRefs:
+          - name: external
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port  
+
+    persistence:
+      data:
+        existingClaim: *app
+        advancedMounts:
+          outline:
+            app:
+              - path: /var/lib/outline/data

@@ -1,0 +1,83 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &name wallos
+  namespace: flux-system
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 10
+  upgrade:
+    remediation:
+      retries: 10
+  values:
+    fullnameOverride: *name
+    # Listens on port 80, chown's around
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
+        fsGroupChangePolicy: "OnRootMismatch"
+        runAsNonRoot: false
+        seccompProfile:
+          type: RuntimeDefault
+    controllers:
+      wallos:
+        containers:
+          wallos:
+            image:
+              repository: ghcr.io/ellite/wallos
+              tag: 3.1.1
+            env:
+              TZ: "Europe/Warsaw"
+            resources:
+              requests:
+                cpu: 10m
+                memory: 60Mi
+              limits:
+                memory: 120Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              # /var/www/html/startup.sh: line 3: can't create /var/log/startup.log: Read-only file system
+              readOnlyRootFilesystem: false
+              # ERROR: [pool www] failed to setgid(82): Operation not permitted (1)
+              #capabilities: { drop: ["ALL"] }
+    service:
+      wallos:
+        controller: *name
+        ports:
+          http:
+            port: &port 80
+
+    route:
+      wallos:
+        hostnames:
+          - "subscriptions.pospiech.dev"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: wallos
+                port: *port
+
+    persistence:
+      wallos:
+        enabled: true
+        existingClaim: wallos
+        advancedMounts:
+          wallos:
+            wallos:
+              - path: /var/www/html/db
+                subPath: db
+              - path: /var/www/html/images/uploads/logos
+                subPath: logos

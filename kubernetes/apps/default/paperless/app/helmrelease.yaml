@@ -1,0 +1,186 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: paperless
+  namespace: default
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    controllers:
+      paperless:
+        type: statefulset
+        annotations:
+          reloader.stakater.com/auto: "true"
+
+        containers:
+          app:
+            image:
+              repository: ghcr.io/paperless-ngx/paperless-ngx
+              tag: 2.16.3
+
+            env:
+              PAPERLESS_ACCOUNT_ALLOW_SIGNUPS: "false"
+              PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
+              PAPERLESS_CONSUMER_POLLING: 60
+              PAPERLESS_CONSUMER_DELETE_DUPLICATES: true
+              PAPERLESS_CONSUMER_RECURSIVE: "true"
+              PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
+              PAPERLESS_CONSUMPTION_DIR: /library/consume
+              PAPERLESS_DATA_DIR: /library/data
+              PAPERLESS_ENABLE_HTTP_REMOTE_USER: "true"
+              PAPERLESS_EXPORT_DIR: /library/export
+              PAPERLESS_FILENAME_FORMAT: "{{ `{{ created_year }}/{{ correspondent }}/{{ title }}` }}"
+              PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: HTTP_REMOTE_USER
+              PAPERLESS_MEDIA_ROOT: /library/media
+              PAPERLESS_OCR_LANGUAGE: pol+eng
+              PAPERLESS_OCR_LANGUAGES: pol eng
+              PAPERLESS_CONVERT_TMPDIR: /var/tmp/paperless/convert
+              PAPERLESS_SCRATCH_DIR: /var/tmp/paperless/scratch
+              PAPERLESS_OCR_USER_ARGS: >
+                {
+                  "invalidate_digital_signatures": true,
+                  "continue_on_soft_render_error": true
+                }
+              PAPERLESS_PORT: &port 80
+              # yamllint disable-line rule:line-length
+              PAPERLESS_REDIS: redis://dragonfly.database.svc.cluster.local:6379/7
+              PAPERLESS_SOCIALACCOUNT_ALLOW_SIGNUPS: "false"
+              PAPERLESS_TASK_WORKERS: 2
+              PAPERLESS_TIKA_ENABLED: 1
+              PAPERLESS_TIKA_ENDPOINT: http://paperless-tika:9998
+              PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenberg:3000
+              PAPERLESS_TIME_ZONE: Europe/Warsaw
+              PAPERLESS_URL: https://documents.pospiech.dev
+              PAPERLESS_WEBSERVER_WORKERS: 2
+              PAPERLESS_AUDIT_LOG_ENABLED: true
+              # PAPERLESS_DISABLE_REGULAR_LOGIN: true
+              PAPERLESS_REDIRECT_LOGIN_TO_SSO: true
+              USERMAP_GID: "65542" # gladius:external-services
+              PAPERLESS_SOCIALACCOUNT_PROVIDERS:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-secret
+                    key: PAPERLESS_SOCIALACCOUNT_PROVIDERS
+              PAPERLESS_ADMIN_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-secret
+                    key: PAPERLESS_ADMIN_USER
+              PAPERLESS_ADMIN_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-secret
+                    key: PAPERLESS_ADMIN_PASSWORD
+            
+            envFrom:
+            - secretRef:
+                name: paperless-secret
+            - secretRef:
+                name: paperless-db-secret
+
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: *port
+                  initialDelaySeconds: 15
+                  periodSeconds: 30
+                  failureThreshold: 3
+              readiness: *probe
+              startup: *probe
+            resources:
+              requests:
+                memory: 2048Mi
+              limits:
+                memory: 2048Mi
+
+      gotenburg:
+        containers:
+          app:
+            image:
+              repository: thecodingmachine/gotenberg
+              tag: 8.21.0
+            env: 
+              DISABLE_GOOGLE_CHROME: 1
+
+      tika:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/paperless-ngx/tika
+              tag: 2.9.1-full
+
+    service:
+      app:
+        controller: paperless
+        ports:
+          http:
+            port: *port
+
+      gotenburg:
+        controller: gotenburg
+        ports:
+          http: 
+            port: 3000
+
+      tika: 
+        controller: tika
+        ports:
+          http: 
+            port: 9998
+
+    route:
+      app:
+        hostnames:
+          - "documents.pospiech.dev"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+
+    persistence:
+      library:
+        existingClaim: paperless-nfs
+        globalMounts:
+          - path: /library
+      convert:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        advancedMounts:
+          paperless:
+            app:
+              - path: /var/tmp/paperless/convert
+      scratch:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 1Gi
+        advancedMounts:
+          paperless:
+            app:
+              - path: /var/tmp/paperless/convert
+
