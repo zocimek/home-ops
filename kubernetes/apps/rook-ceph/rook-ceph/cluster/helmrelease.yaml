@@ -65,6 +65,8 @@ spec:
       #   ssl: false
       #   prometheusEndpoint: http://prometheus-operated.monitoring.svc.cluster.local:9090
       mgr:
+        count: 1
+        activeStandby: false
         modules:
           - name: diskprediction_local
             enabled: true
