@@ -66,13 +66,13 @@ spec:
                 gpu.intel.com/i915: 1
               limits:
                 gpu.intel.com/i915: 1
-    
+
     service:
       app:
         controller: jellyfin
         type: LoadBalancer
         annotations:
-          lbipam.cilium.io/ips: 192.168.100.107
+          lbipam.cilium.io/ips: 10.0.42.107
         externalTrafficPolicy: Cluster
         ports:
           http:

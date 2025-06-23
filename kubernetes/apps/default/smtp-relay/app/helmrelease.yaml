@@ -69,7 +69,7 @@ spec:
         controller: smtp-relay
         type: LoadBalancer
         annotations:
-          lbipam.cilium.io/ips: 192.168.100.108
+          lbipam.cilium.io/ips: 10.0.42.108
         ports:
           http:
             primary: true
