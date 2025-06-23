@@ -52,7 +52,6 @@ spec:
               PAPERLESS_OCR_LANGUAGE: pol+eng
               PAPERLESS_OCR_LANGUAGES: pol eng
               PAPERLESS_CONVERT_TMPDIR: /var/tmp/paperless/convert
-              PAPERLESS_SCRATCH_DIR: /var/tmp/paperless/scratch
               PAPERLESS_OCR_USER_ARGS: >
                 {
                   "invalidate_digital_signatures": true,
@@ -88,7 +87,7 @@ spec:
                   secretKeyRef:
                     name: paperless-secret
                     key: PAPERLESS_ADMIN_PASSWORD
-            
+
             envFrom:
             - secretRef:
                 name: paperless-secret
@@ -120,7 +119,7 @@ spec:
             image:
               repository: thecodingmachine/gotenberg
               tag: 8.21.0
-            env: 
+            env:
               DISABLE_GOOGLE_CHROME: 1
 
       tika:
@@ -140,13 +139,13 @@ spec:
       gotenburg:
         controller: gotenburg
         ports:
-          http: 
+          http:
             port: 3000
 
-      tika: 
+      tika:
         controller: tika
         ports:
-          http: 
+          http:
             port: 9998
 
     route:
@@ -175,12 +174,3 @@ spec:
           paperless:
             app:
               - path: /var/tmp/paperless/convert
-      scratch:
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        size: 1Gi
-        advancedMounts:
-          paperless:
-            app:
-              - path: /var/tmp/paperless/convert
-
