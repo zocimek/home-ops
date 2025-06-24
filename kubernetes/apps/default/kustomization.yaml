@@ -5,7 +5,7 @@ kind: Kustomization
 namespace: default
 components:
   - ../../components/common
-  - ../../components/registries
+  - ../../components/registry-creds
 resources:
   - ./atuin/ks.yaml
   - ./backlogs/ks.yaml
