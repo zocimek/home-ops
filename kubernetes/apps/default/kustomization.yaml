@@ -5,8 +5,10 @@ kind: Kustomization
 namespace: default
 components:
   - ../../components/common
+  - ../../components/registries
 resources:
   - ./atuin/ks.yaml
+  - ./backlogs/ks.yaml
   - ./cyberchef/ks.yaml
   - ./memos/ks.yaml
   - ./opengist/ks.yaml
