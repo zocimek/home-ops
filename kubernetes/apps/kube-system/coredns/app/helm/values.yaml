@@ -13,7 +13,7 @@ servers:
   - zones:
       - zone: .
         scheme: dns://
-        use_tcp: true
+        use_tcp: false
     port: 53
     plugins:
       - name: errors
