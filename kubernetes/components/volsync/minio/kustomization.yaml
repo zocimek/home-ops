@@ -4,5 +4,4 @@ kind: Kustomization
 resources:
   - external-secret.yaml
   - replicationdestination.yaml
-  # do not create replication source during migration
-  # - replicationsource.yaml
+  - replicationsource.yaml
