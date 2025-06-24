@@ -61,6 +61,8 @@ spec:
 
         pod:
           hostname: "home-assistant"
+          nodeSelector:
+            kubernetes.io/hostname: goku
 
         containers:
           app:
