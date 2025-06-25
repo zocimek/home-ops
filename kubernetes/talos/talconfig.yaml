@@ -153,7 +153,8 @@ patches:
     machine:
       network:
         nameservers:
-        - 10.0.42.1
+        - 1.1.1.1
+        - 1.0.0.1
         extraHostEntries:
           - ip: 10.0.42.21
             aliases:
@@ -170,6 +171,7 @@ patches:
         net.core.wmem_max: 67108864            # Cloudflared / QUIC
         net.ipv4.tcp_fastopen: 3               # Send and accept data in the opening SYN packet
         vm.nr_hugepages: 1024                  # PostgreSQL
+        vm.max_map_count: 262144 # Increase max_map_count required by eg. elasticsearch
 
   # Configure udev rules
   - |-
