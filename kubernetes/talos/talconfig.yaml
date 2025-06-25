@@ -34,8 +34,13 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "58:47:ca:7d:51:87"
-        dhcp: true
-        mtu: 9000
+        dhcp: false
+        addresses:
+          - 10.0.42.9/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.42.1
+        # mtu: 9000
         vip:
           ip: "10.0.42.21"
 
@@ -50,8 +55,13 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "1c:bf:ce:26:00:92" # zordon
-        dhcp: true
-        mtu: 9000
+        dhcp: false
+        addresses:
+          - 10.0.42.2/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.42.1
+        # mtu: 9000
         vip:
           ip: "10.0.42.21"
 
@@ -66,8 +76,13 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "1c:bf:ce:26:00:77" # kakashi
-        dhcp: true
-        mtu: 9000
+        dhcp: false
+        addresses:
+          - 10.0.42.3/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.42.1
+        # mtu: 9000
         vip:
           ip: "10.0.42.21"
 
@@ -82,8 +97,13 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "00:e0:4c:68:01:1d" # kirito
-        dhcp: true
-        mtu: 9000
+        dhcp: false
+        addresses:
+          - 10.0.42.4/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.42.1
+        # mtu: 9000
 
 patches:
   # Configure containerd
@@ -153,8 +173,7 @@ patches:
     machine:
       network:
         nameservers:
-        - 1.1.1.1
-        - 1.0.0.1
+        - 10.0.42.1
         extraHostEntries:
           - ip: 10.0.42.21
             aliases:
