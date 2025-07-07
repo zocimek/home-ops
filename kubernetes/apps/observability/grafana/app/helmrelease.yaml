@@ -50,6 +50,10 @@ spec:
       GF_SECURITY_ANGULAR_SUPPORT_ENABLED: true
       GF_SERVER_ROOT_URL: https://grafana.pospiech.dev
 
+    envFromSecrets:
+      - name: grafana-secret
+      - name: grafana-db-secret
+
     grafana.ini:
       analytics:
         check_for_updates: false
