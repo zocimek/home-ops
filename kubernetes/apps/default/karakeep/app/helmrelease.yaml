@@ -38,7 +38,8 @@ spec:
               CRAWLER_ENABLE_ADBLOCKER: true
               CRAWLER_STORE_SCREENSHOT: true
               DATA_DIR: /data
-              DISABLE_SIGNUPS: true
+              DISABLE_SIGNUPS: false
+              DISABLE_PASSWORD_AUTH: "true"
               MEILI_ADDR: http://karakeep-meilisearch.selfhosted.svc.cluster.local:7700
               NEXTAUTH_URL: https://karakeep.pospiech.dev
               DISABLE_NEW_RELEASE_CHECK: true
