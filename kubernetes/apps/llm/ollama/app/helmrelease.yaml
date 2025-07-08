@@ -22,7 +22,7 @@ spec:
   values:
     controllers:
       ollama:
-        replicas: 3 # 1 per node
+        replicas: 1 # 1 per node
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
