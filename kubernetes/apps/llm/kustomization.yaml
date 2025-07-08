@@ -9,4 +9,4 @@ resources:
   - ./ollama/ks.yaml
   - ./open-webui/ks.yaml
   - ./sdnext/ks.yaml
-  - ./searchxng/ks.yaml
+  - ./searxng/ks.yaml
