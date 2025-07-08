@@ -78,7 +78,8 @@ spec:
 
               ZIGBEE2MQTT_CONFIG_SERIAL_BAUDRATE: 115200
               # yamllint disable-line rule:line-length
-              ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2452113-if00
+              ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/serial/by-id/usb-dresden_elektronik_ConBee_III_DE03186780-if00-port0
+              # ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2452113-if00
               ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER: deconz
 
             envFrom:
@@ -140,4 +141,5 @@ spec:
       usb:
         type: hostPath
         # yamllint disable-line rule:line-length
-        hostPath: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2452113-if00
+        hostPath: /dev/serial/by-id/usb-dresden_elektronik_ConBee_III_DE03186780-if00-port0
+        # hostPath: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2452113-if00
