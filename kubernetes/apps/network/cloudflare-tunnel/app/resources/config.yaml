@@ -1,6 +1,7 @@
 ---
 originRequest:
   originServerName: external.pospiech.dev
+  http2Origin: true
 
 ingress:
   - hostname: "*.pospiech.dev"
