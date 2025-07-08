@@ -127,7 +127,7 @@ spec:
         rules:
           - backendRefs:
               - identifier: app
-                port: *syncPort
+                port: *apiPort
     persistence:
       config:
         type: emptyDir
