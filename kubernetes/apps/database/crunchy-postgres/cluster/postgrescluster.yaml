@@ -201,6 +201,11 @@ spec:
         - wikijs
       password:
         type: AlphaNumeric
+    - name: open-webui
+      databases:
+        - open-webui
+      password:
+        type: AlphaNumeric
 
   backups:
     pgbackrest:
