@@ -12,6 +12,7 @@ resources:
   - ./cyberchef/ks.yaml
   - ./gitea/ks.yaml
   - ./home-api/ks.yaml
+  - ./karakeep/ks.yaml
   - ./memos/ks.yaml
   - ./opengist/ks.yaml
   - ./openspeedtest/ks.yaml
