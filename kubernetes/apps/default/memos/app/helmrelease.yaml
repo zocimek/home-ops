@@ -60,36 +60,41 @@ spec:
         ports:
           http:
             port: &port 5230
-
-    route:
-      app:
-        annotations:
-          hajimari.io/icon: mdi:notebook-edit-outline
-        hostnames:
-          - &host "{{ .Release.Name }}.pospiech.dev"
-        parentRefs:
-          - name: external
-            namespace: kube-system
-            sectionName: https
-        rules:
-          - backendRefs:
-              - identifier: app
-                port: *port
+            appProtocol: http
       grpc:
-        kind: GRPCRoute
-        hostnames:
-          - *host
-        parentRefs:
-          - name: external
-            namespace: kube-system
-            sectionName: https
-        rules:
-          - backendRefs:
-              - identifier: app
-                port: *port
+        controller: memos
+        ports:
+          http:
+            port: 5231
+            targetPort: &grpcPort 5230
+            appProtocol: kubernetes.io/h2c
+    route: {}
+      # disable until support for headers matches is enabled
+      # app:
+      #   annotations:
+      #     hajimari.io/icon: mdi:notebook-edit-outline
+      #   hostnames:
+      #     - &host "{{ .Release.Name }}.pospiech.dev"
+      #   parentRefs:
+      #     - name: external
+      #       namespace: kube-system
+      #       sectionName: https
+      #   rules:
+      #     - backendRefs:
+      #         - identifier: app
+      #           port: *port
+      #     - backendRefs:
+      #         - identifier: grpc
+      #           port: *grpcPort
+      #       matches:
+      #         - headers:
+      #             - type: Exact
+      #               name: Content-Type
+      #               value: "application/grpc-web+proto"
+
 
     persistence:
       data:
-        existingClaim: ${VOLSYNC_CLAIM}
+        existingClaim: memos
         globalMounts:
           - path: /var/opt/memos
