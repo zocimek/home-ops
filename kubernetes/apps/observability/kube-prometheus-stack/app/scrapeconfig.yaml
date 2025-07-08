@@ -13,6 +13,12 @@ spec:
     - action: replace
       targetLabel: job
       replacement: *name
+    - action: replace
+      regex: (.*):9100
+      replacement: $1
+      sourceLabels:
+        - __address__
+      targetLabel: instance
 
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
@@ -29,3 +35,9 @@ spec:
     - action: replace
       targetLabel: job
       replacement: *name
+    - action: replace
+      regex: (.*):9633
+      replacement: $1
+      sourceLabels:
+        - __address__
+      targetLabel: instance
