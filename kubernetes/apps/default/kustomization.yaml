@@ -19,7 +19,6 @@ resources:
   - ./outline/ks.yaml
   - ./pairdrop/ks.yaml
   - ./paperless/ks.yaml
-  - ./searxng/ks.yaml
   - ./shlink/ks.yaml
   - ./smtp-relay/ks.yaml
   - ./umami/ks.yaml
