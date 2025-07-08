@@ -59,7 +59,6 @@ spec:
         controller: memos
         ports:
           http:
-            appProtocol: kubernetes.io/h2c
             port: &port 5230
 
     route:
@@ -67,7 +66,19 @@ spec:
         annotations:
           hajimari.io/icon: mdi:notebook-edit-outline
         hostnames:
-          - "{{ .Release.Name }}.pospiech.dev"
+          - &host "{{ .Release.Name }}.pospiech.dev"
+        parentRefs:
+          - name: external
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+      grpc:
+        kind: GRPCRoute
+        hostnames:
+          - *host
         parentRefs:
           - name: external
             namespace: kube-system
