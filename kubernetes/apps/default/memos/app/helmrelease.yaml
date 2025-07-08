@@ -59,6 +59,7 @@ spec:
         controller: memos
         ports:
           http:
+            appProtocol: kubernetes.io/h2c
             port: &port 5230
 
     route:
