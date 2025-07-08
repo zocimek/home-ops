@@ -116,6 +116,18 @@ spec:
         ports:
           http:
             port: *apiPort
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.pospiech.dev"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *syncPort
     persistence:
       config:
         type: emptyDir
