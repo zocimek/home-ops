@@ -82,7 +82,7 @@ spec:
         existingClaim: *app
         globalMounts:
           - path: /root/.ollama
-      ollama_models:
+      models:
         existingClaim: ollama-models
         globalMounts:
           - path: *modelPath
