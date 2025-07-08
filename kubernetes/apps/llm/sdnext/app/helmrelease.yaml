@@ -43,9 +43,9 @@ spec:
           - name: external
             namespace: kube-system
             sectionName: https
-    persistence:
-      config:
-        enabled: true
-        existingClaim: *app
-        globalMounts:
-          - path: /app
+    # persistence:
+    #   config:
+    #     enabled: true
+    #     existingClaim: *app
+    #     globalMounts:
+    #       - path: /app
