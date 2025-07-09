@@ -166,7 +166,7 @@ spec:
         hostnames:
           - karakeep.pospiech.dev
         parentRefs:
-          - name: external
+          - name: internal
             namespace: kube-system
             sectionName: https
         rules:
