@@ -161,7 +161,7 @@ spec:
           provider: openidConnect
           # yamllint disable-line rule:line-length
           autoDiscoverUrl: https://id.pospiech.dev/.well-known/openid-configuration
-          groupsClaimName: groups
+          groupClaimName: groups
           adminGroup: administrators
           restrictedGroup: gitea_users
       admin:
