@@ -148,14 +148,6 @@ spec:
           SHOW_FOOTER_TEMPLATE_LOAD_TIME: false
 
       oauth:
-        - name: sso
-          existingSecret: gitea-oauth
-          provider: openidConnect
-          # yamllint disable-line rule:line-length
-          autoDiscoverUrl: https://auth.pospiech.dev/application/o/gitea/.well-known/openid-configuration
-          groupClaimName: groups
-          adminGroup: admins
-          restrictedGroup: people
         - name: PocketID
           existingSecret: gitea-oauth-secret
           provider: openidConnect
