@@ -156,6 +156,14 @@ spec:
           groupClaimName: groups
           adminGroup: admins
           restrictedGroup: people
+        - name: PocketID
+          existingSecret: gitea-oauth-secret
+          provider: openidConnect
+          # yamllint disable-line rule:line-length
+          autoDiscoverUrl: https://id.pospiech.dev/.well-known/openid-configuration
+          groupsClaimName: groups
+          adminGroup: administrators
+          restrictedGroup: gitea_users
       admin:
         existingSecret: gitea-admin-secret
 
