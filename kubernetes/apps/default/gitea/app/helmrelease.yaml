@@ -109,7 +109,7 @@ spec:
         mailer:
           ENABLED: true
           PROTOCOL: smtp
-          FROM: "Gitea <no-reply@pospiech.dev>"
+          FROM: "Gitea <gitea@pospiech.dev>"
           SMTP_ADDR: smtp-relay.default.svc.cluster.local
           SMTP_PORT: 25
         service:
@@ -139,7 +139,8 @@ spec:
         openid:
           ENABLE_OPENID_SIGNIN: false
           ENABLE_OPENID_SIGNUP: true
-          WHITELISTED_URIS: auth.pospiech.dev
+          OPENID_CONNECT_SCOPES: email profile groups
+          WHITELISTED_URIS: id.pospiech.dev
 
         webhook:
           ALLOWED_HOST_LIST: "*.pospiech.dev"
