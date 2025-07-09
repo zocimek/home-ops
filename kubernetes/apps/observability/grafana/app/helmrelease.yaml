@@ -36,12 +36,12 @@ spec:
     # admin:
     #   existingSecret: grafana-admin-secret
     env:
-      GF_AUTH_GENERIC_OAUTH_API_URL: https://auth.pospiech.dev/application/o/userinfo/
-      GF_AUTH_GENERIC_OAUTH_AUTH_URL: https://auth.pospiech.dev/application/o/authorize/
+      GF_AUTH_GENERIC_OAUTH_API_URL: https://id.pospiech.dev/api/oidc/userinfo
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: https://id.pospiech.dev/authorize
       GF_AUTH_GENERIC_OAUTH_CLIENT_ID: grafana
       GF_AUTH_GENERIC_OAUTH_EMPTY_SCOPES: false
-      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: https://auth.pospiech.dev/application/o/token/
-      GF_AUTH_SIGNOUT_REDIRECT_URL: "https://auth.pospiech.dev/application/o/grafana/end-session/"
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: https://id.pospiech.dev/api/oidc/token
+      GF_AUTH_SIGNOUT_REDIRECT_URL: https://id.pospiech.dev/api/oidc/end-session
 
 
       GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
@@ -61,7 +61,7 @@ spec:
         reporting_enabled: false
 
       auth:
-        oauth_auto_login: true
+        oauth_auto_login: false
         oauth_allow_insecure_email_lookup: true
 
       auth.anonymous:
@@ -90,7 +90,7 @@ spec:
       auth.generic_oauth.group_mapping:
         org_id: 1
         role_attribute_path: |
-          contains(groups[*], 'admins') && 'Admin' || contains(groups[*], 'people') && 'Viewer'
+          contains(groups[*], 'grafana_admins') && 'Admin' || contains(groups[*], 'grafana_users') && 'Viewer'
 
       news:
         news_feed_enabled: false
