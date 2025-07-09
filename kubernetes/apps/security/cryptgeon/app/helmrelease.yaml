@@ -46,9 +46,9 @@ spec:
         containers:
           app:
             image:
-              repository: zocimek/cryptgeon
+              repository: cupcakearmy/cryptgeon
               # yamllint disable-line rule:line-length
-              tag: latest@sha256:e27fce18d6f3abc2756804d18c6baf497efd14ff5b8bb3a8a414a283e5248366
+              tag: 2.9.1
 
             env:
               REDIS: redis://dragonfly.database.svc.cluster.local:6379/3
