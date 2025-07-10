@@ -69,6 +69,7 @@ spec:
               SMTP_PORT: 25
               SMTP_FROM_NAME: Mealie
               SMTP_FROM_EMAIL: noreply@pospiech.dev
+              SMTP_AUTH_STRATEGY: null
 
               # OIDC Values
               OIDC_AUTH_ENABLED: "true"
