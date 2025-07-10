@@ -75,6 +75,9 @@ spec:
         empty_scopes: false
         login_attribute_path: preferred_username
         groups_attribute_path: groups
+        role_attribute_path: |
+          contains(groups[*], 'grafana_admins') && 'Admin' || 'Viewer'
+
         name_attribute_path: name
         auth_style: InParams
         use_pkce: true
@@ -82,11 +85,6 @@ spec:
 
       auth.basic:
         enabled: false
-
-      auth.generic_oauth.group_mapping:
-        org_id: 1
-        role_attribute_path: |
-          contains(groups[*], 'grafana_admins') && 'Admin' || contains(groups[*], 'grafana_users') && 'Viewer'
 
       news:
         news_feed_enabled: false
@@ -299,7 +297,7 @@ spec:
         enabled: true
         hostnames: ["{{ .Release.Name }}.pospiech.dev"]
         parentRefs:
-          - name: internal
+          - name: external
             namespace: kube-system
             sectionName: https
     persistence:
