@@ -29,13 +29,16 @@ spec:
           app:
             image:
               repository: intelanalytics/ipex-llm-inference-cpp-xpu
-              # repository: ghcr.io/joryirving/ollama-intel-gpu
-              tag: latest
+              tag: 2.3.0-SNAPSHOT
               # tag: ipex-llm-v.0.0.1-2
             command:
-              - /bin/sh
+              - sh
               - -c
-              - mkdir -p /llm/ollama && cd /llm/ollama && init-ollama && exec ./ollama serve
+              - |
+                mkdir -p /llm/ollama &&
+                cd /llm/ollama &&
+                init-ollama &&
+                exec ./ollama serve
             securityContext:
               privileged: true
             env:
@@ -46,9 +49,16 @@ spec:
               OLLAMA_HOST: 0.0.0.0
               DEVICE: Arc
               OLLAMA_INTEL_GPU: true
-              OLLAMA_NUM_GPU: 999
-              OLLAMA_CONTEXT_LENGTH: 8192
+              OLLAMA_NUM_CTX: "6144"
+              OLLAMA_NUM_GPU: "999"
+              OLLAMA_CONTEXT_LENGTH: "6144"
+              OLLAMA_KEEP_ALIVE: "-1" # Never unload models except to load new
+              OLLAMA_LOAD_TIMEOUT: "600"
+              OLLAMA_MAX_LOADED_MODELS: "1"
               ZES_ENABLE_SYSMAN: 1
+              OLLAMA_NUM_PARALLEL: "1"
+              OLLAMA_ORIGINS: "*"
+              OLLAMA_SET_OT: "exps=CPU"
             resources:
               requests:
                 cpu: 200m
