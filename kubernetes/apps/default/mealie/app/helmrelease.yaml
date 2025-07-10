@@ -51,7 +51,7 @@ spec:
           app:
             image:
               repository: ghcr.io/mealie-recipes/mealie
-              tag: v2.7.1@sha256:708e9ffb843bafdcebf46ee35bb45d1b003518e8c204483a1da039b4076ef980
+              tag: v2.8.0
             env:
               TZ: "Europe/Warsaw"
               BASE_URL: https://recipies.pospiech.dev
