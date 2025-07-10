@@ -86,7 +86,8 @@ spec:
               OPENAI_SEND_DATABASE_DATA: "true"
               OPENAI_ENABLE_IMAGE_SERVICES: "True"
               # dummy api key
-              OPENAI_BASE_URL: https://chat.pospiech.dev/
+              OPENAI_API_KEY: 'ollama'
+              OPENAI_BASE_URL: http://ollama.llm.svc.cluster.local:11434/v1
 
             envFrom:
               - secretRef:
