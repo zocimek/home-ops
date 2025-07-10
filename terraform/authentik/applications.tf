@@ -35,8 +35,8 @@ module "gitea" {
   authorization_flow  = data.authentik_flow.default-provider-authorization-implicit-consent.id
   invalidation_flow  = resource.authentik_flow.provider-invalidation.uuid
 
-  redirect_uris = ["https://gitea.pospiech.dev/user/oauth2/sso/callback"]
-  
+  redirect_uris = ["https://gitea.pospiech.dev/user/oauth2/Authentik/callback"]
+
   auth_groups = [
     authentik_group.group["gitea_admins"].id,
     authentik_group.group["gitea_users"].id,
@@ -44,7 +44,7 @@ module "gitea" {
 
   meta_icon       = "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/gitea.png"
   meta_description = "Version control"
-  meta_launch_url = "https://gitea.pospiech.dev/user/oauth2/sso"
+  meta_launch_url = "https://gitea.pospiech.dev/user/oauth2/Authentik"
 }
 
 ######### GRAFANA #########

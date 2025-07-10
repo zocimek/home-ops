@@ -1,6 +1,6 @@
 resource "authentik_brand" "home" {
   domain           = "pospiech.dev"
-  branding_title   = "WilZinn World"
+  branding_title   = "Freaks World"
   branding_logo    = "/static/dist/assets/icons/icon_left_brand.svg"
   branding_favicon = "/static/dist/assets/icons/icon.png"
 
