@@ -47,6 +47,7 @@ spec:
               DEVICE: Arc
               OLLAMA_INTEL_GPU: true
               OLLAMA_NUM_GPU: 999
+              OLLAMA_CONTEXT_LENGTH: 8192
               ZES_ENABLE_SYSMAN: 1
             resources:
               requests:
