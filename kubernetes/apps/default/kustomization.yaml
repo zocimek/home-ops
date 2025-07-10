@@ -13,6 +13,7 @@ resources:
   - ./gitea/ks.yaml
   - ./home-api/ks.yaml
   - ./karakeep/ks.yaml
+  - ./mealie/ks.yaml
   - ./opengist/ks.yaml
   - ./openspeedtest/ks.yaml
   - ./outline/ks.yaml
