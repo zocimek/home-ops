@@ -43,9 +43,8 @@ spec:
               FILE_STORAGE_IMPORT_MAX_SIZE: 5120000
 
               ENABLE_UPDATES: "false"
-              
+
               OIDC_AUTH_URI: "https://auth.pospiech.dev/application/o/authorize/"
-              OIDC_CLIENT_ID: outline
               OIDC_DISPLAY_NAME: SSO
               OIDC_SCOPES: "openid offline_access profile email"
               OIDC_TOKEN_URI: "https://auth.pospiech.dev/application/o/token/"
@@ -58,7 +57,7 @@ spec:
               REDIS_URL: redis://dragonfly.database.svc.cluster.local:6379/5?pool_size=20&idle_timeout=180s
               URL: "https://docs.pospiech.dev"
               WEB_CONCURRENCY: 10
-            
+
             envFrom:
               - secretRef:
                   name: outline-secret
@@ -110,7 +109,7 @@ spec:
         rules:
           - backendRefs:
               - identifier: app
-                port: *port  
+                port: *port
 
     persistence:
       data:

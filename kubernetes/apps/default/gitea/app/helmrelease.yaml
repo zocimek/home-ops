@@ -140,7 +140,7 @@ spec:
           ENABLE_OPENID_SIGNIN: false
           ENABLE_OPENID_SIGNUP: true
           OPENID_CONNECT_SCOPES: email profile groups
-          WHITELISTED_URIS: id.pospiech.dev
+          WHITELISTED_URIS: auth.pospiech.dev
 
         webhook:
           ALLOWED_HOST_LIST: "*.pospiech.dev"

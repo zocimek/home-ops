@@ -33,14 +33,14 @@ spec:
   values:
     deploymentStrategy:
       type: Recreate
-    # admin:
-    #   existingSecret: grafana-admin-secret
+    admin:
+      existingSecret: grafana-admin-secret
     env:
-      GF_AUTH_GENERIC_OAUTH_API_URL: https://id.pospiech.dev/api/oidc/userinfo
-      GF_AUTH_GENERIC_OAUTH_AUTH_URL: https://id.pospiech.dev/authorize
+      GF_AUTH_GENERIC_OAUTH_API_URL: https://auth.pospiech.dev/application/o/userinfo/
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: https://auth.pospiech.dev/application/o/authorize/
       GF_AUTH_GENERIC_OAUTH_EMPTY_SCOPES: false
-      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: https://id.pospiech.dev/api/oidc/token
-      GF_AUTH_SIGNOUT_REDIRECT_URL: https://id.pospiech.dev/api/oidc/end-session
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: https://auth.pospiech.dev/application/o/token/
+      GF_AUTH_SIGNOUT_REDIRECT_URL: "https://auth.pospiech.dev/application/o/grafana/end-session/"
 
 
       GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
@@ -50,8 +50,7 @@ spec:
       GF_SERVER_ROOT_URL: https://grafana.pospiech.dev
 
     envFromSecrets:
-      - name: grafana-secret
-      - name: grafana-db-secret
+      - name: grafana
 
     grafana.ini:
       analytics:
@@ -71,8 +70,7 @@ spec:
 
       auth.generic_oauth:
         enabled: true
-        name: SSO
-        client_id: grafana
+        name: Authentik
         icon: signin
         scopes: openid profile email groups
         empty_scopes: false
