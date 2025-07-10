@@ -84,7 +84,9 @@ spec:
               OPENAI_MODEL: gemma3
               OPENAI_BASE_URL: http://ollama.llm.svc.cluster.local:11434
 
-            envFrom: *envFrom
+            envFrom:
+              - secretRef:
+                  name: *app
 
             probes:
               liveness:
