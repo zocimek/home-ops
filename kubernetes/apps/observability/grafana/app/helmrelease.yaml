@@ -49,7 +49,7 @@ spec:
       GF_SERVER_ROOT_URL: https://grafana.pospiech.dev
 
     envFromSecrets:
-      - name: grafana
+      - name: grafana-secret
 
     grafana.ini:
       analytics:
