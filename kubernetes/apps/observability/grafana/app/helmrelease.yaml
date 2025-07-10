@@ -42,7 +42,6 @@ spec:
       GF_AUTH_GENERIC_OAUTH_TOKEN_URL: https://auth.pospiech.dev/application/o/token/
       GF_AUTH_SIGNOUT_REDIRECT_URL: "https://auth.pospiech.dev/application/o/grafana/end-session/"
 
-
       GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
       GF_EXPLORE_ENABLED: true
       GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: natel-discrete-panel,pr0ps-trackmap-panel,panodata-map-panel

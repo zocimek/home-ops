@@ -71,6 +71,7 @@ spec:
               PAPERLESS_AUDIT_LOG_ENABLED: true
               # PAPERLESS_DISABLE_REGULAR_LOGIN: true
               PAPERLESS_REDIRECT_LOGIN_TO_SSO: true
+              PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS: true
               USERMAP_GID: "65542" # gladius:external-services
               PAPERLESS_SOCIALACCOUNT_PROVIDERS:
                 valueFrom:
