@@ -50,8 +50,6 @@ spec:
             envFrom:
               - secretRef:
                   name: *app
-              - secretRef:
-                  name: open-webui-db
             resources:
               requests:
                 cpu: 500m
