@@ -86,6 +86,11 @@ spec:
         - authentik
       password:
         type: AlphaNumeric
+    - name: charges-api
+      databases:
+        - charges-api
+      password:
+        type: AlphaNumeric
     - name: gatus
       databases:
         - gatus
