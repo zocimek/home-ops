@@ -82,12 +82,9 @@ spec:
               OIDC_REMEMBER_ME: "true"
               OIDC_USER_CLAIM: email
               # OpenAI Values
-              OPENAI_MODEL: llama3.2-vision
-              OPENAI_SEND_DATABASE_DATA: "true"
-              OPENAI_ENABLE_IMAGE_SERVICES: "True"
-              # dummy api key
-              OPENAI_API_KEY: 'ollama'
-              OPENAI_BASE_URL: http://ollama.llm.svc.cluster.local:11434/v1
+              OPENAI_MODEL: gpt-4o-mini
+              OPENAI_ENABLE_IMAGE_SERVICES: "false" #creating recipes via image
+              OPENAI_BASE_URL: https://openrouter.ai/api/v1
 
             envFrom:
               - secretRef:
