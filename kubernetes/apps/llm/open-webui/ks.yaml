@@ -31,6 +31,7 @@ spec:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: chat
+      VOLSYNC_CAPACITY: 10Gi
   prune: true
   retryInterval: 2m
   sourceRef:
