@@ -81,25 +81,9 @@ spec:
     - name: atuin
       databases:
         - atuin
-    - name: zitadel
-      databases:
-        - zitadel
-    # Applications
-    - name: authelia
-      databases:
-        - authelia
-      password:
-        type: AlphaNumeric
-
     - name: authentik
       databases:
         - authentik
-      password:
-        type: AlphaNumeric
-
-    - name: charges-api
-      databases:
-        - charges-api
       password:
         type: AlphaNumeric
     - name: gatus
@@ -112,35 +96,15 @@ spec:
         - gitea
       password:
         type: AlphaNumeric
-    - name: grafana
-      databases:
-        - grafana
-      password:
-        type: AlphaNumeric
     - name: hass-db
       databases:
         - hass-db
-      password:
-        type: AlphaNumeric
-    - name: hoppscotch
-      databases:
-        - hoppscotch-db
       password:
         type: AlphaNumeric
     - name: immich
       databases:
         - immich
       options: SUPERUSER
-      password:
-        type: AlphaNumeric
-    - name: lldap
-      databases:
-        - lldap
-      password:
-        type: AlphaNumeric
-    - name: memos
-      databases:
-        - memos
       password:
         type: AlphaNumeric
     - name: outline
@@ -158,52 +122,30 @@ spec:
         - pmapp
       password:
         type: AlphaNumeric
-
     - name: shlink
       databases:
         - shlink
       password:
         type: AlphaNumeric
-
     - name: synapse
       databases:
         - synapse
       password:
         type: AlphaNumeric
-
     - name: umami
       databases:
         - umami
       password:
         type: AlphaNumeric
-
     - name: vaultwarden
       databases:
         - vaultwarden
       password:
         type: AlphaNumeric
-
-    - name: vikunja
-      databases:
-        - vikunja
-      password:
-        type: AlphaNumeric
-
     - name: whisparr
       databases:
         - whisparr
         - whisparr-logs
-      password:
-        type: AlphaNumeric
-
-    - name: wikijs
-      databases:
-        - wikijs
-      password:
-        type: AlphaNumeric
-    - name: open-webui
-      databases:
-        - open-webui
       password:
         type: AlphaNumeric
 
