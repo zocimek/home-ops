@@ -7,4 +7,13 @@ components:
   - ../../components/common
   - ../../components/registry-creds
 resources:
+  - ./autobrr/ks.yaml
+  - ./cross-seed/ks.yaml
+  - ./flarebypasser/ks.yaml
+  - ./flaresolverr/ks.yaml
+  - ./pinchflat/ks.yaml
+  - ./prowlarr/ks.yaml
+  - ./qbittorrent/ks.yaml
+  - ./sabnzbd/ks.yaml
+  - ./whisparr/ks.yaml
   - ./metube/ks.yaml
