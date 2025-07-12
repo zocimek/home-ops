@@ -120,12 +120,15 @@ spec:
           immich:
             app:
               - path: /config
-      library:
-        existingClaim: immich-nfs
+      downloads:
+        type: nfs
+        server: nas01.pospiech.dev
+        path: /mnt/data/apps
         advancedMounts:
           immich:
             app:
               - path: /usr/src/app/upload
+                subPath: immich
 
       geocoding-dump:
         type: emptyDir
