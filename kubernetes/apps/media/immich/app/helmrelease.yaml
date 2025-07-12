@@ -41,7 +41,6 @@ spec:
             image:
               repository: ghcr.io/immich-app/immich-server
               tag: &version v1.135.3
-
             envFrom: &envFrom
               - secretRef:
                   name: immich-secret
@@ -123,12 +122,11 @@ spec:
       downloads:
         type: nfs
         server: nas01.pospiech.dev
-        path: /mnt/data/apps
+        path: /mnt/data/apps/immich
         advancedMounts:
           immich:
             app:
               - path: /usr/src/app/upload
-                subPath: immich
 
       geocoding-dump:
         type: emptyDir
