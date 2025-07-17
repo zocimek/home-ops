@@ -41,6 +41,10 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 1h
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
   path: ./kubernetes/apps/download/qbittorrent/tools
   prune: true
   retryInterval: 2m
