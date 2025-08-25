@@ -65,7 +65,7 @@ spec:
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
         serviceAccount:
-          identifier: dragonfly
+          identifier: *app
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
