@@ -97,4 +97,45 @@ spec:
             interval: 1m
             scrapeTimeout: 10s
     serviceAccount:
-      dragonfly: {}
+      *app : {}
+
+    rbac:
+      roles:
+        *app :
+          type: ClusterRole
+          rules:
+            - apiGroups: [""]
+              resources: ["events"]
+              verbs: ["create", "patch"]
+            - apiGroups: [""]
+              resources: ["pods"]
+              verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+            - apiGroups: [""]
+              resources: ["services"]
+              verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+            - apiGroups: ["apps"]
+              resources: ["statefulsets"]
+              verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+            - apiGroups: ["policy"]
+              resources: ["poddisruptionbudgets"]
+              verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+            - apiGroups: ["dragonflydb.io"]
+              resources: ["dragonflies"]
+              verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+            - apiGroups: ["dragonflydb.io"]
+              resources: ["dragonflies/finalizers"]
+              verbs: ["update"]
+            - apiGroups: ["dragonflydb.io"]
+              resources: ["dragonflies/status"]
+              verbs: ["get", "patch", "update"]
+      bindings:
+        *app :
+          type: ClusterRoleBinding
+          subjects:
+            - kind: ServiceAccount
+              name: *app
+              namespace: database
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: *app
