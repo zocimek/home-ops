@@ -55,6 +55,9 @@ spec:
       namespace: database
     - name: dragonfly-cluster
       namespace: database
+  components:
+    - ../../../../components/keda/nfs-scaler
+    - ../../../../components/gatus/external
   path: ./kubernetes/apps/media/immich/app
   prune: true
   sourceRef:
