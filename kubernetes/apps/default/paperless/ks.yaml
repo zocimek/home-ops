@@ -19,6 +19,7 @@ spec:
       namespace: database
   components:
     - ../../../../components/gatus/internal
+    - ../../../../components/keda/nfs-scaler
   path: ./kubernetes/apps/default/paperless/app
   prune: true
   sourceRef:
