@@ -15,13 +15,14 @@ spec:
   components:
     - ../../../../components/gatus/internal
     - ../../../../components/volsync
+    - ../../../../components/keda/nfs-scaler
   interval: 1h
   path: ./kubernetes/apps/download/metube/app
   postBuild:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 1Gi
-      GATUS_SUBDOMAIN: yt
+      GATUS_SUBDOMAIN: yt-downloader
   prune: true
   retryInterval: 2m
   sourceRef:
