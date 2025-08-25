@@ -120,7 +120,7 @@ spec:
           app:
             image:
               repository: thecodingmachine/gotenberg
-              tag: 8.21.1
+              tag: 8.22.0
             env:
               DISABLE_GOOGLE_CHROME: 1
 
