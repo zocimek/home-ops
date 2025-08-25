@@ -166,14 +166,14 @@ spec:
     persistence:
       library:
         type: nfs
-        server: nas01.pospiech.dev
+        server: nas01.internal
         path: /mnt/data/apps/paperless/data
         globalMounts:
           - path: /library
 
       consume:
         type: nfs
-        server: nas01.pospiech.dev
+        server: nas01.internal
         path: /mnt/data/apps/paperless/consume
         globalMounts:
           - path: /incoming

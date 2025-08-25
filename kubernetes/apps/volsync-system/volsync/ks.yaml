@@ -19,6 +19,8 @@ spec:
       kind: HelmRelease
       name: *app
       namespace: *namespace
+  components:
+    - ../../../../components/keda/nfs-scaler
   interval: 1h
   path: ./kubernetes/apps/volsync-system/volsync/app
   prune: true

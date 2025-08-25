@@ -202,7 +202,7 @@ spec:
         - name: repo1  # Minio
           s3: &minio
             bucket: "hl-backup"
-            endpoint: "nas01.pospiech.dev:9000"
+            endpoint: "nas01.internal:9000"
             region: "us-east-1"
           schedules:
             full: "0 1 * * 0"  # Sunday at 01:00

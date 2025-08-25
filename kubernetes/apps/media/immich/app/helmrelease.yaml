@@ -121,7 +121,7 @@ spec:
               - path: /config
       downloads:
         type: nfs
-        server: nas01.pospiech.dev
+        server: nas01.internal
         path: /mnt/data/apps/immich
         advancedMounts:
           immich:
