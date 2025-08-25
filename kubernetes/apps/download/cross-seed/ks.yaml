@@ -12,6 +12,7 @@ spec:
   targetNamespace: *namespace
   components:
     - ../../../../components/volsync
+    - ../../../../components/keda/nfs-scaler
   dependsOn:
     - name: onepassword
       namespace: external-secrets
