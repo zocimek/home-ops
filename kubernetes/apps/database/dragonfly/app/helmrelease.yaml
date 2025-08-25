@@ -97,11 +97,11 @@ spec:
             interval: 1m
             scrapeTimeout: 10s
     serviceAccount:
-      *app : {}
+      dragonfly: {}
 
     rbac:
       roles:
-        *app :
+        dragonfly:
           type: ClusterRole
           rules:
             - apiGroups: [""]
@@ -129,7 +129,7 @@ spec:
               resources: ["dragonflies/status"]
               verbs: ["get", "patch", "update"]
       bindings:
-        *app :
+        dragonfly:
           type: ClusterRoleBinding
           subjects:
             - kind: ServiceAccount
