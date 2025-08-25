@@ -21,7 +21,7 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 1Gi
-      GATUS_SUBDOMAIN: yt
+      GATUS_SUBDOMAIN: yt-downloader
   prune: true
   retryInterval: 2m
   sourceRef:
