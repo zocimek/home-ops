@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: ghcr.io/paperless-ngx/paperless-ngx
-              tag: 2.16.3
+              tag: 2.18.2
 
             env:
               PAPERLESS_ACCOUNT_ALLOW_SIGNUPS: "false"
@@ -42,7 +42,7 @@ spec:
               PAPERLESS_CONSUMER_DELETE_DUPLICATES: true
               PAPERLESS_CONSUMER_RECURSIVE: "true"
               PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
-              PAPERLESS_CONSUMPTION_DIR: /library/consume
+              PAPERLESS_CONSUMPTION_DIR: /incoming
               PAPERLESS_DATA_DIR: /library/data
               PAPERLESS_ENABLE_HTTP_REMOTE_USER: "true"
               PAPERLESS_EXPORT_DIR: /library/export
@@ -71,6 +71,7 @@ spec:
               PAPERLESS_AUDIT_LOG_ENABLED: true
               # PAPERLESS_DISABLE_REGULAR_LOGIN: true
               PAPERLESS_REDIRECT_LOGIN_TO_SSO: true
+              PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS: true
               USERMAP_GID: "65542" # gladius:external-services
               PAPERLESS_SOCIALACCOUNT_PROVIDERS:
                 valueFrom:
@@ -119,7 +120,7 @@ spec:
           app:
             image:
               repository: thecodingmachine/gotenberg
-              tag: 8.21.0
+              tag: 8.22.0
             env:
               DISABLE_GOOGLE_CHROME: 1
 
@@ -164,9 +165,19 @@ spec:
 
     persistence:
       library:
-        existingClaim: paperless-nfs
+        type: nfs
+        server: nas01.internal
+        path: /mnt/data/apps/paperless/data
         globalMounts:
           - path: /library
+
+      consume:
+        type: nfs
+        server: nas01.internal
+        path: /mnt/data/apps/paperless/consume
+        globalMounts:
+          - path: /incoming
+
       convert:
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce

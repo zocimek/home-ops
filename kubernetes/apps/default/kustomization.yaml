@@ -10,13 +10,15 @@ resources:
   - ./atuin/ks.yaml
   - ./backlogs/ks.yaml
   - ./cyberchef/ks.yaml
-  - ./memos/ks.yaml
+  - ./gitea/ks.yaml
+  - ./home-api/ks.yaml
+  - ./karakeep/ks.yaml
+  - ./mealie/ks.yaml
   - ./opengist/ks.yaml
   - ./openspeedtest/ks.yaml
   - ./outline/ks.yaml
   - ./pairdrop/ks.yaml
   - ./paperless/ks.yaml
-  - ./searxng/ks.yaml
   - ./shlink/ks.yaml
   - ./smtp-relay/ks.yaml
   - ./umami/ks.yaml
