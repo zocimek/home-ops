@@ -1,5 +1,5 @@
 ---
-name: Image Pull
+name: Flux Local
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   filter:
-    name: Image Pull - Filter
+    name: Flux Local - Filter
     runs-on: ubuntu-latest
     outputs:
       changed-files: ${{ steps.changed-files.outputs.changed_files }}
@@ -25,93 +25,97 @@ jobs:
         with:
           patterns: kubernetes/**/*
 
-  extract:
+  test:
     if: ${{ needs.filter.outputs.changed-files != '[]' }}
     needs: filter
-    name: Image Pull - Extract Images
+    name: Flux Local - Test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        branch: ["default", "pull"]
-      fail-fast: false
-    outputs:
-      default: ${{ steps.extract.outputs.default }}
-      pull: ${{ steps.extract.outputs.pull }}
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           persist-credentials: false
-          ref: ${{ matrix.branch == 'default' && github.event.repository.default_branch || '' }}
 
-      - name: Gather Images
+      - name: Run flux-local test
         uses: docker://ghcr.io/allenporter/flux-local:v7.8.0
         with:
           args: >-
-            get cluster
+            test
             --all-namespaces
+            --enable-helm
             --path /github/workspace/kubernetes/flux/cluster
-            --enable-images
-            --only-images
-            --output json
-            --output-file images.json
-
-      - name: Extract Images
-        id: extract
-        run: |
-          echo "${{ matrix.branch }}=$(jq --compact-output '.' images.json)" >> $GITHUB_OUTPUT
-
-          echo '## Branch ${{ matrix.branch }} images' >> $GITHUB_STEP_SUMMARY
-          echo '```json' >> $GITHUB_STEP_SUMMARY
-          jq '.' images.json >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+            --verbose
 
   diff:
-    if: ${{ needs.extract.outputs.default != needs.extract.outputs.pull }}
-    needs: extract
-    name: Image Pull - Diff Images
+    if: ${{ needs.filter.outputs.changed-files != '[]' }}
+    needs: filter
+    name: Flux Local - Diff
     runs-on: ubuntu-latest
-    outputs:
-      images: ${{ steps.diff.outputs.images }}
-    steps:
-      - name: Diff Images
-        id: diff
-        run: |
-          images=$(jq --compact-output --null-input \
-              --argjson f1 '${{ needs.extract.outputs.default }}' \
-              --argjson f2 '${{ needs.extract.outputs.pull }}' \
-              '$f2 - $f1' \
-          )
-          echo "images=${images}" >> $GITHUB_OUTPUT
-
-          echo '## New images to Pull' >> $GITHUB_STEP_SUMMARY
-          echo '```json' >> $GITHUB_STEP_SUMMARY
-          echo $images | jq >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-
-  pull:
-    if: ${{ needs.diff.outputs.images != '[]' }}
-    needs: diff
-    name: Image Pull - Pull Images
-    runs-on: home-ops-runner
+    permissions:
+      contents: read
+      pull-requests: write
     strategy:
       matrix:
-        image: ${{ fromJSON(needs.diff.outputs.images) }}
-      max-parallel: 4
+        resource: ["helmrelease", "kustomization"]
       fail-fast: false
-    env:
-      MATRIX_IMAGE: ${{ matrix.image }}
     steps:
-      - name: Install talosctl
-        run: curl -fsSL https://talos.dev/install | sh
+      - name: Checkout Pull Request Branch
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          path: pull
+          persist-credentials: false
 
-      - name: Pull Image
-        run: talosctl --nodes $NODE image pull "${MATRIX_IMAGE}"
+      - name: Checkout Default Branch
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          path: default
+          persist-credentials: false
+          ref: "${{ github.event.repository.default_branch }}"
+
+      - name: Run flux-local diff
+        uses: docker://ghcr.io/allenporter/flux-local:v7.8.0
+        with:
+          args: >-
+            diff ${{ matrix.resource }}
+            --unified 6
+            --path /github/workspace/pull/kubernetes/flux/cluster
+            --path-orig /github/workspace/default/kubernetes/flux/cluster
+            --strip-attrs "helm.sh/chart,checksum/config,app.kubernetes.io/version,chart"
+            --limit-bytes 10000
+            --all-namespaces
+            --sources "flux-system"
+            --output-file diff.patch
+
+      - name: Generate Diff
+        id: diff
+        run: |
+          echo 'diff<<EOF' >> $GITHUB_OUTPUT
+          cat diff.patch >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+
+      - if: ${{ steps.diff.outputs.diff != '' }}
+        name: Generate Token
+        uses: actions/create-github-app-token@a8d616148505b5069dccd32f177bb87d7f39123b # v2.1.1
+        id: app-token
+        with:
+          app-id: ${{ secrets.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+
+      - if: ${{ steps.diff.outputs.diff != '' }}
+        name: Add Comment
+        uses: marocchino/sticky-pull-request-comment@773744901bac0e8cbb5a0dc842800d45e9b2b405 # v2.9.4
+        with:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          header: ${{ github.event.pull_request.number }}/kubernetes/${{ matrix.resource }}
+          message: |
+            ```diff
+            ${{ steps.diff.outputs.diff }}
+            ```
 
   success:
     if: ${{ !cancelled() }}
-    needs: pull
-    name: Image Pull - Success
+    needs: ["test", "diff"]
+    name: Flux Local - Success
     runs-on: ubuntu-latest
     steps:
       - name: Any jobs failed?
