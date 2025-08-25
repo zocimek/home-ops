@@ -40,7 +40,7 @@ spec:
           app:
             image:
               repository: ghcr.io/immich-app/immich-server
-              tag: &version v1.135.3
+              tag: &version v1.139.3
             envFrom: &envFrom
               - secretRef:
                   name: immich-secret
@@ -121,7 +121,7 @@ spec:
               - path: /config
       downloads:
         type: nfs
-        server: nas01.pospiech.dev
+        server: nas01.internal
         path: /mnt/data/apps/immich
         advancedMounts:
           immich:
