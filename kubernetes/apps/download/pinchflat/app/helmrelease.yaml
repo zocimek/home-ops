@@ -82,10 +82,10 @@ spec:
     persistence:
       config:
         existingClaim: pinchflat
-      
+
       media:
         type: nfs
-        server: nas01.pospiech.dev
+        server: nas01.internal
         path: /mnt/data/media
         advancedMounts:
           pinchflat:
