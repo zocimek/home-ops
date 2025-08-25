@@ -81,7 +81,7 @@ spec:
         ports:
           http:
             port: *port
-    
+
     route:
       app:
         hostnames:
@@ -106,7 +106,7 @@ spec:
           - readOnly: true
       media:
         type: nfs
-        server: nas01.pospiech.dev
+        server: nas01.internal
         path: /mnt/data/media
         globalMounts:
           - path: /media/Downloads/sabnzbd
