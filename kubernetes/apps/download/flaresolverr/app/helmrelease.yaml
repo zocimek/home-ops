@@ -28,7 +28,7 @@ spec:
           app:
             image:
               repository: ghcr.io/flaresolverr/flaresolverr
-              tag: v3.3.24@sha256:72e5a8bc63899ebeeb6bc0aece2b05a8d725c8a518aa30c610a8d61bb50303e1
+              tag: v3.4.0@sha256:ab535d1fef5d7f1654c2756949798442ae4bbecee99d4338128aa137fd8eca0e
             env:
               CAPTCHA_SOLVER: "harvester"
             resources: {}
