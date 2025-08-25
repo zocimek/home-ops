@@ -1,0 +1,108 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app metube
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    # also worth to consider
+    # https://github.com/imputnet/cobalt?tab=readme-ov-file
+    controllers:
+      metube:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/alexta69/metube
+              tag: "2025-06-10"
+            env:
+              DOWNLOAD_DIR: "/downloads"
+              DOWNLOAD_MODE: concurrent # defaults to limited
+              # MAX_CONCURRENT_DOWNLOADS: 5 #only used with limited, default to 3
+              STATE_DIR: "/config"
+              TEMP_DIR: "/tmp"
+              DEFAULT_THEME: dark
+              OUTPUT_TEMPLATE: "%(title)s_-_[%(id)s].%(ext)s"
+              YTDL_OPTIONS: |
+                {
+                  "http_headers":{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0"},
+                  "format": "bestvideo[height<=1080][vcodec!*=av01]+bestaudio/best",
+                  "merge_output_format": "mkv",
+                  "verbose": true,
+                  "writesubtitles": true,
+                  "restrictfilenames": true,
+                  "subtitleslangs": [
+                    "en",
+                    "pl"
+                    ],
+                  "clean_infojson":true,
+                  "writethumbnail":true,
+                  "postprocessors": [
+                        {"key":"SponsorBlock"},
+                        {"key":"EmbedThumbnail"},
+                        {"key":"FFmpegEmbedSubtitle"},
+                        {"key":"FFmpegSubtitlesConvertor","format":"srt","when":"before_dl"},
+                        {"key":"FFmpegMetadata","add_metadata":"True","add_infojson":"True","add_chapters":"True"}
+                  ]
+                }
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      hostname: *app
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: &port 8081
+    route:
+      app:
+        hostnames: ["yt-downloader.pospiech.dev"]
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
+    persistence:
+      config:
+        existingClaim: *app
+      tmp:
+        enabled: true
+        type: emptyDir
+      downloads:
+        type: nfs
+        server: nas01.pospiech.dev
+        path: /mnt/data/media
+        globalMounts:
+          - path: /downloads
+            subPath: Downloads/yt-downloader

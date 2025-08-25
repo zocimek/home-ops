@@ -46,7 +46,7 @@ spec:
             image:
               repository: ghcr.io/koenkk/zigbee2mqtt
               # yamllint disable-line rule:line-length
-              tag: 2.4.0@sha256:dd7479e5416c4b95725333d0a69ff504bcbda9a7a3431e5d5dd1e27c16465cdd
+              tag: 2.5.1@sha256:1e639d3144960f246dcecc21d993169fd6844b5817e939bca498b2abf2c23159
             env:
               TZ: Europe/Warsaw
               ZIGBEE2MQTT_DATA: /config
@@ -76,10 +76,13 @@ spec:
               ZIGBEE2MQTT_CONFIG_ADVANCED_LEGACY_AVAILABILITY_PAYLOAD: "false"
               ZIGBEE2MQTT_CONFIG_DEVICE_OPTIONS_LEGACY: "false"
 
-              ZIGBEE2MQTT_CONFIG_SERIAL_BAUDRATE: 115200
               # yamllint disable-line rule:line-length
-              ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2452113-if00
+              # ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyUSB0
+              ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/serial/by-id/usb-dresden_elektronik_ConBee_III_DE03186780-if00-port0
+              # ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2452113-if00
               ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER: deconz
+              ZIGBEE2MQTT_CONFIG_SERIAL_BAUDRATE: 115200
+
 
             envFrom:
               - secretRef:
@@ -140,4 +143,5 @@ spec:
       usb:
         type: hostPath
         # yamllint disable-line rule:line-length
-        hostPath: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2452113-if00
+        hostPath: /dev/serial/by-id/usb-dresden_elektronik_ConBee_III_DE03186780-if00-port0
+        # hostPath: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2452113-if00

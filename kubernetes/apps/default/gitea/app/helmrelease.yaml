@@ -47,7 +47,7 @@ spec:
 
     image:
       repository: gitea/gitea
-      tag: 1.23.8
+      tag: 1.24.2
       rootless: false
 
     containerSecurityContext:
@@ -60,7 +60,7 @@ spec:
           external-dns.alpha.kubernetes.io/hostname: git.pospiech.dev
           lbipam.cilium.io/ips: 10.0.42.106
         type: LoadBalancer
-        externalTrafficPolicy: Cluster
+        externalTrafficPolicy: Local
 
     persistence:
       enabled: true
@@ -109,7 +109,7 @@ spec:
         mailer:
           ENABLED: true
           PROTOCOL: smtp
-          FROM: "Gitea <no-reply@pospiech.dev>"
+          FROM: "Gitea <gitea@pospiech.dev>"
           SMTP_ADDR: smtp-relay.default.svc.cluster.local
           SMTP_PORT: 25
         service:
@@ -139,6 +139,7 @@ spec:
         openid:
           ENABLE_OPENID_SIGNIN: false
           ENABLE_OPENID_SIGNUP: true
+          OPENID_CONNECT_SCOPES: email profile groups
           WHITELISTED_URIS: auth.pospiech.dev
 
         webhook:
@@ -147,15 +148,28 @@ spec:
         other:
           SHOW_FOOTER_TEMPLATE_LOAD_TIME: false
 
+      # https://docs.gitea.com/administration/command-line?_highlight=gitea&_highlight=admin&_highlight=auth&_highlight=add&_highlight=oauth#admin
+      # add-oauth section
       oauth:
-        - name: sso
+        - name: Authentik
           existingSecret: gitea-oauth
           provider: openidConnect
           # yamllint disable-line rule:line-length
           autoDiscoverUrl: https://auth.pospiech.dev/application/o/gitea/.well-known/openid-configuration
           groupClaimName: groups
-          adminGroup: admins
-          restrictedGroup: people
+          adminGroup: gitea_admins
+          restrictedGroup: gitea_users
+          scopes: "email profile groups"
+          iconUrl: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/authentik.png
+        - name: PocketID
+          existingSecret: gitea-oauth-secret
+          provider: openidConnect
+          # yamllint disable-line rule:line-length
+          autoDiscoverUrl: https://id.pospiech.dev/.well-known/openid-configuration
+          groupClaimName: groups
+          adminGroup: administrators
+          restrictedGroup: gitea_users
+          iconUrl: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/pocket-id.png
       admin:
         existingSecret: gitea-admin-secret
 

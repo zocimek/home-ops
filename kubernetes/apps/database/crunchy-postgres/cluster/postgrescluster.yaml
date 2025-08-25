@@ -24,7 +24,7 @@ spec:
 
   # https://github.com/chkpwd/cdpgvecto.rs/pkgs/container/cdpgvecto.rs
   # https://github.com/1Solon/Home-Server-Configuration/blob/main/kubernetes/infra/databases/postgres/clusters/vector-cluster.yaml
-  image: ghcr.io/drag0n141/cdpgvectorchord:0.4.2@sha256:76586888ced37296509120e10bbf7f0cd04f5ca23dd418915fe5284d3585bc05
+  image: ghcr.io/drag0n141/cdpgvectorchord:0.4.3@sha256:99de325b21fa4b98c9efd2b07a3ced730004bfb0d244ad45b30ef326ad3c8e9d
 
   service:
     type: LoadBalancer
@@ -81,22 +81,11 @@ spec:
     - name: atuin
       databases:
         - atuin
-    - name: zitadel
-      databases:
-        - zitadel
-    # Applications
-    - name: authelia
-      databases:
-        - authelia
-      password:
-        type: AlphaNumeric
-
     - name: authentik
       databases:
         - authentik
       password:
         type: AlphaNumeric
-
     - name: charges-api
       databases:
         - charges-api
@@ -112,35 +101,15 @@ spec:
         - gitea
       password:
         type: AlphaNumeric
-    - name: grafana
-      databases:
-        - grafana
-      password:
-        type: AlphaNumeric
     - name: hass-db
       databases:
         - hass-db
-      password:
-        type: AlphaNumeric
-    - name: hoppscotch
-      databases:
-        - hoppscotch-db
       password:
         type: AlphaNumeric
     - name: immich
       databases:
         - immich
       options: SUPERUSER
-      password:
-        type: AlphaNumeric
-    - name: lldap
-      databases:
-        - lldap
-      password:
-        type: AlphaNumeric
-    - name: memos
-      databases:
-        - memos
       password:
         type: AlphaNumeric
     - name: outline
@@ -158,47 +127,30 @@ spec:
         - pmapp
       password:
         type: AlphaNumeric
-
     - name: shlink
       databases:
         - shlink
       password:
         type: AlphaNumeric
-
     - name: synapse
       databases:
         - synapse
       password:
         type: AlphaNumeric
-
     - name: umami
       databases:
         - umami
       password:
         type: AlphaNumeric
-
     - name: vaultwarden
       databases:
         - vaultwarden
       password:
         type: AlphaNumeric
-
-    - name: vikunja
-      databases:
-        - vikunja
-      password:
-        type: AlphaNumeric
-
     - name: whisparr
       databases:
         - whisparr
         - whisparr-logs
-      password:
-        type: AlphaNumeric
-
-    - name: wikijs
-      databases:
-        - wikijs
       password:
         type: AlphaNumeric
 
