@@ -31,7 +31,7 @@ spec:
           app:
             image:
               repository: ghcr.io/karakeep-app/karakeep
-              tag: latest@sha256:b48b9fb01d1d1832f6dd168b9cd8a8dea7200e9500de0e4de093cfca5ceb4c1d
+              tag: latest@sha256:57d81d42869ed450ca70dc79bccdd37d1f58d7d6adc3da43e31f86d7a2dff1d9
             env:
               BROWSER_WEB_URL: http://karakeep-chrome.default.svc.cluster.local:9222
               CRAWLER_DOWNLOAD_BANNER_IMAGE: true
