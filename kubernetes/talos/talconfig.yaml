@@ -265,5 +265,6 @@ controlPlane:
       cluster:
         apiServer:
           extraArgs:
+            enable-aggregator-routing: "true"
+            feature-gates: ImageVolume=true,MutatingAdmissionPolicy=true
             runtime-config: admissionregistration.k8s.io/v1alpha1=true
-            feature-gates: MutatingAdmissionPolicy=true
