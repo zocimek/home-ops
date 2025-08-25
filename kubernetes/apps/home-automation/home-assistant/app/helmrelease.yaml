@@ -68,7 +68,7 @@ spec:
           app:
             image:
               repository: ghcr.io/home-operations/home-assistant
-              tag: 2025.6.1
+              tag: 2025.8.3
             env:
               TZ: Europe/Warsaw
               VENV_FOLDER: /venv
@@ -96,7 +96,7 @@ spec:
             dependsOn: app
             image:
               repository: ghcr.io/coder/code-server
-              tag: 4.101.2@sha256:5f654c1137f8d87c8cf44253318bf94b85f6f9129e426a9956da46eb602dcc5a
+              tag: 4.103.1@sha256:fc1d8a57dc5ca5fab67999416165d994ab78a7338b046c4b29f168033a6b7b38
             args:
               - --auth
               - none
@@ -173,7 +173,7 @@ spec:
       backup:
         enabled: true
         type: nfs
-        server: nas01.pospiech.dev
+        server: nas01.internal
         path: /mnt/data/backup/apps/home-assistant
         globalMounts:
           - path: /config/backups
