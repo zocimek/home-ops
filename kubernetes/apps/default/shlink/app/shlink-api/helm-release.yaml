@@ -43,7 +43,7 @@ spec:
             image:
               repository: ghcr.io/shlinkio/shlink
               # yamllint disable-line rule:line-length
-              tag: 4.4.6@sha256:1a697baca56ab8821783e0ce53eb4fb22e51bb66749ec50581adc0cb6d031d7a
+              tag: 4.5.1@sha256:bd194f427b64852f94062db1411e773f17dc4cb04d129cbb6838a3ec9f12aa7e
             env:
               DB_DRIVER: postgres
               DEFAULT_DOMAIN: &host "ln.pospiech.dev"

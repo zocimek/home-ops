@@ -101,7 +101,7 @@ spec:
         type: emptyDir
       downloads:
         type: nfs
-        server: nas01.pospiech.dev
+        server: nas01.internal
         path: /mnt/data/media
         globalMounts:
           - path: /downloads
