@@ -33,7 +33,7 @@ spec:
           coredns:
             image:
               repository: mirror.gcr.io/coredns/coredns
-              tag: 1.12.1
+              tag: 1.12.3
             args:
               - -conf
               - /etc/coredns/Corefile
@@ -186,7 +186,7 @@ spec:
               - path: /config
       downloads:
         type: nfs
-        server: nas01.pospiech.dev
+        server: nas01.internal
         path: /mnt/data/media
         globalMounts:
           - path: /media/Downloads/qbittorrent
