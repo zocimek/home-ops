@@ -8,3 +8,4 @@ components:
 resources:
   - ./authentik/ks.yaml
   - ./cryptgeon/ks.yaml
+  - ./pocket-id/ks.yaml

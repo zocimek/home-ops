@@ -23,90 +23,10 @@ cniConfig:
   name: none
 
 nodes:
-  # - hostname: "k8s-1.pospiech.local"
-  #   # hostname: "zordon.pospiech.local"
-  #   ipAddress: "10.0.42.6"
-  #   installDisk: "/dev/sda"
-  #   # installDiskSelector:
-  #   #   model: SSDPR-CX400*
-  #   machineSpec:
-  #     secureboot: false
-  #   talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
-  #   controlPlane: true
-  #   # nodeLabels:
-  #   #   intel.feature.node.kubernetes.io/gpu: "true"
-  #   networkInterfaces:
-  #     - deviceSelector:
-  #         hardwareAddr: "bc:24:11:b3:1b:01"
-  #         # hardwareAddr: "1c:bf:ce:26:00:92" # zordon
-  #       dhcp: true
-  #       mtu: 9000
-  #       # vlans:
-  #       #   - &vlan100 { vlanId: 100, dhcp: false, mtu: 9000 }
-  #       vip:
-  #         ip: "10.0.42.21"
-  # - hostname: "k8s-2.pospiech.local"
-  #   # hostname: "kakashi.pospiech.local"
-  #   ipAddress: "10.0.42.7"
-  #   installDisk: "/dev/sda"
-  #   # installDiskSelector:
-  #   #   model: SSDPR-CX400*
-  #   machineSpec:
-  #     secureboot: false
-  #   talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
-  #   controlPlane: true
-  #   # nodeLabels:
-  #   #   intel.feature.node.kubernetes.io/gpu: "true"
-  #   networkInterfaces:
-  #     - deviceSelector:
-  #         hardwareAddr: "bc:24:11:b3:1b:02"
-  #         # hardwareAddr: "1c:bf:ce:26:00:77" # kakashi
-  #       dhcp: true
-  #       # addresses:
-  #       #   - "10.0.42.7/24"
-  #       routes:
-  #         - network: "0.0.0.0/0"
-  #           gateway: "10.0.42.1"
-  #       mtu: 9000
-  #       vip:
-  #         ip: "10.0.42.21"
-  #       # vlans:
-  #       #   - *vlan100
-  # - hostname: "k8s-3.pospiech.local"
-  #   # hostname: kirito.pospiech.local
-  #   ipAddress: "10.0.42.8"
-  #   installDisk: "/dev/sda"
-  #   # installDiskSelector:
-  #   #   model: SSDPR-CX400*
-  #   machineSpec:
-  #     secureboot: false
-  #   talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
-  #   controlPlane: true
-  #   # nodeLabels:
-  #   #   intel.feature.node.kubernetes.io/gpu: "true"
-  #   networkInterfaces:
-  #     - deviceSelector:
-  #         hardwareAddr: "bc:24:11:b3:1b:03"
-  #         # hardwareAddr: "00:e0:4c:68:01:1d" # kirito
-
-  #       dhcp: true
-  #       # addresses:
-  #       #   - "10.0.42.8/24"
-  #       routes:
-  #         - network: "0.0.0.0/0"
-  #           gateway: "10.0.42.1"
-  #       mtu: 9000
-        # vip:
-        #   ip: "10.0.42.21"
-  #       # vlans:
-  #       #   - *vlan100
-
-  - hostname: goku.pospiech.internal
+  - hostname: goku.internal
     ipAddress: "10.0.42.9"
     installDiskSelector:
       model: SSDPR-PX500*
-    machineSpec:
-      secureboot: false
     talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
     controlPlane: true
     nodeLabels:
@@ -114,21 +34,76 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "58:47:ca:7d:51:87"
-        dhcp: true
+        dhcp: false
+        addresses:
+          - 10.0.42.9/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.42.1
         mtu: 9000
         vip:
           ip: "10.0.42.21"
-        # vlans:
-        #   - *vlan100
-        #   - *vlan666
 
-# # Global patches
-# patches:
-#   - "@./patches/global/machine-files.yaml"
-#   - "@./patches/global/machine-kubelet.yaml"
-#   - "@./patches/global/machine-network.yaml"
-#   - "@./patches/global/machine-sysctls.yaml"
-#   - "@./patches/global/machine-time.yaml"
+  - hostname: "zordon.internal"
+    ipAddress: "10.0.42.2"
+    installDiskSelector:
+      model: SSDPR-CX400*
+    talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
+    controlPlane: true
+    nodeLabels:
+      intel.feature.node.kubernetes.io/gpu: "true"
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "1c:bf:ce:26:00:92" # zordon
+        dhcp: false
+        addresses:
+          - 10.0.42.2/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.42.1
+        mtu: 9000
+        vip:
+          ip: "10.0.42.21"
+
+  - hostname: "kakashi.internal"
+    ipAddress: "10.0.42.3"
+    installDiskSelector:
+      model: SSDPR-CX400*
+    talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
+    controlPlane: true
+    nodeLabels:
+      intel.feature.node.kubernetes.io/gpu: "true"
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "1c:bf:ce:26:00:77" # kakashi
+        dhcp: false
+        addresses:
+          - 10.0.42.3/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.42.1
+        # mtu: 9000
+        vip:
+          ip: "10.0.42.21"
+
+  - hostname: kirito.internal
+    ipAddress: "10.0.42.4"
+    installDiskSelector:
+      model: SSDPR-CX400*
+    talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
+    controlPlane: false
+    nodeLabels:
+      intel.feature.node.kubernetes.io/gpu: "true"
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "00:e0:4c:68:01:1d" # kirito
+        dhcp: false
+        addresses:
+          - 10.0.42.4/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.42.1
+        mtu: 9000
 
 patches:
   # Configure containerd
@@ -146,12 +121,6 @@ patches:
               discard_unpacked_layers = false
             [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
               discard_unpacked_layers = false
-
-  # Disable search domain everywhere
-  - |-
-    machine:
-      network:
-        disableSearchDomain: true
 
   # Enable host dns
   - |-
@@ -221,6 +190,7 @@ patches:
         net.core.wmem_max: 67108864            # Cloudflared / QUIC
         net.ipv4.tcp_fastopen: 3               # Send and accept data in the opening SYN packet
         vm.nr_hugepages: 1024                  # PostgreSQL
+        vm.max_map_count: 262144 # Increase max_map_count required by eg. elasticsearch
 
   # Configure udev rules
   - |-
@@ -295,5 +265,6 @@ controlPlane:
       cluster:
         apiServer:
           extraArgs:
+            enable-aggregator-routing: "true"
+            feature-gates: ImageVolume=true,MutatingAdmissionPolicy=true
             runtime-config: admissionregistration.k8s.io/v1alpha1=true
-            feature-gates: MutatingAdmissionPolicy=true

@@ -21,4 +21,25 @@ spec:
           # [502574.695983] usb 1-1.3: SerialNumber: DE2452113
             vendor: { op: In, value: ["1cf1"] }
             device: { op: In, value: ["0030"] }
-            # serial: { op: In, value: ["DE2452113"] }
+            serial: { op: In, value: ["DE2452113"] }
+    - # Conbee III
+      # move to solution described here: https://gist.github.com/ammmze/74c0472214dc641c8252c40312a27af8
+      name: conbee-iii-zigbee
+      labels:
+        feature.node.kubernetes.io/zigbee-controller: "true"
+      matchFeatures:
+        - feature: usb.device
+          matchExpressions:
+          # [71764.115758] usb 1-10: new full-speed USB device number 7 using xhci_hcd
+          # [71764.250578] usb 1-10: New USB device found, idVendor=0403, idProduct=6015, bcdDevice=10.00
+          # [71764.250606] usb 1-10: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+          # [71764.250610] usb 1-10: Product: ConBee III
+          # [71764.250616] usb 1-10: Manufacturer: dresden elektronik
+          # [71764.250620] usb 1-10: SerialNumber: DE03186780
+            vendor: { op: In, value: ["0403"] }
+            device: { op: In, value: ["6015"] }
+            serial: { op: In, value: ["DE03186780"] }
+
+
+# feature.node.kubernetes.io/usb-ff_0403_6015.present: "true"
+# feature.node.kubernetes.io/usb-ff_0bda_8156.present: "true"nt: "true"

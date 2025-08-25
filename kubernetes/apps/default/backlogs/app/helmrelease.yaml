@@ -1,0 +1,122 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app backlogs
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    global:
+      fullnameOverride: *app
+    controllers:
+      backlogs:
+        type: deployment
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          imagePullSecrets:
+            - name: zot-credentials
+          annotations:
+            secret.reloader.stakater.com/reload: "auto"
+        initContainers:
+          run-migrations:
+            image:
+              repository: &image registry.pospiech.dev/simple-backlogs
+              tag: &version RELEASE.2025-06-25T21-43-19Z
+              pullPolicy: IfNotPresent
+            envFrom:
+              - secretRef:
+                  name: *app
+              - secretRef:
+                  name: &dbSecret backlogs-db-secret
+            command:
+              - /app/simple-backlogs
+            args:
+              - migrate
+              - up
+
+        containers:
+          main:
+            image:
+              repository: *image
+              tag: *version
+              pullPolicy: IfNotPresent
+            command:
+              - /app/simple-backlogs
+            args:
+              - server
+            env:
+              TZ: Europe/Warsaw
+              SERVER_PORT: &port 8080
+              SERVER_HOST: 0.0.0.0
+              SERVER_READ_TIMEOUT: 60
+              SERVER_WRITE_TIMEOUT: 60
+              SERVER_IDLE_TIMEOUT: 120
+              SECURE_COOKIES: true
+
+              VITE_API_URL: &url https://projects.pospiech.dev
+
+              # JWT Authentication
+              JWT_EXPIRATION: 24h
+              REFRESH_TOKEN_EXPIRATION: 168h # 7 days
+
+              # CORS configuration
+              CORS_ALLOWED_ORIGINS: *url
+              CORS_ALLOWED_METHODS: GET,POST,PUT,DELETE,OPTIONS
+              CORS_ALLOWED_HEADERS: Content-Type,Authorization
+              CORS_EXPOSED_HEADERS: ""
+              CORS_ALLOW_CREDENTIALS: true
+              CORS_MAX_AGE: 300
+
+              # Logging
+              LOG_LEVEL: info # debug, info, warn, error
+              LOG_FORMAT: text # json or text
+
+              # Application settings
+              APP_ENVIRONMENT: production # development, staging, production
+            envFrom:
+              - secretRef:
+                  name: *app
+              - secretRef:
+                  name: *dbSecret
+
+    service:
+      main:
+        enabled: true
+        controller: *app
+
+        ports:
+          http:
+            port: *port
+
+    route:
+      main:
+        annotations:
+          hajimari.io/enabled: "false"
+        hostnames:
+          - "projects.pospiech.dev"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: main
+                port: *port

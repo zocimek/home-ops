@@ -1,0 +1,102 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app ollama
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  dependsOn:
+    - name: intel-device-plugin-gpu
+      namespace: kube-system
+  values:
+    controllers:
+      ollama:
+        replicas: 1 # 1 per node
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: intelanalytics/ipex-llm-inference-cpp-xpu
+              tag: 2.3.0-SNAPSHOT
+              # tag: ipex-llm-v.0.0.1-2
+            command:
+              - sh
+              - -c
+              - |
+                mkdir -p /llm/ollama &&
+                cd /llm/ollama &&
+                init-ollama &&
+                exec ./ollama serve
+            securityContext:
+              privileged: true
+            env:
+              OLLAMA_MODELS: &modelPath /models
+              # ONEAPI_DEVICE_SELECTOR: level_zero:0
+              # IPEX_LLM_NUM_CTX: 16384
+              no_proxy: localhost,127.0.0.1
+              OLLAMA_HOST: 0.0.0.0
+              DEVICE: Arc
+              OLLAMA_INTEL_GPU: true
+              OLLAMA_NUM_CTX: "6144"
+              OLLAMA_NUM_GPU: "999"
+              OLLAMA_CONTEXT_LENGTH: "6144"
+              OLLAMA_KEEP_ALIVE: "-1" # Never unload models except to load new
+              OLLAMA_LOAD_TIMEOUT: "600"
+              OLLAMA_MAX_LOADED_MODELS: "1"
+              ZES_ENABLE_SYSMAN: 1
+              OLLAMA_NUM_PARALLEL: "1"
+              OLLAMA_ORIGINS: "*"
+              OLLAMA_SET_OT: "exps=CPU"
+            resources:
+              requests:
+                cpu: 200m
+              limits:
+                memory: 32Gi
+                gpu.intel.com/i915: 1
+        pod:
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - topologyKey: "kubernetes.io/hostname"
+                  labelSelector:
+                    matchExpressions:
+                      - key: app.kubernetes.io/name
+                        operator: In
+                        values:
+                          - *app
+    service:
+      app:
+        ports:
+          http:
+            port: &port 11434
+    route:
+      app:
+        hostnames: ["{{ .Release.Name }}.pospiech.dev"]
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+    persistence:
+      ollama:
+        existingClaim: *app
+        globalMounts:
+          - path: /root/.ollama
+      models:
+        existingClaim: ollama-models
+        globalMounts:
+          - path: *modelPath
+      dri:
+        type: hostPath
+        hostPath: /dev/dri
