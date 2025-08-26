@@ -161,15 +161,6 @@ spec:
           restrictedGroup: gitea_users
           scopes: "email profile groups"
           iconUrl: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/authentik.png
-        - name: PocketID
-          existingSecret: gitea-oauth-secret
-          provider: openidConnect
-          # yamllint disable-line rule:line-length
-          autoDiscoverUrl: https://id.pospiech.dev/.well-known/openid-configuration
-          groupClaimName: groups
-          adminGroup: administrators
-          restrictedGroup: gitea_users
-          iconUrl: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/pocket-id.png
       admin:
         existingSecret: gitea-admin-secret
 
