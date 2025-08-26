@@ -36,7 +36,7 @@ spec:
       namespace: kube-system
   values:
     csi:
-      cephFSKernelMountOptions: ms_mode=prefer-crc,_netdev
+      cephFSKernelMountOptions: ms_mode=secure,_netdev
       enableLiveness: true
       serviceMonitor:
         enabled: true
