@@ -10,6 +10,7 @@ resources:
   - ./atuin/ks.yaml
   - ./backlogs/ks.yaml
   - ./cyberchef/ks.yaml
+  - ./excalidraw/ks.yaml
   - ./gitea/ks.yaml
   - ./home-api/ks.yaml
   - ./karakeep/ks.yaml
