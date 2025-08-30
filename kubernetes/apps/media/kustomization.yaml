@@ -10,3 +10,4 @@ resources:
   # - ./kubernetes-schemas/ks.yaml
   - ./immich/ks.yaml
   - ./jellyfin/ks.yaml
+  - ./stash/ks.yaml
