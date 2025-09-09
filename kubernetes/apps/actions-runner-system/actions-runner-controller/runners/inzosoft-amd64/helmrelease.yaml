@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &name inzosoft-amd64-runner
+  name: &name inzosoft-amd64
 spec:
   interval: 1h
   chartRef:
@@ -19,7 +19,7 @@ spec:
   values:
     githubConfigUrl: https://github.com/inzosoft
     githubConfigSecret: inzosoft-amd64-runner-secret
-    minRunners: 1
+    minRunners: 0
     maxRunners: 4
     containerMode:
       type: kubernetes
