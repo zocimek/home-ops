@@ -19,7 +19,7 @@ spec:
   values:
     githubConfigUrl: https://github.com/inzosoft
     githubConfigSecret: inzosoft-amd64-runner-secret
-    minRunners: 0
+    minRunners: 1
     maxRunners: 4
     containerMode:
       type: kubernetes
