@@ -18,7 +18,7 @@ spec:
       retries: 3
   values:
     githubConfigUrl: https://github.com/inzosoft
-    githubConfigSecret: inzosoft-amd64-runner-secret
+    githubConfigSecret: inzosoft-amd64-secret
     minRunners: 0
     maxRunners: 4
     containerMode:
