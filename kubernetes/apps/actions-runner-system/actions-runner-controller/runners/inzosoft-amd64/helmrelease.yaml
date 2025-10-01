@@ -22,7 +22,7 @@ spec:
     minRunners: 0
     maxRunners: 4
     containerMode:
-      type: kubernetes
+      type: dind
       kubernetesModeWorkVolumeClaim:
         accessModes: ["ReadWriteOnce"]
         storageClassName: openebs-hostpath
