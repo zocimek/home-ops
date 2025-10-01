@@ -31,7 +31,7 @@ spec:
           app:
             image:
               repository: ghcr.io/karakeep-app/karakeep
-              tag: latest@sha256:d64ca0625fedba7ec1632313538fd3821fc83b1d881915c07c08b7ab773412cb
+              tag: latest@sha256:6878999640a8898559dff5474bcc3723bfbb97a118b6f45c02ae44dc25f2c66e
             env:
               BROWSER_WEB_URL: http://karakeep-chrome.default.svc.cluster.local:9222
               CRAWLER_DOWNLOAD_BANNER_IMAGE: true
@@ -116,7 +116,7 @@ spec:
           app:
             image:
               repository: docker.io/getmeili/meilisearch
-              tag: v1.20.0
+              tag: v1.22.2
             args:
               - /bin/meilisearch
               - --experimental-dumpless-upgrade
