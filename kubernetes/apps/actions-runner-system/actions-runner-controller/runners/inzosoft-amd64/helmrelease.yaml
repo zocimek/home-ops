@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &name home-ops-runner
+  name: &name inzosoft-amd64
 spec:
   interval: 1h
   chartRef:
@@ -17,12 +17,12 @@ spec:
     remediation:
       retries: 3
   values:
-    githubConfigUrl: https://github.com/zocimek/home-ops
-    githubConfigSecret: home-ops-runner-secret
-    minRunners: 1
-    maxRunners: 3
+    githubConfigUrl: https://github.com/inzosoft
+    githubConfigSecret: inzosoft-amd64-secret
+    minRunners: 0
+    maxRunners: 4
     containerMode:
-      type: kubernetes
+      type: dind
       kubernetesModeWorkVolumeClaim:
         accessModes: ["ReadWriteOnce"]
         storageClassName: openebs-hostpath
@@ -45,12 +45,4 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: status.hostIP
-            volumeMounts:
-              - mountPath: /var/run/secrets/talos.dev
-                name: talos
-                readOnly: true
         serviceAccountName: *name
-        volumes:
-          - name: talos
-            secret:
-              secretName: *name
