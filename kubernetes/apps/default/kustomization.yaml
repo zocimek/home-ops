@@ -25,3 +25,4 @@ resources:
   - ./umami/ks.yaml
   - ./vaultwarden/ks.yaml
   - ./wallos/ks.yaml
+  - ./wheel/ks.yaml
