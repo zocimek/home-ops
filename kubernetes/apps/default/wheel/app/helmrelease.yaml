@@ -40,8 +40,11 @@ spec:
           main:
             image:
               repository: registry.pospiech.dev/spin-the-wheel
-              tag: latest
+              tag: RELEASE.2025-10-13T13-44-13Z
               pullPolicy: Always
+            env:
+              SERVER_PORT: &port 8080
+              TZ: Europe/Warsaw
 
     service:
       wheel:
@@ -50,7 +53,7 @@ spec:
 
         ports:
           http:
-            port: &port 8080
+            port: *port
 
     route:
       main:
