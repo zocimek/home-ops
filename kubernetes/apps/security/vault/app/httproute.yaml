@@ -7,7 +7,7 @@ spec:
   hostnames:
     - vault.pospiech.dev
   parentRefs:
-    - name: internal
+    - name: external
       namespace: kube-system
       sectionName: https
   rules:
