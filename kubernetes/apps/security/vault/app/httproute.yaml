@@ -8,12 +8,12 @@ spec:
     - vault.pospiech.dev
   parentRefs:
     - name: internal
-      namespace: network
+      namespace: kube-system
       sectionName: https
   rules:
     - backendRefs:
         - kind: Service
-          name: vault-active
+          name: vault-ui
           port: 8200
       matches:
         - path:
