@@ -33,16 +33,6 @@ spec:
         VAULT_CACERT: /vault/userconfig/tls-ca/ca.crt
         TZ: Europe/Warsaw
 
-      # extraVolumes is a list of extra volumes to mount. These will be exposed
-      # to Vault in the path `/vault/userconfig/<name>/`.
-      extraVolumes:
-        - type: secret
-          name: tls-server
-        - type: secret
-          name: tls-ca
-        - type: secret
-          name: kms-creds
-
       dataStorage:
         enabled: true
         storageClass: "ceph-block"
