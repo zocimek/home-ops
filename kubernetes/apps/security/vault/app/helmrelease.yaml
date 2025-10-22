@@ -75,7 +75,7 @@ spec:
 
     ui:
       enabled: true
-      serviceType: "ClusterIP"
+      serviceType: "LoadBalancer"
 
     injector:
       enabled: "false"
