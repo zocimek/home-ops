@@ -20,7 +20,7 @@ spec:
     # also worth to consider
     # https://github.com/imputnet/cobalt?tab=readme-ov-file
     controllers:
-      metube:
+      yt-downloader:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
