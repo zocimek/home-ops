@@ -17,3 +17,4 @@ resources:
   - ./sabnzbd/ks.yaml
   - ./whisparr/ks.yaml
   - ./metube/ks.yaml
+  - ./yt-downloader/ks.yaml
