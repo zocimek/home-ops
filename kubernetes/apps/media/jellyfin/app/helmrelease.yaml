@@ -31,7 +31,7 @@ spec:
         supplementalGroups:
           - 44
           - 110
-          - 65542  # gladius:external-services
+          - 65542 # gladius:external-services
     controllers:
       jellyfin:
         type: statefulset
@@ -97,7 +97,7 @@ spec:
       config:
         existingClaim: jellyfin
 
-      media:
+      video:
         type: nfs
         server: nfs.homelab.pospiech.dev
         path: /volume1/video
@@ -115,6 +115,16 @@ spec:
           jellyfin:
             app:
               - path: /media/porn
+
+      media:
+        enabled: true
+        type: nfs
+        server: nas01.internal
+        path: /mnt/data/media
+        advancedMounts:
+          jellyfin:
+            app:
+              - path: /data/media
 
       transcode:
         type: emptyDir
