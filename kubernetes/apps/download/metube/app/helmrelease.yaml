@@ -39,7 +39,6 @@ spec:
               YTDL_OPTIONS: |
                 {
                   "impersonate": "chrome",
-                  "http_headers":{"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0"},
                   "format": "bestvideo[height<=1080][vcodec!*=av01]+bestaudio/best",
                   "merge_output_format": "mkv",
                   "verbose": true,
