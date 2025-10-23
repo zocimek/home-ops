@@ -17,7 +17,7 @@ spec:
     - ../../../../components/volsync
     - ../../../../components/keda/nfs-scaler
   interval: 1h
-  path: ./kubernetes/apps/download/metube/app
+  path: ./kubernetes/apps/download/yt-downloader/app
   postBuild:
     substitute:
       APP: *app
