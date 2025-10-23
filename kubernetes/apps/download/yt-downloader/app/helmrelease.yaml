@@ -97,6 +97,10 @@ spec:
     persistence:
       config:
         existingClaim: *app
+      cache:
+        type: emptyDir
+        globalMounts:
+          - path: /.cache
       tmp:
         enabled: true
         type: emptyDir
