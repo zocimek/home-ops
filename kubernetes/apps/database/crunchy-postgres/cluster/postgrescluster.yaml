@@ -33,7 +33,7 @@ spec:
         external-dns.alpha.kubernetes.io/hostname: postgres.pospiech.dev
         lbipam.cilium.io/ips: 10.0.42.115
 
-  patroni:  # turn on sync writes to at least 1 other replica
+  patroni: # turn on sync writes to at least 1 other replica
     dynamicConfiguration:
       synchronous_mode: true
       postgresql:
@@ -45,7 +45,7 @@ spec:
           search_path: '"$user", public, vectors"'
 
         pg_hba:
-          - hostnossl all all 10.42.0.0/16 md5  # Needed because dbman does not support SSL yet
+          - hostnossl all all 10.42.0.0/16 md5 # Needed because dbman does not support SSL yet
           - hostssl all all all md5
 
   instances:
@@ -153,6 +153,11 @@ spec:
         - whisparr-logs
       password:
         type: AlphaNumeric
+    - name: resume
+      databases:
+        - resume
+      password:
+        type: AlphaNumeric
 
   backups:
     pgbackrest:
@@ -199,24 +204,24 @@ spec:
         labels:
           app.kubernetes.io/name: crunchy-postgres-backup
       repos:
-        - name: repo1  # Minio
+        - name: repo1 # Minio
           s3: &minio
             bucket: "hl-backup"
             endpoint: "nas01.pospiech.dev:9000"
             region: "us-east-1"
           schedules:
-            full: "0 1 * * 0"  # Sunday at 01:00
-            differential: "0 1 * * 1-6"  # Mon-Sat at 01:00
-            incremental: "0 2-23 * * *"  # Every hour except 01:00
+            full: "0 1 * * 0" # Sunday at 01:00
+            differential: "0 1 * * 1-6" # Mon-Sat at 01:00
+            incremental: "0 2-23 * * *" # Every hour except 01:00
 
-        - name: repo2  # B2
+        - name: repo2 # B2
           s3: &b2
             bucket: "zocimek-hl-pg-backup"
             endpoint: "s3.us-west-001.backblazeb2.com"
             region: "us-west-001"
           schedules:
-            full: "0 2 * * 0"  # Sunday at 02:00
-            incremental: "0 2 * * 1-6/2"  # Mon-Sat at 02:00, every 2nd day
+            full: "0 2 * * 0" # Sunday at 02:00
+            incremental: "0 2 * * 1-6/2" # Mon-Sat at 02:00, every 2nd day
 
   dataSource:
     pgbackrest:
@@ -228,8 +233,8 @@ spec:
         s3: *minio
       options:
         - --type=immediate
-      # options:
-      #   - --set=20250617-085218F_20250619-210002I
+        # options:
+        #   - --set=20250617-085218F_20250619-210002I
 
   proxy:
     pgBouncer:
