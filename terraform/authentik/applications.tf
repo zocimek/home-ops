@@ -9,6 +9,7 @@ locals {
     "opengist",
     "outline",
     "paperless",
+    "qui",
   ]
 }
 
@@ -126,6 +127,32 @@ module "karakeep" {
   meta_icon       = "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/karakeep.png"
   meta_description = "Bookmarks management & Memos"
   meta_launch_url = "https://karakeep.pospiech.dev/signin"
+}
+
+######### KARAKEEP #########
+module "qui" {
+  source = "./modules/oidc-application"
+
+  name   = "Qui"
+  domain = "qui.pospiech.dev"
+  group  = "Download"
+
+  client_id     = module.onepassword_oauth["qui"].fields["OIDC_CLIENT_ID"]
+  client_secret = module.onepassword_oauth["qui"].fields["OIDC_CLIENT_SECRET"]
+
+  auth_groups = [
+    authentik_group.group["download_admins"].id
+  ]
+
+  authentication_flow = authentik_flow.authentication.uuid
+  authorization_flow  = data.authentik_flow.default-provider-authorization-implicit-consent.id
+  invalidation_flow  = resource.authentik_flow.provider-invalidation.uuid
+
+  redirect_uris = ["https://qui.pospiech.dev/api/auth/oidc/callback"]
+
+  meta_icon       = "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/qui.png"
+  meta_description = "Modern download manager"
+  meta_launch_url = "https://qui.pospiech.dev/"
 }
 
 ######### MEALIE #########

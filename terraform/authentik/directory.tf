@@ -6,6 +6,8 @@ data "authentik_group" "admins" {
 locals {
   groups = [
     "users",
+    "download_admins",
+    "download_users",
     "gitea_users",
     "gitea_admins",
     "grafana_users",
@@ -25,6 +27,7 @@ locals {
   parents_groups = [
     authentik_group.group["family"].id,
     authentik_group.group["parents"].id,
+    authentik_group.group["download_users"].id,
   ]
 
   kids_groups = [
@@ -38,6 +41,7 @@ locals {
     authentik_group.group["grafana_admins"].id,
     authentik_group.group["paperless_admins"].id,
     authentik_group.group["mealie_admins"].id,
+    authentik_group.group["download_admins"].id,
   ]
 }
 
