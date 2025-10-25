@@ -71,7 +71,8 @@ spec:
           - "{{ .Release.Name }}.pospiech.dev"
         parentRefs:
           - name: internal
-            namespace: network
+            namespace: kube-system
+            sectionName: https
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
