@@ -8,7 +8,7 @@ spec:
   interval: 1h
   chartRef:
     kind: OCIRepository
-    name: home-ops-runner
+    name: gha-runner-scale-set
   install:
     remediation:
       retries: -1
