@@ -11,7 +11,9 @@ spec:
     name: letsencrypt-production
     kind: ClusterIssuer
   commonName: pospiech.dev
-  dnsNames: ["pospiech.dev", "*.pospiech.dev"]
+  dnsNames:
+    - "pospiech.dev"
+    - "*.pospiech.dev"
 
 ---
 # yamllint disable-line rule:line-length
@@ -26,4 +28,6 @@ spec:
     name: letsencrypt-production
     kind: ClusterIssuer
   commonName: prywatna-notatka.pl
-  dnsNames: ["prywatna-notatka.pl", "*.prywatna-notatka.pl"]
+  dnsNames:
+    - "prywatna-notatka.pl"
+    - "*.prywatna-notatka.pl"
