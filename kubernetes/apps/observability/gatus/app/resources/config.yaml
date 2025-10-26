@@ -1,9 +1,9 @@
 ---
 web:
-  port: ${WEB_PORT}
+  port: ${GATUS_WEB_PORT}
 storage:
-  type: postgres
-  path: ${DATABASE_URL}
+  type: sqlite
+  path: /config/data.db
   caching: true
 metrics: true
 debug: true
@@ -116,11 +116,10 @@ endpoints:
       - "[STATUS] == 200"
     alerts:
       - type: pushover
+        # - name: SMTP
+        #   url: "starttls://mx.emeraldit.pl:587"
+        #   <<: *defaultMx
 
-  # - name: SMTP
-  #   url: "starttls://mx.emeraldit.pl:587"
-  #   <<: *defaultMx
-
-  # - name: IMAP
-  #   url: "tls://mx.emeraldit.pl:993"
-  #   <<: *defaultMx
+        # - name: IMAP
+        #   url: "tls://mx.emeraldit.pl:993"
+        #   <<: *defaultMx
