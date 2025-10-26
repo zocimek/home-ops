@@ -72,7 +72,7 @@ spec:
         controller: jellyfin
         type: LoadBalancer
         annotations:
-          lbipam.cilium.io/ips: 10.0.42.107
+          lbipam.cilium.io/ips: 10.0.42.103
         externalTrafficPolicy: Cluster
         ports:
           http:
