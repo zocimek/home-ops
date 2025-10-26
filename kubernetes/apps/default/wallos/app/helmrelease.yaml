@@ -8,8 +8,7 @@ spec:
   interval: 30m
   chartRef:
     kind: OCIRepository
-    name: app-template
-    namespace: flux-system
+    name: wallos
   install:
     createNamespace: true
     remediation:
@@ -35,7 +34,7 @@ spec:
           wallos:
             image:
               repository: ghcr.io/ellite/wallos
-              tag: 4.3.0
+              tag: 4.4.0
             env:
               TZ: "Europe/Warsaw"
             resources:
