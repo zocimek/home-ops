@@ -20,7 +20,7 @@ spec:
       route:
         enabled: true
         hostnames:
-          - victoria-logs.internal
+          - victoria-logs.pospiech.dev
         parentRefs:
           - name: envoy-internal
             namespace: network
