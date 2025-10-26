@@ -1,8 +1,8 @@
 ---
 instance:
   distribution:
-    # renovate: datasource=github-releases depName=controlplaneio-fluxcd/distribution
-    version: 2.7.0
+    artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:v0.32.0
+    version: 2.x
   cluster:
     networkPolicy: false
   components:
@@ -15,6 +15,7 @@ instance:
     url: "https://github.com/zocimek/home-ops.git"
     ref: "refs/heads/main"
     path: kubernetes/flux/cluster
+    interval: 1h
   commonMetadata:
     labels:
       app.kubernetes.io/name: flux
@@ -98,3 +99,19 @@ instance:
         target:
           kind: Deployment
           name: helm-controller
+      - # Only reconcile Kustomizations from watched labels
+        patch: |
+          - op: add
+            path: /spec/template/spec/containers/0/args/-
+            value: --watch-configs-label-selector=owner!=helm
+        target:
+          kind: Deployment
+          name: (helm-controller|kustomize-controller)
+      - # Cancel health checks on new Kustomizations revisions
+        patch: |
+          - op: add
+            path: /spec/template/spec/containers/0/args/-
+            value: --feature-gates=CancelHealthCheckOnNewRevision=true
+        target:
+          kind: Deployment
+          name: kustomize-controller
