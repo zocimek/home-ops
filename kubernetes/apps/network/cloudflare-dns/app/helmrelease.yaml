@@ -34,7 +34,9 @@ spec:
       - --gateway-name=external
     triggerLoopOnEvent: true
     policy: sync
-    sources: ["crd", "gateway-httproute"]
+    sources:
+      - "crd"
+      - "gateway-httproute"
     txtPrefix: k8s.
     txtOwnerId: default
     domainFilters:

@@ -78,9 +78,9 @@ spec:
       datasources.yaml:
         apiVersion: 1
         deleteDatasources:
-          - { name: Alertmanager, orgId: 1 }
-          - { name: Loki, orgId: 1 }
-          - { name: Prometheus, orgId: 1 }
+          - {name: Alertmanager, orgId: 1}
+          - {name: Loki, orgId: 1}
+          - {name: Prometheus, orgId: 1}
         datasources:
           - name: Prometheus
             type: prometheus
@@ -141,13 +141,13 @@ spec:
           gnetId: 17457
           revision: 6
           datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
+            - {name: DS_PROMETHEUS, value: Prometheus}
         envoy:
-           # renovate: depName="Envoy Proxy Monitoring gRPC"
-           gnetId: 23239
-           revision: 1
-           datasource:
-             - { name: DS_AFRANET_PROMETHEUS, value: Prometheus }
+          # renovate: depName="Envoy Proxy Monitoring gRPC"
+          gnetId: 23239
+          revision: 1
+          datasource:
+            - {name: DS_AFRANET_PROMETHEUS, value: Prometheus}
         external-dns:
           # renovate: depName="External-dns"
           gnetId: 15038
@@ -193,7 +193,7 @@ spec:
           gnetId: 1860
           revision: 42
           datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
+            - {name: DS_PROMETHEUS, value: Prometheus}
         prometheus:
           # renovate: depName="Prometheus"
           gnetId: 19105
@@ -204,14 +204,14 @@ spec:
           gnetId: 22604
           revision: 2
           datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
+            - {name: DS_PROMETHEUS, value: Prometheus,}
 
         unifi-pdu:
           # renovate: depName="UniFi-Poller: PDU Insights - Prometheus"
           gnetId: 23027
           revision: 1
           datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
+            - {name: DS_PROMETHEUS, value: Prometheus}
         unifi-insights:
           # renovate: depName="UniFi-Poller: Client Insights - Prometheus"
           gnetId: 11315
@@ -238,15 +238,15 @@ spec:
           gnetId: 23485
           revision: 2
           datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
+            - {name: DS_PROMETHEUS, value: Prometheus,}
 
         volsync:
           # renovate: depName="VolSync Dashboard"
           gnetId: 21356
           revision: 3
           datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
-            - { name: VAR_REPLICATIONDESTNAME, value: .*-dst }
+            - {name: DS_PROMETHEUS, value: Prometheus}
+            - {name: VAR_REPLICATIONDESTNAME, value: .*-dst}
         zfs:
           # renovate: depName="ZFS"
           gnetId: 7845
@@ -281,7 +281,8 @@ spec:
     route:
       main:
         enabled: true
-        hostnames: ["{{ .Release.Name }}.pospiech.dev"]
+        hostnames:
+          - "{{ .Release.Name }}.pospiech.dev"
         parentRefs:
           - name: external
             namespace: kube-system
