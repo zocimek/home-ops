@@ -33,6 +33,7 @@ spec:
         certificateRefs:
           - kind: Secret
             name: pospiech-dev-tls
+            namespace: network
     - name: privnote-https
       protocol: HTTPS
       port: 443
@@ -44,3 +45,4 @@ spec:
         certificateRefs:
           - kind: Secret
             name: prywatna-notatka-pl-tls
+            namespace: network
