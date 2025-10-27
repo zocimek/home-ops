@@ -59,4 +59,3 @@ spec:
           - backendRefs:
               - identifier: app
                 port: *port
-

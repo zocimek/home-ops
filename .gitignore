@@ -22,3 +22,6 @@ talosconfig
 Thumbs.db
 **/.terraform
 **/.terraform.lock.hcl
+secrets.env
+talsecret.sops.yaml
+TODO.md

@@ -23,7 +23,7 @@ spec:
     keepHistory: false
   values:
     defaultPodOptions:
-      nodeSelector: 
+      nodeSelector:
         kubernetes.io/arch: amd64
 
     controllers:
@@ -55,7 +55,7 @@ spec:
                     port: &port 8108
                   periodSeconds: 10
                   timeoutSeconds: 5
-                  failureThreshold: 60  
+                  failureThreshold: 60
               liveness: &probes
                 enabled: true
                 custom: true
@@ -74,9 +74,7 @@ spec:
         ports:
           http:
             port: *port
-    
+
     persistence:
       data:
         existingClaim: immich-typesense
-    
-    
