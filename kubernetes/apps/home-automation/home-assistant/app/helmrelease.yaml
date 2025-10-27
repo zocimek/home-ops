@@ -131,9 +131,8 @@ spec:
         hostnames:
           - "hass-code.pospiech.dev"
         parentRefs:
-          - name: internal
-            namespace: kube-system
-            sectionName: https
+          - name: envoy-internal
+            namespace: network
         rules:
           - backendRefs:
               - identifier: code

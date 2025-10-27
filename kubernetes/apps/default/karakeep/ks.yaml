@@ -8,7 +8,6 @@ metadata:
 spec:
   components:
     - ../../../../components/volsync
-    - ../../../../components/gatus/internal
   dependsOn:
     - name: onepassword
       namespace: external-secrets

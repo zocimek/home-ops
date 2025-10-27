@@ -13,7 +13,7 @@ spec:
     mode: enabled
   values:
     controllers:
-      *app :
+      *app:
         type: statefulset
         strategy: RollingUpdate
         replicas: 2
@@ -132,9 +132,8 @@ spec:
         hostnames:
           - '{{ .Release.Name }}.pospiech.dev'
         parentRefs:
-          - name: internal
-            namespace: kube-system
-            sectionName: https
+          - name: envoy-internal
+            namespace: network
         rules:
           - matches:
               - path:
@@ -158,11 +157,11 @@ spec:
                   path:
                     type: ReplacePrefixMatch
                     replacePrefixMatch: /status
-        # annotations:
-        #   gethomepage.dev/enabled: 'true'
-        #   gethomepage.dev/name: VerneMQ
-        #   gethomepage.dev/group: Infrastructure
-        #   gethomepage.dev/icon: mqtt.svg
+                    # annotations:
+                    #   gethomepage.dev/enabled: 'true'
+                    #   gethomepage.dev/name: VerneMQ
+                    #   gethomepage.dev/group: Infrastructure
+                    #   gethomepage.dev/icon: mqtt.svg
 
     persistence:
       tmpfs:
@@ -186,11 +185,11 @@ spec:
             scrapeTimeout: 1s
 
     serviceAccount:
-      *app : {}
+      *app: {}
 
     rbac:
       roles:
-        *app :
+        *app:
           type: Role
           rules:
             - apiGroups:
@@ -207,7 +206,7 @@ spec:
               verbs:
                 - get
       bindings:
-        *app :
+        *app:
           type: RoleBinding
           roleRef:
             identifier: *app

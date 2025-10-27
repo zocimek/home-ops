@@ -51,7 +51,7 @@ spec:
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+              capabilities: {drop: ["ALL"]}
             resources:
               requests:
                 cpu: 10m
@@ -64,8 +64,9 @@ spec:
         runAsGroup: 568
         fsGroup: 568
         fsGroupChangePolicy: OnRootMismatch
-        supplementalGroups: [10000]
-        seccompProfile: { type: RuntimeDefault }
+        supplementalGroups:
+          - 10000
+        seccompProfile: {type: RuntimeDefault}
     service:
       app:
         controller: whisparr
@@ -78,9 +79,8 @@ spec:
         hostnames:
           - "{{ .Release.Name }}.pospiech.dev"
         parentRefs:
-          - name: internal
-            namespace: kube-system
-            sectionName: https
+          - name: envoy-internal
+            namespace: network
         rules:
           - backendRefs:
               - identifier: app
@@ -99,18 +99,17 @@ spec:
         path: /mnt/data/media
         globalMounts:
           - path: /media
-
-      # pushover-notify:
-      #   type: configMap
-      #   name: whisparr-configmap
-      #   defaultMode: 0775
-      #   globalMounts:
-      #     - path: /scripts/pushover-notify.sh
-      #       subPath: pushover-notify.sh
-      #       readOnly: true
-      # media:
-      #   type: nfs
-      #   server: citadel.internal
-      #   path: /mnt/storage0/media
-      #   globalMounts:
-      #     - path: /media
+            # pushover-notify:
+            #   type: configMap
+            #   name: whisparr-configmap
+            #   defaultMode: 0775
+            #   globalMounts:
+            #     - path: /scripts/pushover-notify.sh
+            #       subPath: pushover-notify.sh
+            #       readOnly: true
+            # media:
+            #   type: nfs
+            #   server: citadel.internal
+            #   path: /mnt/storage0/media
+            #   globalMounts:
+            #     - path: /media

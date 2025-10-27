@@ -23,9 +23,8 @@ spec:
           hostnames:
             - "alertmanager.pospiech.dev"
           parentRefs:
-            - name: internal
-              namespace: kube-system
-              sectionName: https
+            - name: envoy-internal
+              namespace: network
       alertmanagerSpec:
         alertmanagerConfiguration:
           name: alertmanager
@@ -52,9 +51,8 @@ spec:
           hostnames:
             - "prometheus.pospiech.dev"
           parentRefs:
-            - name: internal
-              namespace: kube-system
-              sectionName: https
+            - name: envoy-internal
+              namespace: network
       prometheusSpec:
         image:
           registry: docker.io
