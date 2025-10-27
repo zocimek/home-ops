@@ -3,7 +3,7 @@
 apiVersion: externaldns.k8s.io/v1alpha1
 kind: DNSEndpoint
 metadata:
-  name: cloudflare-tunnel
+  name: cloudflare-tunnel-external
 spec:
   endpoints:
     - dnsName: "external.pospiech.dev"
@@ -16,7 +16,7 @@ spec:
 apiVersion: externaldns.k8s.io/v1alpha1
 kind: DNSEndpoint
 metadata:
-  name: cloudflare-tunnel
+  name: cloudflare-tunnel-envoy-external
 spec:
   endpoints:
     - dnsName: "envoy-external.pospiech.dev"
@@ -29,7 +29,7 @@ spec:
 apiVersion: externaldns.k8s.io/v1alpha1
 kind: DNSEndpoint
 metadata:
-  name: cloudflare-tunnel
+  name: cloudflare-tunnel-envoy-privnote
 spec:
   endpoints:
     - dnsName: "envoy-privnote.pospiech.dev"
