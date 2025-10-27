@@ -6,7 +6,7 @@ TALOSCONFIG = '{{config_root}}/kubernetes/talos/clusterconfig/talosconfig'
 SOPS_AGE_KEY_FILE = "{{config_root}}/age.key"
 
 [tools]
-"python" = "3.13"
+"python" = "3.14.0"
 "pipx:makejinja" = "2.8.1"
 "aqua:budimanjojo/talhelper" = "3.0.36"
 "aqua:cilium/cilium-cli" = "0.18.7"
