@@ -76,13 +76,13 @@ spec:
               - hostname: "*.pospiech.dev"
                 originRequest:
                   http2Origin: true
-                  originServerName: external.pospiech.dev
-                service: &svc https://cilium-gateway-external.kube-system.svc.cluster.local
+                  originServerName: envoy-external.pospiech.dev
+                service: &svc https://envoy-external.{{ .Release.Namespace }}.svc.cluster.local:443
               - hostname: pospiech.dev
-                service: https://cilium-gateway-external.kube-system.svc.cluster.local
+                service: hhttps://envoy-external.{{ .Release.Namespace }}.svc.cluster.local:443
                 originRequest:
                   http2Origin: true
-                  originServerName: external.pospiech.dev
+                  originServerName: envoy-external.pospiech.dev
 
               - hostname: "*.prywatna-notatka.pl"
                 service: https://envoy-privnote.{{ .Release.Namespace }}.svc.cluster.local:443

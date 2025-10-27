@@ -55,7 +55,10 @@ spec:
               - secretRef:
                   name: outline-db-secret
 
-            command: ["/bin/sh", "-c", "yarn db:migrate --env=production-ssl-disabled && yarn start --env=production-ssl-disabled"]
+            command:
+              - "/bin/sh"
+              - "-c"
+              - "yarn db:migrate --env=production-ssl-disabled && yarn start --env=production-ssl-disabled"
             probes:
               liveness:
                 enabled: true
@@ -94,8 +97,8 @@ spec:
         hostnames:
           - "docs.pospiech.dev"
         parentRefs:
-          - name: external
-            namespace: kube-system
+          - name: envoy-external
+            namespace: network
             sectionName: https
         rules:
           - backendRefs:

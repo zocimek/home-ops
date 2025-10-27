@@ -60,7 +60,7 @@ spec:
             securityContext:
               allowPrivilegeEscalation: false
               # readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+              capabilities: {drop: ["ALL"]}
 
     defaultPodOptions:
       securityContext:
@@ -76,16 +76,16 @@ spec:
         ports:
           http:
             port: &port 6157
-          # ssh:
-          #   port: 2222
+            # ssh:
+            #   port: 2222
 
     route:
       app:
         hostnames:
-          - "{{ .Release.Name }}.pospiech.dev"
+          - "opengist.pospiech.dev"
         parentRefs:
-          - name: external
-            namespace: kube-system
+          - name: envoy-external
+            namespace: network
             sectionName: https
         rules:
           - backendRefs:

@@ -53,8 +53,8 @@ spec:
         hostnames:
           - "home-api.pospiech.dev"
         parentRefs:
-          - name: external
-            namespace: kube-system
+          - name: envoy-external
+            namespace: network
             sectionName: https
         rules:
           - backendRefs:

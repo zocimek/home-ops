@@ -8,8 +8,8 @@ spec:
   hostnames:
     - "rook.pospiech.dev"
   parentRefs:
-    - name: internal
-      namespace: envoy-internal
+    - name: envoy-internal
+      namespace: network
   rules:
     - backendRefs:
         - name: rook-ceph-mgr-dashboard
