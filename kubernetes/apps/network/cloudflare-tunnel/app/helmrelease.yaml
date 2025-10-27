@@ -85,12 +85,12 @@ spec:
                 service: https://envoy-privnote.{{ .Release.Namespace }}.svc.cluster.local:443
                 originRequest:
                   http2Origin: true
-                  originServerName: https://envoy-privnote.pospiech.dev
+                  originServerName: https://envoy-privnote.prywatna-notatka.pl
               - hostname: "prywatna-notatka.pl"
                 service: https://envoy-privnote.{{ .Release.Namespace }}.svc.cluster.local:443
                 originRequest:
                   http2Origin: true
-                  originServerName: https://envoy-privnote.pospiech.dev
+                  originServerName: https://envoy-privnote.prywatna-notatka.pl
 
               - service: http_status:403
 
