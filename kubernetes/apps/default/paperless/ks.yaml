@@ -4,7 +4,6 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app paperless
-  namespace: flux-system
 spec:
   components:
     - ../../../../components/nfs-scaler
@@ -20,8 +19,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: documents
-
   prune: true
   sourceRef:
     kind: GitRepository

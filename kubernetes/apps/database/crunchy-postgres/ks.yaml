@@ -34,7 +34,6 @@ spec:
     substitute:
       APP: postgres
       GATUS_PORT: "5432"
-
   prune: true
   sourceRef:
     kind: GitRepository
@@ -54,7 +53,6 @@ spec:
       namespace: database
     - name: external-secrets
       namespace: external-secrets
-
   interval: 10m
   path: ./kubernetes/apps/database/crunchy-postgres/stores
   prune: true

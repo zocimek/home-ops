@@ -4,7 +4,6 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app jellyfin
-  namespace: flux-system
 spec:
   components:
     - ../../../../components/volsync
@@ -17,9 +16,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: tv
       VOLSYNC_CAPACITY: 20Gi
-
   prune: true
   sourceRef:
     kind: GitRepository

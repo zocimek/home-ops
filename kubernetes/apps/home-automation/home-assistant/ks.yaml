@@ -4,11 +4,9 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app home-assistant
-  namespace: flux-system
 spec:
   components:
     - ../../../../components/volsync
-    - ../../../../components/gatus/external
     - ../../../../components/nfs-scaler
   dependsOn:
     - name: onepassword
@@ -22,7 +20,6 @@ spec:
       APP: *app
       GATUS_SUBDOMAIN: home
       VOLSYNC_CAPACITY: 10Gi
-
   prune: true
   sourceRef:
     kind: GitRepository

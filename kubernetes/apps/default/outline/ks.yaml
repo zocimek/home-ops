@@ -4,10 +4,8 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app outline
-  namespace: flux-system
 spec:
   components:
-    - ../../../../components/gatus/external
     - ../../../../components/volsync
   dependsOn:
     - name: crunchy-postgres-operator-cluster
@@ -26,7 +24,6 @@ spec:
       VOLSYNC_CAPACITY: 10Gi
       VOLSYNC_UID: "568"
       VOLSYNC_GID: "568"
-
   prune: true
   sourceRef:
     kind: GitRepository

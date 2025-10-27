@@ -4,7 +4,6 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app qbittorrent
-
 spec:
   components:
     - ../../../../components/volsync
@@ -17,7 +16,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-
   prune: true
   sourceRef:
     kind: GitRepository
@@ -26,13 +24,13 @@ spec:
   targetNamespace: download
   wait: false
   timeout: 5m
+
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app qbittorrent-tools
-  namespace: download
 spec:
   interval: 1h
   path: ./kubernetes/apps/download/qbittorrent/tools
@@ -43,6 +41,5 @@ spec:
     namespace: flux-system
   targetNamespace: download
   wait: false
-
   retryInterval: 2m
   timeout: 5m

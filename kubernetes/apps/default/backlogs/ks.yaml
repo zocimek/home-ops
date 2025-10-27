@@ -4,7 +4,6 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app backlogs
-
 spec:
   dependsOn:
     - name: onepassword
@@ -16,8 +15,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: projects
-
   prune: true
   sourceRef:
     kind: GitRepository
