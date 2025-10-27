@@ -4,29 +4,27 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &appname vernemq
-  namespace: &namespace database
+
 spec:
-  targetNamespace: *namespace
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *appname
   components:
     # - ../../../../components/gatus/external
     - ../../../../components/gatus/tcp
-  interval: 30m
-  timeout: 5m
-  path: "./kubernetes/apps/database/vernemq/app"
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false
   dependsOn:
     - name: onepassword
       namespace: external-secrets
+  interval: 30m
+  path: "./kubernetes/apps/database/vernemq/app"
   postBuild:
     substitute:
       APP: *appname
       GATUS_PORT: "1883"
       GATUS_SUBDOMAIN: mqtt
+
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: database
+  wait: false
+  timeout: 5m

@@ -6,10 +6,6 @@ metadata:
   name: &app home-assistant
   namespace: flux-system
 spec:
-  targetNamespace: &ns home-automation
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   components:
     - ../../../../components/volsync
     - ../../../../components/gatus/external
@@ -19,18 +15,20 @@ spec:
       namespace: external-secrets
     - name: crunchy-postgres-operator-cluster
       namespace: database
-  path: ./kubernetes/apps/home-automation/home-assistant/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false
   interval: 30m
-  retryInterval: 1m
-  timeout: 5m
+  path: ./kubernetes/apps/home-automation/home-assistant/app
   postBuild:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: home
       VOLSYNC_CAPACITY: 10Gi
+
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: home-automation
+  wait: false
+  retryInterval: 1m
+  timeout: 5m

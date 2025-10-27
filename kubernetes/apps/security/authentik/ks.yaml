@@ -6,28 +6,25 @@ metadata:
   name: &app authentik
   namespace: flux-system
 spec:
-  targetNamespace: security
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/gatus/external
   dependsOn:
     - name: crunchy-postgres-operator-cluster
       namespace: database
     - name: dragonfly-cluster
       namespace: database
-  components:
-    - ../../../../components/gatus/external
+  interval: 30m
   path: ./kubernetes/apps/security/authentik/app
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_SUBDOMAIN: auth
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
+  targetNamespace: security
   wait: false # no flux ks dependents
-  interval: 30m
   retryInterval: 1m
   timeout: 5m
-  postBuild:
-    substitute:
-      APP: *app
-      GATUS_SUBDOMAIN: auth

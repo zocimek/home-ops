@@ -6,16 +6,8 @@ metadata:
   name: &app umami
   namespace: flux-system
 spec:
-  targetNamespace: default
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/default/umami/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
+  components:
+    - ../../../../components/gatus/external
   dependsOn:
     - name: onepassword
       namespace: external-secrets
@@ -23,13 +15,19 @@ spec:
       namespace: rook-ceph
     - name: volsync
       namespace: volsync-system
-  components:
-    - ../../../../components/gatus/external
-  wait: false
   interval: 30m
-  retryInterval: 1m
-  timeout: 5m
+  path: ./kubernetes/apps/default/umami/app
   postBuild:
     substitute:
       APP: *app
       GATUS_PATH: /login
+
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: default
+  wait: false
+  retryInterval: 1m
+  timeout: 5m
