@@ -4,29 +4,26 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app karakeep
-  namespace: &namespace default
+
 spec:
-  targetNamespace: *namespace
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
-  interval: 30m
-  timeout: 5m
+  components:
+    - ../../../../components/volsync
+    - ../../../../components/gatus/internal
   dependsOn:
     - name: onepassword
       namespace: external-secrets
     - name: volsync
       namespace: volsync-system
-  components:
-    - ../../../../components/volsync
-    - ../../../../components/gatus/internal
+  interval: 30m
   path: "./kubernetes/apps/default/karakeep/app"
+  postBuild:
+    substitute:
+      APP: *app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
+  targetNamespace: default
   wait: false
-  postBuild:
-    substitute:
-      APP: *app
+  timeout: 5m

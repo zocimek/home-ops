@@ -4,16 +4,13 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app flarebypasser
-  namespace: &namespace download
+
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/nfs-scaler
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
-  components:
-    - ../../../../components/nfs-scaler
   interval: 1h
   path: ./kubernetes/apps/download/flarebypasser/app
   postBuild:
@@ -21,11 +18,12 @@ spec:
       APP: *app
       VOLSYNC_CAPACITY: 1Gi
   prune: true
-  retryInterval: 2m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
-  timeout: 5m
+  targetNamespace: download
   wait: false
+
+  retryInterval: 2m
+  timeout: 5m

@@ -8,10 +8,6 @@ metadata:
   name: &app immich-typesense
   namespace: flux-system
 spec:
-  targetNamespace: &ns media
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   components:
     - ../../../../components/volsync
   dependsOn:
@@ -21,21 +17,22 @@ spec:
       namespace: database
     - name: crunchy-postgres-operator-cluster
       namespace: database
-  path: ./kubernetes/apps/media/immich/typesense
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false # no flux ks dependents
   interval: 30m
-  retryInterval: 1m
-  timeout: 5m
+  path: ./kubernetes/apps/media/immich/typesense
   postBuild:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 10Gi
 
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: media
+  wait: false # no flux ks dependents
+  retryInterval: 1m
+  timeout: 5m
 ---
 # yamllint disable-line rule:line-length
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
@@ -45,32 +42,29 @@ metadata:
   name: &app immich
   namespace: flux-system
 spec:
-  targetNamespace: &ns media
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/nfs-scaler
+    - ../../../../components/gatus/external
   dependsOn:
     - name: immich-typesense
     - name: crunchy-postgres-operator-cluster
       namespace: database
     - name: dragonfly-cluster
       namespace: database
-  components:
-    - ../../../../components/nfs-scaler
-    - ../../../../components/gatus/external
-  path: ./kubernetes/apps/media/immich/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false
   interval: 30m
-  retryInterval: 1m
-  timeout: 5m
+  path: ./kubernetes/apps/media/immich/app
   postBuild:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: photos
 
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: media
+  wait: false
+  retryInterval: 1m
+  timeout: 5m
 # https://github.com/samip5/k8s-cluster/blob/main/k8s/nebula/apps/default/immich/app/hr.yaml

@@ -1,7 +1,7 @@
 [env]
 _.python.venv = { path = "{{config_root}}/.venv", create = true }
 ROOT_DIR = "{{config_root}}"
-KUBECONFIG = "{{config_root}}/kubeconfig"
+KUBECONFIG = "~/.kube/configs/config.homelab"
 TALOSCONFIG = '{{config_root}}/kubernetes/talos/clusterconfig/talosconfig'
 SOPS_AGE_KEY_FILE = "{{config_root}}/age.key"
 

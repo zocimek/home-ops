@@ -6,10 +6,6 @@ metadata:
   name: &app jellyfin
   namespace: flux-system
 spec:
-  targetNamespace: &ns media
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   components:
     - ../../../../components/volsync
     - ../../../../components/gatus/internal
@@ -17,18 +13,20 @@ spec:
   dependsOn:
     - name: onepassword
       namespace: external-secrets
-  path: ./kubernetes/apps/media/jellyfin/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false # no flux ks dependents
   interval: 30m
-  retryInterval: 1m
-  timeout: 5m
+  path: ./kubernetes/apps/media/jellyfin/app
   postBuild:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: tv
       VOLSYNC_CAPACITY: 20Gi
+
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: media
+  wait: false # no flux ks dependents
+  retryInterval: 1m
+  timeout: 5m

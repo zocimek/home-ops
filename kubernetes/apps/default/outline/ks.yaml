@@ -6,10 +6,9 @@ metadata:
   name: &app outline
   namespace: flux-system
 spec:
-  targetNamespace: default
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/gatus/external
+    - ../../../../components/volsync
   dependsOn:
     - name: crunchy-postgres-operator-cluster
       namespace: database
@@ -17,19 +16,8 @@ spec:
       namespace: external-secrets
     - name: dragonfly-cluster
       namespace: database
-  components:
-    - ../../../../components/gatus/external
-    - ../../../../components/volsync
-  path: ./kubernetes/apps/default/outline/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false
   interval: 30m
-  retryInterval: 1m
-  timeout: 5m
+  path: ./kubernetes/apps/default/outline/app
   postBuild:
     substitute:
       APP: *app
@@ -38,3 +26,13 @@ spec:
       VOLSYNC_CAPACITY: 10Gi
       VOLSYNC_UID: "568"
       VOLSYNC_GID: "568"
+
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: default
+  wait: false
+  retryInterval: 1m
+  timeout: 5m

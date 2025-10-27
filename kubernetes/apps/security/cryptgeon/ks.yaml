@@ -6,27 +6,25 @@ metadata:
   name: &app cryptgeon
   namespace: flux-system
 spec:
-  targetNamespace: security
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/security/cryptgeon/app
-  prune: true
   components:
     - ../../../../components/gatus/external
   dependsOn:
     - name: dragonfly-cluster
       namespace: database
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false # no flux ks dependents
   interval: 30m
-  retryInterval: 1m
-  timeout: 5m
+  path: ./kubernetes/apps/security/cryptgeon/app
   postBuild:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: "prywatna-notatka"
       GATUS_DOMAIN: .pl
+
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: security
+  wait: false # no flux ks dependents
+  retryInterval: 1m
+  timeout: 5m

@@ -3,12 +3,9 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app kube-prometheus-stack
-  namespace: &namespace observability
+  name: kube-prometheus-stack
+
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/internal
   dependsOn:
@@ -21,11 +18,11 @@ spec:
       APP: kube-prometheus-stack
       GATUS_SUBDOMAIN: prometheus
   prune: true
-  retryInterval: 2m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
-  timeout: 5m
+  targetNamespace: observability
   wait: false
+  retryInterval: 2m
+  timeout: 5m

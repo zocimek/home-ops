@@ -6,10 +6,9 @@ metadata:
   name: &app paperless
   namespace: flux-system
 spec:
-  targetNamespace: &ns default
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/gatus/internal
+    - ../../../../components/nfs-scaler
   dependsOn:
     - name: onepassword
       namespace: external-secrets
@@ -17,22 +16,20 @@ spec:
       namespace: database
     - name: dragonfly-cluster
       namespace: database
-  components:
-    - ../../../../components/gatus/internal
-    - ../../../../components/nfs-scaler
-  path: ./kubernetes/apps/default/paperless/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false # no flux ks dependents
   interval: 30m
-  retryInterval: 1m
-  timeout: 5m
+  path: ./kubernetes/apps/default/paperless/app
   postBuild:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: documents
 
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: default
+  wait: false # no flux ks dependents
+  retryInterval: 1m
+  timeout: 5m
 # https://github.com/bjw-s/home-ops/blob/c4e694eb9af5858ef91a00db022268aeeaf35ba8/kubernetes/main/apps/selfhosted/paperless/app/externalsecret.yaml

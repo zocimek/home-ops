@@ -6,10 +6,6 @@ metadata:
   name: &app opengist
   namespace: flux-system
 spec:
-  targetNamespace: default
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   components:
     - ../../../../components/volsync
     - ../../../../components/gatus/external
@@ -18,16 +14,8 @@ spec:
       namespace: rook-ceph
     - name: onepassword
       namespace: external-secrets
-  path: ./kubernetes/apps/default/opengist/app
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false
   interval: 30m
-  retryInterval: 1m
-  timeout: 5m
+  path: ./kubernetes/apps/default/opengist/app
   postBuild:
     substitute:
       APP: *app
@@ -35,3 +23,12 @@ spec:
       # VOLSYNC_STORAGECLASS: ceph-block # default
       # VOLSYNC_SNAPSHOTCLASS: csi-ceph-block # update with storageclass
       # VOLSYNC_COPY_METHOD: Snapshot # default; change to "Clone" for local-path
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: default
+  wait: false
+  retryInterval: 1m
+  timeout: 5m

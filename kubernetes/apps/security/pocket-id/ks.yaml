@@ -6,12 +6,6 @@ metadata:
   name: &app pocket-id
   namespace: flux-system
 spec:
-  targetNamespace: security
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/security/pocket-id/app
-  prune: true
   components:
     - ../../../../components/gatus/external
     - ../../../../components/volsync
@@ -20,15 +14,19 @@ spec:
       namespace: volsync-system
     - name: rook-ceph-cluster
       namespace: rook-ceph
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false # no flux ks dependents
   interval: 30m
-  retryInterval: 1m
-  timeout: 5m
+  path: ./kubernetes/apps/security/pocket-id/app
   postBuild:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: "id"
+
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: security
+  wait: false # no flux ks dependents
+  retryInterval: 1m
+  timeout: 5m
