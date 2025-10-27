@@ -80,10 +80,15 @@ spec:
                 service: &svc https://cilium-gateway-external.kube-system.svc.cluster.local
               - hostname: pospiech.dev
                 service: https://cilium-gateway-external.kube-system.svc.cluster.local
-              - hostname: "prywatna-notatka.pl"
-                service: https://envoy-privnote.{{ .Release.Namespace }}.svc.cluster.local:443
+
               - hostname: "*.prywatna-notatka.pl"
                 service: https://envoy-privnote.{{ .Release.Namespace }}.svc.cluster.local:443
+                originRequest:
+                  http2Origin: true
+                  originServerName: https://envoy-privnote.pospiech.dev
+              - hostname: "prywatna-notatka.pl"
+                service: https://envoy-privnote.{{ .Release.Namespace }}.svc.cluster.local:443
+
               - service: http_status:403
 
     persistence:

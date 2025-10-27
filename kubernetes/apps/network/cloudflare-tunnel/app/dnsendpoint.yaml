@@ -32,7 +32,7 @@ metadata:
   name: cloudflare-tunnel-envoy-privnote
 spec:
   endpoints:
-    - dnsName: "envoy-privnote.pospiech.dev"
+    - dnsName: "envoy-external.prywatna-notatka.pl"
       recordType: CNAME
       targets:
         - "${CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com"
