@@ -6,8 +6,6 @@ metadata:
   name: &app backlogs
 
 spec:
-  components:
-    - ../../../../components/gatus/internal
   dependsOn:
     - name: onepassword
       namespace: external-secrets

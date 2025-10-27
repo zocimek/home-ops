@@ -6,8 +6,6 @@ metadata:
   name: &app pairdrop
   namespace: flux-system
 spec:
-  components:
-    - ../../../../components/gatus/internal
   interval: 30m
   path: ./kubernetes/apps/default/pairdrop/app
   postBuild:

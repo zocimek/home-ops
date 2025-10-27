@@ -7,7 +7,6 @@ metadata:
   namespace: flux-system
 spec:
   components:
-    - ../../../../components/gatus/internal
     - ../../../../components/nfs-scaler
   dependsOn:
     - name: onepassword
@@ -32,4 +31,4 @@ spec:
   wait: false # no flux ks dependents
   retryInterval: 1m
   timeout: 5m
-# https://github.com/bjw-s/home-ops/blob/c4e694eb9af5858ef91a00db022268aeeaf35ba8/kubernetes/main/apps/selfhosted/paperless/app/externalsecret.yaml
+  # https://github.com/bjw-s/home-ops/blob/c4e694eb9af5858ef91a00db022268aeeaf35ba8/kubernetes/main/apps/selfhosted/paperless/app/externalsecret.yaml

@@ -55,7 +55,7 @@ spec:
               WIREGUARD_ENDPOINT_PORT: 51820
               VPN_PORT_FORWARDING: "on"
               FIREWALL_INPUT_PORTS: 8080
-               # Allow access to k8s subnets
+              # Allow access to k8s subnets
               # yamllint disable-line rule:line-length
               FIREWALL_OUTBOUND_SUBNETS: 10.42.0.0/16,10.43.0.0/16,192.168.100.0/24
             envFrom:
@@ -67,7 +67,10 @@ spec:
               postStart:
                 exec:
                   # command: ["/bin/sh", "-c", "(ip rule del table 51820;) || true"]
-                  command: ["/bin/sh", "-c", "(ip rule del table 51820; ip -6 rule del table 51820) || true"]
+                  command:
+                    - "/bin/sh"
+                    - "-c"
+                    - "(ip rule del table 51820; ip -6 rule del table 51820) || true"
             restartPolicy: Always
             securityContext:
               capabilities:
@@ -161,9 +164,8 @@ spec:
         hostnames:
           - "{{ .Release.Name }}.pospiech.dev"
         parentRefs:
-          - name: internal
-            namespace: kube-system
-            sectionName: https
+          - name: envoy-internal
+            namespace: network
         rules:
           - backendRefs:
               - identifier: app

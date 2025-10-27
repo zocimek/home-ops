@@ -6,8 +6,6 @@ metadata:
   name: &app atuin
   namespace: flux-system
 spec:
-  components:
-    - ../../../../components/gatus/internal
   dependsOn:
     - name: onepassword
       namespace: external-secrets
@@ -15,11 +13,6 @@ spec:
       namespace: database
   interval: 30m
   path: ./kubernetes/apps/default/atuin/app
-  postBuild:
-    substitute:
-      APP: *app
-      GATUS_SUBDOMAIN: sh
-
   prune: true
   sourceRef:
     kind: GitRepository

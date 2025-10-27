@@ -70,9 +70,9 @@ spec:
         hostnames:
           - "{{ .Release.Name }}.pospiech.dev"
         parentRefs:
-          - name: internal
-            namespace: kube-system
-            sectionName: https
+          - name: envoy-internal
+            namespace: network
+        rules:
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"

@@ -7,7 +7,6 @@ metadata:
   namespace: flux-system
 spec:
   components:
-    - ../../../../components/gatus/internal
     - ../../../../components/volsync
   dependsOn:
     - name: vernemq
