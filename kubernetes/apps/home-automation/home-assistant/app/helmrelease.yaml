@@ -10,17 +10,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: home-assistant
-  maxHistory: 2
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
-  uninstall:
-    keepHistory: false
 
   values:
     defaultPodOptions:
@@ -195,7 +184,6 @@ spec:
                 subPath: code-server-tmp
               - path: /nonexistent
                 subPath: nonexistent
-
-      # ssh:
-      #   type: emptyDir
-      #   enabled: true
+                # ssh:
+                #   type: emptyDir
+                #   enabled: true

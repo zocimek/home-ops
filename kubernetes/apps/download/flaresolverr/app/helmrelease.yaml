@@ -9,17 +9,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: flaresolverr
-  maxHistory: 2
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      strategy: rollback
-      retries: 3
-  uninstall:
-    keepHistory: false
   values:
     controllers:
       flaresolverr:
@@ -31,11 +20,11 @@ spec:
             env:
               CAPTCHA_SOLVER: "harvester"
             resources: {}
-              # requests:
-              #   cpu: 10m
-              #   memory: 150Mi
-              # limits:
-              #   memory: 500Mi
+            # requests:
+            #   cpu: 10m
+            #   memory: 150Mi
+            # limits:
+            #   memory: 500Mi
     service:
       app:
         controller: flaresolverr

@@ -10,17 +10,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: vaultwarden
-  maxHistory: 2
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
-  uninstall:
-    keepHistory: false
   values:
     controllers:
       vaultwarden:
@@ -39,10 +28,10 @@ spec:
               pullPolicy: IfNotPresent
 
             envFrom:
-            - secretRef:
-                name: vaultwarden-secret
-            - secretRef:
-                name: vaultwarden-db-secret
+              - secretRef:
+                  name: vaultwarden-secret
+              - secretRef:
+                  name: vaultwarden-db-secret
 
             env:
               TZ: Europe/Warsaw
@@ -55,7 +44,6 @@ spec:
               SMTP_SECURITY: starttls
 
               SIGNUPS_ALLOWED: "false"
-
 
     service:
       main:

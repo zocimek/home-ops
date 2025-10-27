@@ -10,17 +10,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: immich-typesense
-  maxHistory: 2
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
-  uninstall:
-    keepHistory: false
   values:
     defaultPodOptions:
       nodeSelector:
@@ -39,8 +28,8 @@ spec:
             env:
               TYPESENSE_DATA_DIR: /data
             envFrom:
-            - secretRef:
-                name: immich-typesense
+              - secretRef:
+                  name: immich-typesense
             resources:
               requests:
                 cpu: 500m
