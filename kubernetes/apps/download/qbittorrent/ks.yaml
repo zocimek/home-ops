@@ -13,7 +13,7 @@ spec:
   components:
     - ../../../../components/gatus/internal
     - ../../../../components/volsync
-    - ../../../../components/keda/nfs-scaler
+    - ../../../../components/nfs-scaler
   dependsOn:
     - name: onepassword
       namespace: external-secrets
@@ -42,10 +42,6 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 1h
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-age
   path: ./kubernetes/apps/download/qbittorrent/tools
   prune: true
   retryInterval: 2m

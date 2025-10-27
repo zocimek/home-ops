@@ -13,7 +13,7 @@ spec:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   components:
-    - ../../../../components/keda/nfs-scaler
+    - ../../../../components/nfs-scaler
   interval: 1h
   path: ./kubernetes/apps/download/flarebypasser/app
   postBuild:

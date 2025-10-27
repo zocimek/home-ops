@@ -9,17 +9,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: flarebypasser
-  maxHistory: 2
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      strategy: rollback
-      retries: 3
-  uninstall:
-    keepHistory: false
   values:
     # https://github.com/lucas-dclrcq/homelabitty/blob/main/kubernetes/apps/downloads/flarebypasser/app/helmrelease.yaml
     controllers:

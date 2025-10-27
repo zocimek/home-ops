@@ -19,14 +19,14 @@ spec:
       namespace: database
   components:
     - ../../../../components/gatus/internal
-    - ../../../../components/keda/nfs-scaler
+    - ../../../../components/nfs-scaler
   path: ./kubernetes/apps/default/paperless/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false  # no flux ks dependents
+  wait: false # no flux ks dependents
   interval: 30m
   retryInterval: 1m
   timeout: 5m

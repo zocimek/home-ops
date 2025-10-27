@@ -9,17 +9,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: cryptgeon
-  maxHistory: 2
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
-  uninstall:
-    keepHistory: false
   values:
     controllers:
       cryptgeon:
@@ -127,4 +116,3 @@ spec:
                       value: SAMEORIGIN
                     - name: X-XSS-Protection
                       value: "1; mode=block"
-

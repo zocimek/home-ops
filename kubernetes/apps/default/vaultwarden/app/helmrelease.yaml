@@ -10,24 +10,13 @@ spec:
   chartRef:
     kind: OCIRepository
     name: vaultwarden
-  maxHistory: 2
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
-  uninstall:
-    keepHistory: false
   values:
     controllers:
       vaultwarden:
         type: deployment
-        
+
         strategy: Recreate
-        
+
         annotations:
           secret.reloader.stakater.com/reload: "auto"
 
@@ -37,12 +26,12 @@ spec:
               repository: vaultwarden/server
               tag: 1.34.3
               pullPolicy: IfNotPresent
-          
+
             envFrom:
-            - secretRef:
-                name: vaultwarden-secret
-            - secretRef:
-                name: vaultwarden-db-secret
+              - secretRef:
+                  name: vaultwarden-secret
+              - secretRef:
+                  name: vaultwarden-db-secret
 
             env:
               TZ: Europe/Warsaw
@@ -56,14 +45,13 @@ spec:
 
               SIGNUPS_ALLOWED: "false"
 
-
     service:
       main:
         controller: vaultwarden
         ports:
-          http: 
+          http:
             port: &port 80
-    
+
     route:
       main:
         annotations:

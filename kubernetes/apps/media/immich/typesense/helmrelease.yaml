@@ -10,20 +10,9 @@ spec:
   chartRef:
     kind: OCIRepository
     name: immich-typesense
-  maxHistory: 2
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
-  uninstall:
-    keepHistory: false
   values:
     defaultPodOptions:
-      nodeSelector: 
+      nodeSelector:
         kubernetes.io/arch: amd64
 
     controllers:
@@ -39,8 +28,8 @@ spec:
             env:
               TYPESENSE_DATA_DIR: /data
             envFrom:
-            - secretRef:
-                name: immich-typesense
+              - secretRef:
+                  name: immich-typesense
             resources:
               requests:
                 cpu: 500m
@@ -55,7 +44,7 @@ spec:
                     port: &port 8108
                   periodSeconds: 10
                   timeoutSeconds: 5
-                  failureThreshold: 60  
+                  failureThreshold: 60
               liveness: &probes
                 enabled: true
                 custom: true
@@ -74,9 +63,7 @@ spec:
         ports:
           http:
             port: *port
-    
+
     persistence:
       data:
         existingClaim: immich-typesense
-    
-    

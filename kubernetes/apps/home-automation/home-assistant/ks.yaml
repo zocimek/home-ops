@@ -13,7 +13,7 @@ spec:
   components:
     - ../../../../components/volsync
     - ../../../../components/gatus/external
-    - ../../../../components/keda/nfs-scaler
+    - ../../../../components/nfs-scaler
   dependsOn:
     - name: onepassword
       namespace: external-secrets
