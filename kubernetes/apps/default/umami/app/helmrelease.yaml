@@ -77,6 +77,9 @@ spec:
 
     route:
       app:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            url: https://{{ .Release.Name }}.pospiech.dev/login
         hostnames:
           - "{{ .Release.Name }}.pospiech.dev"
         parentRefs:

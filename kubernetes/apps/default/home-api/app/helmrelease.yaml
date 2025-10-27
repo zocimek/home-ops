@@ -50,6 +50,9 @@ spec:
 
     route:
       main:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            url: https://home-api.pospiech.dev/health
         hostnames:
           - "home-api.pospiech.dev"
         parentRefs:

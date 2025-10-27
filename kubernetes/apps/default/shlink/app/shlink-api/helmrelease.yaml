@@ -55,6 +55,9 @@ spec:
 
     route:
       main:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            url: https://ln.pospiech.dev/AtAO0
         hostnames:
           - *host
         parentRefs:

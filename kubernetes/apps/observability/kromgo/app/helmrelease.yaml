@@ -60,8 +60,11 @@ spec:
             port: *healthPort
     route:
       app:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            conditions: ["[STATUS] == 404"]
         hostnames:
-          - "status.pospiech.dev"
+          - "kromgo.pospiech.dev"
         parentRefs:
           - name: envoy-external
             namespace: network
