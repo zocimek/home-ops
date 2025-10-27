@@ -9,13 +9,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: metube
-  install:
-    remediation:
-      retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
   values:
     # also worth to consider
     # https://github.com/imputnet/cobalt?tab=readme-ov-file

@@ -14,14 +14,6 @@ spec:
       namespace: rook-ceph
     - name: volsync
       namespace: volsync-system
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      strategy: rollback
-      retries: 3
   driftDetection:
     mode: enabled
     ignore:

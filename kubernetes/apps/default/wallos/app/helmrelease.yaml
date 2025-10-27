@@ -10,13 +10,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: wallos
-  install:
-    createNamespace: true
-    remediation:
-      retries: 10
-  upgrade:
-    remediation:
-      retries: 10
   values:
     fullnameOverride: *name
     # Listens on port 80, chown's around
