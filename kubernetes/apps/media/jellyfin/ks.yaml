@@ -13,7 +13,7 @@ spec:
   components:
     - ../../../../components/volsync
     - ../../../../components/gatus/internal
-    - ../../../../components/keda/nfs-scaler
+    - ../../../../components/nfs-scaler
   dependsOn:
     - name: onepassword
       namespace: external-secrets
@@ -23,7 +23,7 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false  # no flux ks dependents
+  wait: false # no flux ks dependents
   interval: 30m
   retryInterval: 1m
   timeout: 5m
