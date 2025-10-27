@@ -5,6 +5,5 @@ kind: Kustomization
 resources:
   - ./helmrepository.yaml
   - ./externalsecret.yaml
-  - ./gatus.yaml
   - ./helmrelease.yaml
   - ./route.yaml

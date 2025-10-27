@@ -31,6 +31,8 @@ spec:
     metadata:
       annotations:
         external-dns.alpha.kubernetes.io/hostname: postgres.pospiech.dev
+        gatus.home-operations.com/endpoint: |-
+          group: services
         lbipam.cilium.io/ips: 10.0.42.115
 
   patroni: # turn on sync writes to at least 1 other replica

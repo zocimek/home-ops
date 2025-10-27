@@ -42,12 +42,15 @@ spec:
 
     containerSecurityContext:
       capabilities:
-        add: ["SYS_CHROOT"]
+        add:
+          - "SYS_CHROOT"
 
     service:
       ssh:
         annotations:
           external-dns.alpha.kubernetes.io/hostname: git.pospiech.dev
+          gatus.home-operations.com/endpoint: |-
+            group: services
           lbipam.cilium.io/ips: 10.0.42.106
         type: LoadBalancer
         externalTrafficPolicy: Local
