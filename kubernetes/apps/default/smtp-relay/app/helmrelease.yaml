@@ -37,7 +37,7 @@ spec:
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+              capabilities: {drop: ["ALL"]}
             resources:
               requests:
                 cpu: 10m
@@ -60,6 +60,9 @@ spec:
         controller: smtp-relay
         type: LoadBalancer
         annotations:
+          external-dns.alpha.kubernetes.io/hostname: smtp-relay.pospiech.dev
+          gatus.home-operations.com/endpoint: |-
+            group: services
           lbipam.cilium.io/ips: 10.0.42.108
         ports:
           http:
