@@ -55,11 +55,14 @@ spec:
 
     route:
       main:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            url: https://ln.pospiech.dev/AtAO0
         hostnames:
           - *host
         parentRefs:
-          - name: external
-            namespace: kube-system
+          - name: envoy-external
+            namespace: network
             sectionName: https
         rules:
           - backendRefs:

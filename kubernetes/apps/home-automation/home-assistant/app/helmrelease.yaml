@@ -119,8 +119,8 @@ spec:
         hostnames:
           - "home.pospiech.dev"
         parentRefs:
-          - name: external
-            namespace: kube-system
+          - name: envoy-external
+            namespace: network
             sectionName: https
         rules:
           - backendRefs:
@@ -131,9 +131,8 @@ spec:
         hostnames:
           - "hass-code.pospiech.dev"
         parentRefs:
-          - name: internal
-            namespace: kube-system
-            sectionName: https
+          - name: envoy-internal
+            namespace: network
         rules:
           - backendRefs:
               - identifier: code

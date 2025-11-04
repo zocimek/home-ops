@@ -23,6 +23,8 @@ spec:
     type: LoadBalancer
     annotations:
       external-dns.alpha.kubernetes.io/hostname: redis.pospiech.dev
+      gatus.home-operations.com/endpoint: |-
+        group: services
       lbipam.cilium.io/ips: 10.0.42.116
   resources:
     requests:

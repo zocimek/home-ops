@@ -74,7 +74,6 @@ spec:
               ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER: deconz
               ZIGBEE2MQTT_CONFIG_SERIAL_BAUDRATE: 115200
 
-
             envFrom:
               - secretRef:
                   name: zigbee2mqtt-secret
@@ -101,10 +100,10 @@ spec:
               # readOnlyRootFilesystem: true
               # capabilities: { drop: ["ALL"] }
             # resources: {}
-              # requests:
-              #   cpu: 10m
-              # limits:
-              #   memory: 512Mi
+            # requests:
+            #   cpu: 10m
+            # limits:
+            #   memory: 512Mi
 
     service:
       app:
@@ -120,9 +119,8 @@ spec:
         hostnames:
           - "zigbee.pospiech.dev"
         parentRefs:
-          - name: internal
-            namespace: kube-system
-            sectionName: https
+          - name: envoy-internal
+            namespace: network
         rules:
           - backendRefs:
               - identifier: app

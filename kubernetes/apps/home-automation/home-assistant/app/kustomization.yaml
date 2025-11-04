@@ -8,5 +8,4 @@ resources:
   - ./externalsecret.yaml
   - ./pvc.yaml
   # - ./certificate.yaml
-  - ./gatus-code.yaml
   - ./helmrelease.yaml

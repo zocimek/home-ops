@@ -6,11 +6,11 @@ terraform {
     }
     sops = {
       source = "carlpett/sops"
-      version = "1.2.1"
+      version = "1.3.0"
     }
     onepassword = {
       source = "1Password/onepassword"
-      version = "~> 2.1.0"
+      version = "~> 2.2.0"
     }
   }
 }

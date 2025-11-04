@@ -31,14 +31,15 @@ spec:
             port: &port 7860
     route:
       app:
-        hostnames: ["${GATUS_SUBDOMAIN:=${APP}}.pospiech.dev"]
+        hostnames:
+          - "{{ .Release.Name }}.pospiech.dev"
         parentRefs:
-          - name: external
-            namespace: kube-system
+          - name: envoy-external
+            namespace: network
             sectionName: https
-    # persistence:
-    #   config:
-    #     enabled: true
-    #     existingClaim: *app
-    #     globalMounts:
-    #       - path: /app
+            # persistence:
+            #   config:
+            #     enabled: true
+            #     existingClaim: *app
+            #     globalMounts:
+            #       - path: /app

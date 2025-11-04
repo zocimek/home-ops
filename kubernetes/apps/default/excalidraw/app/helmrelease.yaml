@@ -47,8 +47,9 @@ spec:
             port: 80
     route:
       app:
-        hostnames: ["draw.pospiech.dev"]
+        hostnames:
+          - "draw.pospiech.dev"
         parentRefs:
-          - name: external
-            namespace: kube-system
+          - name: envoy-external
+            namespace: network
             sectionName: https

@@ -35,7 +35,7 @@ spec:
           app:
             image:
               repository: ghcr.io/pocket-id/pocket-id
-              tag: v1.11.2
+              tag: v1.14.2
 
             env:
               ANALYTICS_DISABLED: "true"
@@ -88,8 +88,8 @@ spec:
         hostnames:
           - "id.pospiech.dev"
         parentRefs:
-          - name: external
-            namespace: kube-system
+          - name: envoy-external
+            namespace: network
             sectionName: https
 
     persistence:

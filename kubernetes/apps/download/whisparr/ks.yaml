@@ -4,13 +4,8 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app whisparr
-  namespace: &namespace download
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/internal
     - ../../../../components/volsync
     - ../../../../components/nfs-scaler
   dependsOn:
@@ -23,11 +18,11 @@ spec:
       APP: *app
       VOLSYNC_CAPACITY: 50Gi
   prune: true
-  retryInterval: 2m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: *namespace
-  timeout: 5m
+  targetNamespace: download
   wait: false
+  retryInterval: 2m
+  timeout: 5m
