@@ -9,16 +9,17 @@ components:
   - ../../components/registry-creds
 
 resources:
-  - ./namespace.yaml
   - ./autobrr/ks.yaml
   - ./cross-seed/ks.yaml
   - ./flarebypasser/ks.yaml
   - ./flaresolverr/ks.yaml
+  - ./metube/ks.yaml
+  - ./namespace.yaml
   - ./pinchflat/ks.yaml
   - ./prowlarr/ks.yaml
   - ./qbittorrent/ks.yaml
   - ./qui/ks.yaml
   - ./sabnzbd/ks.yaml
+  - ./tqm/ks.yaml
   - ./whisparr/ks.yaml
-  - ./metube/ks.yaml
   - ./yt-downloader/ks.yaml
