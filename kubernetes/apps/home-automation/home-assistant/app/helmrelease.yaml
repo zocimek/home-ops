@@ -84,7 +84,7 @@ spec:
             dependsOn: app
             image:
               repository: ghcr.io/coder/code-server
-              tag: 4.104.2@sha256:6edc8e2d2849749c1a1a5eff8e76563b96db407e68899c143473a6004d0a6b5a
+              tag: 4.106.3@sha256:1a0e813039c8f01404a89654278779ac77492b833bc2d126431268b9b1f1e40a
             args:
               - --auth
               - none
