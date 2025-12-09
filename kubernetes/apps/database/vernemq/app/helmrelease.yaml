@@ -13,7 +13,7 @@ spec:
     mode: enabled
   values:
     controllers:
-      *app:
+      vernemq:
         type: statefulset
         strategy: RollingUpdate
         replicas: 2
@@ -30,7 +30,7 @@ spec:
           app:
             image:
               repository: docker.io/vernemq/vernemq
-              tag: 2.1.1-alpine
+              tag: 2.1.2-alpine
             env:
               MY_POD_NAME:
                 valueFrom:
@@ -187,11 +187,11 @@ spec:
             scrapeTimeout: 1s
 
     serviceAccount:
-      *app: {}
+      vernemq: {}
 
     rbac:
       roles:
-        *app:
+        vernemq:
           type: Role
           rules:
             - apiGroups:
@@ -208,7 +208,7 @@ spec:
               verbs:
                 - get
       bindings:
-        *app:
+        vernemq:
           type: RoleBinding
           roleRef:
             identifier: *app
