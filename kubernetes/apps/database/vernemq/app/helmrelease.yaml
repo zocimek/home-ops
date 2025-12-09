@@ -13,7 +13,7 @@ spec:
     mode: enabled
   values:
     controllers:
-      *app:
+      vernemq:
         type: statefulset
         strategy: RollingUpdate
         replicas: 2
@@ -187,11 +187,11 @@ spec:
             scrapeTimeout: 1s
 
     serviceAccount:
-      *app: {}
+      vernemq: {}
 
     rbac:
       roles:
-        *app:
+        vernemq:
           type: Role
           rules:
             - apiGroups:
@@ -208,7 +208,7 @@ spec:
               verbs:
                 - get
       bindings:
-        *app:
+        vernemq:
           type: RoleBinding
           roleRef:
             identifier: *app
