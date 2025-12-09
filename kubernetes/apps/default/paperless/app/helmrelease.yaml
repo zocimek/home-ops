@@ -107,17 +107,21 @@ spec:
         containers:
           app:
             image:
-              repository: thecodingmachine/gotenberg
+              repository: gotenberg/gotenberg
               tag: 8.25.1
-            env:
-              DISABLE_GOOGLE_CHROME: 1
+            ports:
+              - containerPort: 3000
+            command:
+              - "gotenberg"
+              - "--chromium-disable-javascript=true"
+              - "--chromium-allow-list=file:///tmp/.*"
 
       tika:
         containers:
           app:
             image:
-              repository: ghcr.io/paperless-ngx/tika
-              tag: 2.9.1-full
+              repository: docker.io/apache/tika
+              tag: 3.2.3.0-full
 
     service:
       app:
