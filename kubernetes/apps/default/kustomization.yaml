@@ -12,6 +12,7 @@ resources:
   - ./namespace.yaml
   - ./atuin/ks.yaml
   - ./backlogs/ks.yaml
+  - ./bentopdf/ks.yaml
   - ./cyberchef/ks.yaml
   - ./excalidraw/ks.yaml
   - ./gitea/ks.yaml
