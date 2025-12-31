@@ -1,0 +1,69 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bentopdf
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: bentopdf
+  dependsOn: []
+  interval: 15m
+  values:
+    controllers:
+      bentopdf:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/alam00000/bentopdf-simple
+              tag: v1.15.3@sha256:883f7b25ec62907d393e1e912d72aa8ab04147683f941eef8e054b7de1f0141d
+            env:
+              TZ: Europe/Warsaw
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                memory: 512Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 100
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        controller: bentopdf
+        ports:
+          http:
+            port: &port 8080
+    route:
+      app:
+        hostnames:
+          - "pdf.pospiech.dev"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+
+    persistence:
+      tmpfs:
+        type: emptyDir
+        globalMounts:
+          - path: /var/cache/nginx
+            subPath: cache
+          - path: /etc/nginx/tmp
+            subPath: tmp
