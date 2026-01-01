@@ -36,7 +36,7 @@ spec:
                   "merge_output_format": "mkv",
                   "verbose": true,
                   "writesubtitles": true,
-                  "restrictfilenames": true,
+                  "restrictfilenames": false,
                   "subtitleslangs": [
                     "en",
                     "pl"
