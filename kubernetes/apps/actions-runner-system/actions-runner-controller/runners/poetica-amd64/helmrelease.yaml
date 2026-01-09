@@ -36,8 +36,35 @@ spec:
             env:
               - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
                 value: "false"
+              - name: DOCKER_HOST
+                value: "tcp://localhost:2376"
+              - name: DOCKER_TLS_VERIFY
+                value: "1"
+              - name: DOCKER_CERT_PATH
+                value: "/certs/client"
               - name: NODE
                 valueFrom:
                   fieldRef:
                     fieldPath: status.hostIP
+            volumeMounts:
+              - mountPath: /certs/client
+                name: docker-certs
+                readOnly: true
+          - name: dind
+            image: docker:27-dind
+            env:
+              - name: DOCKER_TLS_CERTDIR
+                value: "/certs"
+            securityContext:
+              privileged: true
+            volumeMounts:
+              - mountPath: /certs
+                name: docker-certs
+              - mountPath: /var/lib/docker
+                name: docker-storage
         serviceAccountName: *name
+        volumes:
+          - name: docker-certs
+            emptyDir: {}
+          - name: docker-storage
+            emptyDir: {}
