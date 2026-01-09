@@ -37,11 +37,14 @@ spec:
               - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
                 value: "false"
               - name: DOCKER_HOST
-                value: "tcp://localhost:2375"
+                value: "unix:///var/run/docker.sock"
               - name: NODE
                 valueFrom:
                   fieldRef:
                     fieldPath: status.hostIP
+            volumeMounts:
+              - mountPath: /var/run
+                name: docker-sock
           - name: dind
             image: docker:27-dind
             env:
@@ -50,9 +53,13 @@ spec:
             securityContext:
               privileged: true
             volumeMounts:
+              - mountPath: /var/run
+                name: docker-sock
               - mountPath: /var/lib/docker
                 name: docker-storage
         serviceAccountName: *name
         volumes:
+          - name: docker-sock
+            emptyDir: {}
           - name: docker-storage
             emptyDir: {}
