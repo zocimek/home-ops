@@ -15,14 +15,7 @@ spec:
     minRunners: 0
     maxRunners: 4
     containerMode:
-      type: kubernetes
-      kubernetesModeWorkVolumeClaim:
-        accessModes:
-          - "ReadWriteOnce"
-        storageClassName: openebs-hostpath
-        resources:
-          requests:
-            storage: 25Gi
+      type: dind
     controllerServiceAccount:
       name: actions-runner-controller
       namespace: actions-runner-system
@@ -36,30 +29,8 @@ spec:
             env:
               - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
                 value: "false"
-              - name: DOCKER_HOST
-                value: "unix:///var/run/docker.sock"
               - name: NODE
                 valueFrom:
                   fieldRef:
                     fieldPath: status.hostIP
-            volumeMounts:
-              - mountPath: /var/run
-                name: docker-sock
-          - name: dind
-            image: docker:27-dind
-            env:
-              - name: DOCKER_TLS_CERTDIR
-                value: ""
-            securityContext:
-              privileged: true
-            volumeMounts:
-              - mountPath: /var/run
-                name: docker-sock
-              - mountPath: /var/lib/docker
-                name: docker-storage
         serviceAccountName: *name
-        volumes:
-          - name: docker-sock
-            emptyDir: {}
-          - name: docker-storage
-            emptyDir: {}
