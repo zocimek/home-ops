@@ -32,9 +32,15 @@ spec:
           - name: dind
             image: docker:27-dind
             restartPolicy: Always
+            args:
+              - dockerd
+              - --host=unix:///var/run/docker.sock
+              - --group=$(DOCKER_GROUP_GID)
             env:
               - name: DOCKER_TLS_CERTDIR
                 value: ""
+              - name: DOCKER_GROUP_GID
+                value: "1001"
             securityContext:
               privileged: true
             volumeMounts:
@@ -47,11 +53,16 @@ spec:
             image: ghcr.io/home-operations/actions-runner:2.330.0@sha256:92a45e47f4b349f4da2307ebaaea5443cc86d1ce625d37acf2c61b3b09192e47
             command:
               - "/home/runner/run.sh"
+            securityContext:
+              supplementalGroups:
+                - 1001
             env:
               - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
                 value: "false"
               - name: DOCKER_HOST
                 value: "unix:///var/run/docker.sock"
+              - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
+                value: "120"
               - name: NODE
                 valueFrom:
                   fieldRef:
