@@ -28,6 +28,20 @@ spec:
       namespace: actions-runner-system
     template:
       spec:
+        initContainers:
+          - name: dind
+            image: docker:27-dind
+            restartPolicy: Always
+            env:
+              - name: DOCKER_TLS_CERTDIR
+                value: ""
+            securityContext:
+              privileged: true
+            volumeMounts:
+              - mountPath: /var/run
+                name: docker-sock
+              - mountPath: /var/lib/docker
+                name: docker-storage
         containers:
           - name: runner
             image: ghcr.io/home-operations/actions-runner:2.330.0@sha256:92a45e47f4b349f4da2307ebaaea5443cc86d1ce625d37acf2c61b3b09192e47
@@ -45,18 +59,6 @@ spec:
             volumeMounts:
               - mountPath: /var/run
                 name: docker-sock
-          - name: dind
-            image: docker:27-dind
-            env:
-              - name: DOCKER_TLS_CERTDIR
-                value: ""
-            securityContext:
-              privileged: true
-            volumeMounts:
-              - mountPath: /var/run
-                name: docker-sock
-              - mountPath: /var/lib/docker
-                name: docker-storage
         serviceAccountName: *name
         volumes:
           - name: docker-sock
