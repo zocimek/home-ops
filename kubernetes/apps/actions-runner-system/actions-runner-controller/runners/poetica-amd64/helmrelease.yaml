@@ -40,7 +40,7 @@ spec:
               - name: DOCKER_TLS_CERTDIR
                 value: ""
               - name: DOCKER_GROUP_GID
-                value: "1001"
+                value: "123"
             securityContext:
               privileged: true
             volumeMounts:
@@ -55,7 +55,7 @@ spec:
               - "/home/runner/run.sh"
             securityContext:
               supplementalGroups:
-                - 1001
+                - 123
             env:
               - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
                 value: "false"
