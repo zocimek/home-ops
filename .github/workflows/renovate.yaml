@@ -4,7 +4,8 @@ name: Renovate
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - "main"
     paths:
       - .renovaterc.json5
       - .renovate/**.json5
@@ -67,8 +68,7 @@ jobs:
           RENOVATE_INTERNAL_CHECKS_FILTER: strict
           RENOVATE_PLATFORM: github
           RENOVATE_PLATFORM_COMMIT: true
-          REGISTRY_USERNAME: "${{ secrets.REGISTRY_USERNAME }}"
-          REGISTRY_PASSWORD: "${{ secrets.REGISTRY_PASSWORD }}"
+          RENOVATE_HOST_RULES: '[{"matchHost":"registry.pospiech.dev","hostType":"docker","username":"${{ secrets.REGISTRY_USERNAME }}","password":"${{ secrets.REGISTRY_PASSWORD }}"}]'
         with:
           token: "${{ steps.app-token.outputs.token }}"
           renovate-version: "${{ inputs.version || 'latest' }}"

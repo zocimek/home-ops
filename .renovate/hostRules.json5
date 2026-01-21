@@ -1,12 +1,4 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
-  hostRules: [
-    {
-      description: "Custom registry authentication for registry.pospiech.dev",
-      matchHost: "registry.pospiech.dev",
-      hostType: "docker",
-      username: "{{ env.REGISTRY_USERNAME }}",
-      password: "{{ env.REGISTRY_PASSWORD }}",
-    },
-  ],
+  hostRules: [],
 }
