@@ -5,8 +5,8 @@
       description: "Custom registry authentication for registry.pospiech.dev",
       matchHost: "registry.pospiech.dev",
       hostType: "docker",
-      username: "{{ secrets.REGISTRY_USERNAME }}",
-      password: "{{ secrets.REGISTRY_PASSWORD }}",
+      username: "{{ env.REGISTRY_USERNAME }}",
+      password: "{{ env.REGISTRY_PASSWORD }}",
     },
   ],
 }
