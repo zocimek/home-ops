@@ -108,7 +108,7 @@ spec:
           app:
             image:
               repository: gotenberg/gotenberg
-              tag: 8.25.1
+              tag: 8.26.0
             ports:
               - containerPort: 3000
             command:
