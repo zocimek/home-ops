@@ -19,7 +19,7 @@ spec:
           app:
             image:
               repository: ghcr.io/alam00000/bentopdf-simple
-              tag: v1.15.3@sha256:883f7b25ec62907d393e1e912d72aa8ab04147683f941eef8e054b7de1f0141d
+              tag: 2.0.0@sha256:499952233964cbf6d1a29c22a17f4f8bda3247a2dd0bacb9b3ca7537bc038704
             env:
               TZ: Europe/Warsaw
             securityContext:
