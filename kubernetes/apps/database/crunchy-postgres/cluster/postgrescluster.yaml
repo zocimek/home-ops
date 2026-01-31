@@ -114,6 +114,12 @@ spec:
       options: SUPERUSER
       password:
         type: AlphaNumeric
+    - name: listmonk
+      databases:
+        - listmonk
+      options: SUPERUSER
+      password:
+        type: AlphaNumeric
     - name: outline
       databases:
         - outline
