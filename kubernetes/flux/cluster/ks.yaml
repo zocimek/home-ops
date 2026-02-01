@@ -42,6 +42,8 @@ spec:
                   rollback:
                     cleanupOnFail: true
                     recreate: true
+                  driftDetection:
+                    enable: true
                   upgrade:
                     cleanupOnFail: true
                     crds: CreateReplace
