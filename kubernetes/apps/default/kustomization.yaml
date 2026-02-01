@@ -20,7 +20,6 @@ resources:
   - ./karakeep/ks.yaml
   - ./listmonk/ks.yaml
   - ./mealie/ks.yaml
-  - ./n8n/ks.yaml
   - ./opengist/ks.yaml
   - ./openspeedtest/ks.yaml
   - ./outline/ks.yaml
