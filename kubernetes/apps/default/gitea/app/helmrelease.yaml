@@ -37,7 +37,7 @@ spec:
 
     image:
       repository: gitea/gitea
-      tag: 1.25.3
+      tag: 1.25.4
       rootless: false
 
     containerSecurityContext:
@@ -48,10 +48,10 @@ spec:
     service:
       ssh:
         annotations:
-          external-dns.alpha.kubernetes.io/hostname: git.pospiech.dev
-          gatus.home-operations.com/endpoint: |-
-            group: services
-          lbipam.cilium.io/ips: 10.0.42.106
+        # external-dns.alpha.kubernetes.io/hostname: git.pospiech.dev
+        # gatus.home-operations.com/endpoint: |-
+        # group: services
+        # lbipam.cilium.io/ips: 10.0.42.106
         type: LoadBalancer
         externalTrafficPolicy: Local
 

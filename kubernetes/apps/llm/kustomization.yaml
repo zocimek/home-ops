@@ -9,6 +9,7 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./n8n/ks.yaml
   - ./ollama/ks.yaml
   - ./open-webui/ks.yaml
   - ./sdnext/ks.yaml

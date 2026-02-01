@@ -19,14 +19,8 @@
     ":timezone(Europe/Warsaw)",
   ],
   dependencyDashboardTitle: "Renovate Dashboard 🤖",
-  suppressNotifications: [
-    "prEditedNotification",
-    "prIgnoreNotification",
-  ],
-  ignorePaths: [
-    "**/*.sops.*",
-    "**/resources/**",
-  ],
+  suppressNotifications: ["prEditedNotification", "prIgnoreNotification"],
+  ignorePaths: ["**/*.sops.*", "**/resources/**"],
   flux: {
     managerFilePatterns: ["/\\.yaml(?:\\.j2)?$/"],
   },
