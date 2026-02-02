@@ -17,7 +17,7 @@ permissions:
 jobs:
   filter:
     name: Flux Local - Filter
-    runs-on: ubuntu-latest
+    runs-on: home-ops-runner
     outputs:
       changed-files: ${{ steps.changed-files.outputs.changed_files }}
     steps:
@@ -31,7 +31,7 @@ jobs:
     if: ${{ needs.filter.outputs.changed-files != '[]' }}
     needs: filter
     name: Flux Local - Test
-    runs-on: ubuntu-latest
+    runs-on: home-ops-runner
     steps:
       - name: Generate Token
         uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
@@ -62,7 +62,7 @@ jobs:
     if: ${{ needs.filter.outputs.changed-files != '[]' }}
     needs: filter
     name: Flux Local - Diff
-    runs-on: ubuntu-latest
+    runs-on: home-ops-runner
     permissions:
       contents: read
       pull-requests: write
@@ -135,7 +135,7 @@ jobs:
       - test
       - diff
     name: Flux Local - Success
-    runs-on: ubuntu-latest
+    runs-on: home-ops-runner
     steps:
       - name: Any jobs failed?
         if: ${{ contains(needs.*.result, 'failure') }}
