@@ -96,4 +96,4 @@ spec:
         enabled: true
         type: emptyDir
         globalMounts:
-          - path: /etc/searxng
+          - path: /tmp
