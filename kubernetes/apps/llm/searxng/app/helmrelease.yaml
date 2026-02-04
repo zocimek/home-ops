@@ -21,7 +21,7 @@ spec:
           main:
             image:
               repository: docker.io/searxng/searxng
-              tag: 2024.6.30-39aaac40d
+              tag: 2026.1.30-ad42b553b
             env:
               SEARXNG_BASE_URL: https://search.pospiech.dev
               SEARXNG_URL: https://search.pospiech.dev
@@ -96,4 +96,4 @@ spec:
         enabled: true
         type: emptyDir
         globalMounts:
-          - path: /etc/searxng
+          - path: /tmp

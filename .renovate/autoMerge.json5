@@ -50,5 +50,14 @@
       matchPackageNames: ["/external-dns/", "/gateway-api/", "/prometheus-operator/"],
       ignoreTests: true,
     },
+    {
+      description: "Auto-merge custom registry images",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["registry.pospiech.dev/**"],
+      automerge: true,
+      automergeType: "branch",
+      matchUpdateTypes: ["major", "minor", "patch"],
+      ignoreTests: true,
+    },
   ],
 }

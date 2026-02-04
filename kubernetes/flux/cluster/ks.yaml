@@ -42,6 +42,8 @@ spec:
                   rollback:
                     cleanupOnFail: true
                     recreate: true
+                  driftDetection:
+                    mode: enabled # undo kubectl edits and other unintended changes
                   upgrade:
                     cleanupOnFail: true
                     crds: CreateReplace

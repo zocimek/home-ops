@@ -13,5 +13,11 @@
       matchPackageNames: ["/factory\\.talos\\.dev/"],
       overridePackageName: "ghcr.io/siderolabs/installer",
     },
+    {
+      description: "Use regex versioning for custom registry images with RELEASE format",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["registry.pospiech.dev/**"],
+      versioning: "regex:^RELEASE\\.(?<major>\\d+)-(?<minor>\\d+)-(?<patch>\\d+)T(?<build>\\d+-\\d+-\\d+)Z$",
+    },
   ],
 }
