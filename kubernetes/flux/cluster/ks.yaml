@@ -78,7 +78,7 @@ spec:
               target:
                 group: helm.toolkit.fluxcd.io
                 kind: HelmRelease
-                labelSelector: "kustomize.toolkit.fluxcd.io/name=actions-runner-controller-runners"
+                namespace: actions-runner-system
 
       target:
         group: kustomize.toolkit.fluxcd.io
