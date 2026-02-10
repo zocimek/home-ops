@@ -15,6 +15,8 @@ spec:
       namespace: rook-ceph
     - name: snapshot-controller
       namespace: kube-system
+  driftDetection:
+    mode: disabled
   values:
     clusterName: "home-ops"
     operatorNamespace: "rook-ceph"
@@ -49,6 +51,9 @@ spec:
         wipeDevicesFromOtherClusters: true
       crashCollector:
         disable: false
+      csi:
+        readAffinity:
+          enabled: true
       dashboard:
         enabled: true
         urlPrefix: /
@@ -72,29 +77,11 @@ spec:
           requireMsgr2: true
       resources:
         mgr:
-          requests:
-            cpu: 100m
-            memory: 512Mi
           limits:
             memory: 2Gi
-        mon:
-          requests:
-            cpu: 50m
-            memory: 512Mi
-          limits:
-            memory: 1Gi
         osd:
-          requests:
-            cpu: 500m
-            memory: 2Gi
           limits:
-            memory: 6Gi
-        mgr-sidecar:
-          requests:
-            cpu: 50m
-            memory: 128Mi
-          limits:
-            memory: 256Mi
+            memory: 8Gi
       storage:
         useAllNodes: true
         useAllDevices: false
