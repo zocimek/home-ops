@@ -78,7 +78,19 @@ spec:
               target:
                 group: helm.toolkit.fluxcd.io
                 kind: HelmRelease
-                labelSelector: "kustomize.toolkit.fluxcd.io/name=actions-runner-controller-runners"
+                name: inzosoft-amd64
+            - patch: |-
+                apiVersion: helm.toolkit.fluxcd.io/v2
+                kind: HelmRelease
+                metadata:
+                  name: _
+                spec:
+                  driftDetection:
+                    mode: disabled
+              target:
+                group: helm.toolkit.fluxcd.io
+                kind: HelmRelease
+                name: poetica-amd64
 
       target:
         group: kustomize.toolkit.fluxcd.io
