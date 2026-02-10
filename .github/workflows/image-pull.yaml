@@ -16,7 +16,7 @@ permissions:
 jobs:
   filter:
     name: Image Pull - Filter
-    runs-on: ubuntu-latest
+    runs-on: home-ops-runner
     outputs:
       changed-files: ${{ steps.changed-files.outputs.changed_files }}
     steps:
@@ -30,7 +30,7 @@ jobs:
     if: ${{ needs.filter.outputs.changed-files != '[]' }}
     needs: filter
     name: Image Pull - Extract Images
-    runs-on: ubuntu-latest
+    runs-on: home-ops-runner
     strategy:
       matrix:
         branch:
@@ -83,7 +83,7 @@ jobs:
     if: ${{ needs.extract.outputs.default != needs.extract.outputs.pull }}
     needs: extract
     name: Image Pull - Diff Images
-    runs-on: ubuntu-latest
+    runs-on: home-ops-runner
     outputs:
       images: ${{ steps.diff.outputs.images }}
     steps:
@@ -125,7 +125,7 @@ jobs:
     if: ${{ !cancelled() }}
     needs: pull
     name: Image Pull - Success
-    runs-on: ubuntu-latest
+    runs-on: home-ops-runner
     steps:
       - name: Any jobs failed?
         if: ${{ contains(needs.*.result, 'failure') }}
