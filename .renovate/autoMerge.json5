@@ -5,7 +5,7 @@
       description: "Auto-merge trusted container digests",
       matchDatasources: ["docker"],
       automerge: true,
-      automergeType: "pr",
+      automergeType: "branch",
       matchUpdateTypes: ["digest"],
       matchPackageNames: ["/home-operations/"],
       ignoreTests: false,
@@ -14,7 +14,7 @@
       description: "Auto-merge OCI Charts",
       matchDatasources: ["docker"],
       automerge: true,
-      automergeType: "pr",
+      automergeType: "branch",
       matchUpdateTypes: ["minor", "patch"],
       matchPackageNames: ["/kube-prometheus-stack/", "/grafana/"],
       ignoreTests: false,
@@ -31,10 +31,7 @@
     {
       description: "Auto-merge trusted GitHub Actions",
       matchManagers: ["github-actions"],
-      matchPackageNames: [
-        "/^actions\//",
-        "/^renovatebot\//",
-      ],
+      matchPackageNames: ["/^actions\//", "/^renovatebot\//"],
       automerge: true,
       automergeType: "branch",
       matchUpdateTypes: ["minor", "patch", "digest"],
@@ -47,7 +44,11 @@
       automerge: true,
       automergeType: "branch",
       matchUpdateTypes: ["minor", "patch"],
-      matchPackageNames: ["/external-dns/", "/gateway-api/", "/prometheus-operator/"],
+      matchPackageNames: [
+        "/external-dns/",
+        "/gateway-api/",
+        "/prometheus-operator/",
+      ],
       ignoreTests: true,
     },
     {
