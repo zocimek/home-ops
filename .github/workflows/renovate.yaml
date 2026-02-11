@@ -72,3 +72,4 @@ jobs:
         with:
           token: "${{ steps.app-token.outputs.token }}"
           renovate-version: "${{ inputs.version || 'latest' }}"
+          mount-docker-socket: true
