@@ -27,7 +27,7 @@ spec:
               SEARXNG_URL: https://search.pospiech.dev
               SEARXNG_PORT: &httpPort 8080
               # yamllint disable-line rule:line-length
-              SEARXNG_REDIS_URL: redis://dragonfly.database.svc.cluster.local:6379/1
+              SEARXNG_VALKEY_URL: redis://dragonfly.database.svc.cluster.local:6379/1
             envFrom:
               - secretRef:
                   name: searxng-secret
