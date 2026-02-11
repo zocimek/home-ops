@@ -83,9 +83,21 @@ spec:
           limits:
             memory: 8Gi
       storage:
-        useAllNodes: true
+        useAllNodes: false
         useAllDevices: false
-        devicePathFilter: /dev/disk/by-id/nvme-XPG_GAMMIX_S70_BLADE_*
+        nodes:
+          - name: goku
+            devices:
+              - name: /dev/disk/by-id/nvme-Samsung_SSD_990_PRO_2TB_S7PJNJ0L103992Z
+          - name: zordon
+            devices:
+              - name: /dev/disk/by-id/nvme-XPG_GAMMIX_S70_BLADE_2N482917S5WT
+          - name: kirito
+            devices:
+              - name: /dev/disk/by-id/nvme-XPG_GAMMIX_S70_BLADE_2O04291H8ACH
+          - name: kakashi
+            devices:
+              - name: /dev/disk/by-id/nvme-XPG_GAMMIX_S70_BLADE_2N482LA7CQF2
         config:
           osdsPerDevice: "1"
       mon:
