@@ -32,7 +32,6 @@ spec:
               - secretRef:
                   name: atuin-secret
             args:
-              - "server"
               - "start"
             probes:
               liveness: &probes
