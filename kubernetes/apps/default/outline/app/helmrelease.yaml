@@ -55,10 +55,10 @@ spec:
               - secretRef:
                   name: outline-db-secret
 
-            command:
-              - "/bin/sh"
-              - "-c"
-              - "yarn db:migrate --env=production-ssl-disabled && yarn start --env=production-ssl-disabled"
+            # command:
+            #   - "/bin/sh"
+            #   - "-c"
+            #   - "yarn db:migrate --env=production-ssl-disabled &&0 yarn start --env=production-ssl-disabled"
             probes:
               liveness:
                 enabled: true
