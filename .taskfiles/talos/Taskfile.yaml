@@ -7,21 +7,18 @@ tasks:
     desc: Generate clusterconfig for Talos
     preconditions:
       - which op test talhelper
-      - test -f {{.KUBERNETES_DIR}}/talos/talsecret.yaml
-      - test -f {{.KUBERNETES_DIR}}/talos/talconfig.yaml
-      - test -f {{.KUBERNETES_DIR}}/talos/talhelper-secrets.env
+      - test -f talos/talsecret.yaml
+      - test -f talos/talconfig.yaml
+      - test -f talos/talhelper-secrets.env
       - op user get --me
     cmds:
-      - op run --env-file {{.KUBERNETES_DIR}}/talos/talhelper-secrets.env --cache=false --no-masking -- talhelper genconfig
-        --secret-file {{.KUBERNETES_DIR}}/talos/talsecret.yaml
-        --config-file {{.KUBERNETES_DIR}}/talos/talconfig.yaml
-        --out-dir {{.KUBERNETES_DIR}}/talos/clusterconfig
+      - op run --env-file talos/talhelper-secrets.env --cache=false --no-masking -- talhelper genconfig --secret-file talos/talsecret.yaml --config-file talos/talconfig.yaml --out-dir talos/clusterconfig
 
   apply-clusterconfig:
     desc: Apply clusterconfig for a Talos cluster
     vars:
       CLUSTERCONFIG_FILES:
-        sh: ls {{.KUBERNETES_DIR}}/talos/clusterconfig/*.yaml
+        sh: ls talos/clusterconfig/*.yaml
     preconditions:
       - which ls
       - test -f "${TALOSCONFIG}"
@@ -47,7 +44,7 @@ tasks:
         - NODE
     vars:
       FILE:
-        sh: ls {{.KUBERNETES_DIR}}/talos/clusterconfig/home-ops-{{.NODE}}*.yaml
+        sh: ls talos/clusterconfig/home-ops-{{.NODE}}*.yaml
     cmds:
       - task: _apply-machineconfig
         vars:
@@ -66,7 +63,7 @@ tasks:
         - NODE
     vars:
       FILE:
-        sh: ls {{.KUBERNETES_DIR}}/talos/clusterconfig/home-ops-{{.NODE}}*.yaml
+        sh: ls talos/clusterconfig/home-ops-{{.NODE}}*.yaml
       TALOS_IMAGE:
         sh: yq '.machine.install.image' < "{{.FILE}}"
     cmds:
@@ -97,9 +94,4 @@ tasks:
     vars:
       MODE: '{{.MODE | default "auto"}}'
     cmds:
-      - talosctl apply-config
-        --nodes "{{.HOSTNAME}}"
-        --file "{{.FILENAME}}"
-        --mode="{{.MODE}}"
-        {{ if eq "true" .INSECURE }}--insecure{{ end }}
-        {{ if eq "true" .DRY_RUN }}--dry-run{{ end }}
+      - talosctl apply-config --nodes "{{.HOSTNAME}}" --file "{{.FILENAME}}" --mode="{{.MODE}}" {{ if eq "true" .INSECURE }}--insecure{{ end }} {{ if eq "true" .DRY_RUN }}--dry-run{{ end }}

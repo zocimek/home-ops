@@ -94,7 +94,7 @@ spec:
               - name: /dev/disk/by-id/nvme-XPG_GAMMIX_S70_BLADE_2N482917S5WT
           - name: kirito
             devices:
-              - name: /dev/disk/by-id/nvme-XPG_GAMMIX_S70_BLADE_2O04291H8ACH
+              - name: /dev/disk/by-id/nvme-Samsung_SSD_990_PRO_2TB_S7PJNJ0L103976J
           - name: kakashi
             devices:
               - name: /dev/disk/by-id/nvme-XPG_GAMMIX_S70_BLADE_2N482LA7CQF2

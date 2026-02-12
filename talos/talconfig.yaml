@@ -3,9 +3,9 @@
 clusterName: &clusterName home-ops
 
 # renovate: depName=ghcr.io/siderolabs/installer datasource=docker
-talosVersion: v1.11.3
+talosVersion: v1.12.3
 # renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
-kubernetesVersion: v1.34.1
+kubernetesVersion: v1.35.0
 
 endpoint: https://k8s.pospiech.local:6443
 
@@ -91,7 +91,9 @@ nodes:
   - hostname: kirito.internal
     ipAddress: "10.0.42.4"
     installDiskSelector:
-      model: SSDPR-CX400*
+      model: CT500MX500*
+      # model: XPG GAMMIX S70 BLADE
+      # serial: "2O04291H8ACH"
     talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
     controlPlane: false
     nodeLabels:
@@ -245,11 +247,6 @@ controlPlane:
                           topologyKey: kubernetes.io/hostname
                           whenUnsatisfiable: ScheduleAnyway
 
-    # Disable default API server admission plugins.
-    - |-
-      - op: remove
-        path: /cluster/apiServer/admissionControl
-
     # Enable K8s Talos API Access
     - |-
       machine:
@@ -266,6 +263,8 @@ controlPlane:
     - |-
       cluster:
         apiServer:
+          admissionControl:
+            $$patch: delete
           extraArgs:
             enable-aggregator-routing: "true"
             feature-gates: ImageVolume=true,MutatingAdmissionPolicy=true
