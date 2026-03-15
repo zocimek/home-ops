@@ -80,9 +80,12 @@ spec:
                 enabled: true
                 custom: true
                 spec:
-                  httpGet:
-                    path: /
-                    port: 9999
+                  exec:
+                    command:
+                      - sh
+                      - -c
+                      - wget -nv -t1 -O - 'http://127.0.0.1:9999' || exit 1
+                  initialDelaySeconds: 30
                   periodSeconds: 30
                   timeoutSeconds: 10
                   failureThreshold: 6
@@ -91,9 +94,11 @@ spec:
                 enabled: true
                 custom: true
                 spec:
-                  httpGet:
-                    path: /
-                    port: 9999
+                  exec:
+                    command:
+                      - sh
+                      - -c
+                      - wget -nv -t1 -O - 'http://127.0.0.1:9999' || exit 1
                   timeoutSeconds: 10
                   failureThreshold: 30
                   periodSeconds: 5
