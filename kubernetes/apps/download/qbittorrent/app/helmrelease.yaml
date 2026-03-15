@@ -46,15 +46,18 @@ spec:
               tag: v3.41.1
             env:
               DOT: "off"
+              DOT_IPV6: "off"
               DNS_ADDRESS: "127.0.0.2"
+              DNS_KEEP_NAMESERVER: "off"
               HTTP_CONTROL_SERVER_AUTH_CONFIG_FILEPATH: &gluetunAuthPath /gluetun/auth.toml
               VPN_TYPE: wireguard
               VPN_INTERFACE: wg0
               VPN_SERVICE_PROVIDER: protonvpn
               VPN_PORT_FORWARDING_PROVIDER: protonvpn
-              WIREGUARD_ENDPOINT_PORT: 51820
+              # WIREGUARD_ENDPOINT_PORT: 51820
               VPN_PORT_FORWARDING: "on"
-              FIREWALL_INPUT_PORTS: "8080,8388,8888,9999"
+              SERVER_COUNTRIES: Germany
+              FIREWALL_INPUT_PORTS: "8000,8080,8388,8888,9999"
               # Allow access to k8s subnets
               # yamllint disable-line rule:line-length
               FIREWALL_OUTBOUND_SUBNETS: 10.42.0.0/16,10.43.0.0/16,192.168.100.0/24
@@ -72,7 +75,31 @@ spec:
                     - "-c"
                     - "(ip rule del table 51820; ip -6 rule del table 51820) || true"
             restartPolicy: Always
+            probes:
+              liveness: &gluetunProbe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /v1/publicip/ip
+                    port: 8000
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 6
+              readiness: *gluetunProbe
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /v1/publicip/ip
+                    port: 8000
+                  timeoutSeconds: 10
+                  failureThreshold: 30
+                  periodSeconds: 5
             securityContext:
+              runAsUser: 0
+              runAsNonRoot: false
               capabilities:
                 add:
                   - NET_ADMIN
@@ -82,8 +109,8 @@ spec:
           app:
             nameOverride: qbittorrent
             image:
-              repository: ghcr.io/onedr0p/qbittorrent-beta
-              tag: 5.0.3@sha256:4b9de3356475bd97fda3fb4d98f213e8d139aef15e7bd20dab72973e661901dd
+              repository: ghcr.io/home-operations/qbittorrent
+              tag: 5.1.4@sha256:bb82ad6668f8eda1d0fcce6c1341498bfa879155bb1295cd9d314a2c35c07a01
             env:
               UMASK: "022"
               QBT_WEBUI_PORT: &port 8080
@@ -99,15 +126,23 @@ spec:
               - secretRef:
                   name: qbittorrent-secret
             probes:
-              liveness:
+              liveness: &probes
                 enabled: true
-              readiness:
-                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v2/app/version
+                    port: *port
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 6
+              readiness: *probes
               startup:
                 enabled: true
                 spec:
                   failureThreshold: 30
-                  periodSeconds: 5
+                  periodSeconds: 10
             resources:
               requests:
                 cpu: 150m
