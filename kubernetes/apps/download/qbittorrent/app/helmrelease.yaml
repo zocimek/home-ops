@@ -235,6 +235,14 @@ spec:
             gluetun:
               - path: *gluetunAuthPath
                 subPath: auth.toml
+      gluetun-forwarded-port:
+        type: emptyDir
+        advancedMounts:
+          qbittorrent:
+            gluetun:
+              - path: /tmp/gluetun
+            port-forward:
+              - path: /tmp/gluetun
       coredns:
         type: configMap
         name: qbittorrent-coredns
