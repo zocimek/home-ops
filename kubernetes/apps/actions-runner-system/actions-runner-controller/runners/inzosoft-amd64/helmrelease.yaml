@@ -36,6 +36,7 @@ spec:
               - dockerd
               - --host=unix:///var/run/docker.sock
               - --group=$(DOCKER_GROUP_GID)
+              - --mtu=1500
             env:
               - name: DOCKER_TLS_CERTDIR
                 value: ""
