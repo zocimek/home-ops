@@ -32,12 +32,13 @@ spec:
           - name: dind
             image: docker:29-dind
             restartPolicy: Always
-            args:
-              - dockerd
-              - --host=unix:///var/run/docker.sock
-              - --group=$(DOCKER_GROUP_GID)
-              - --mtu=1500
-              - --dns=10.0.42.1
+            command:
+              - sh
+              - -c
+              - |
+                iptables -t mangle -A POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1400
+                ip6tables -t mangle -A POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1400 || true
+                exec dockerd --host=unix:///var/run/docker.sock --group=$(DOCKER_GROUP_GID) --mtu=1500 --dns=10.0.42.1
             env:
               - name: DOCKER_TLS_CERTDIR
                 value: ""
