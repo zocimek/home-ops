@@ -81,6 +81,7 @@ resource "authentik_stage_email" "recovery-email" {
   name                     = "recovery-email"
   activate_user_on_success = true
   use_global_settings      = true
+  token_expiry             = 30
   template                 = "email/password_reset.html"
   subject                  = "Password recovery"
 }

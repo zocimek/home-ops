@@ -26,7 +26,7 @@ cniConfig:
 
 nodes:
   - hostname: goku.internal
-    ipAddress: "10.0.42.9"
+    ipAddress: "10.0.42.5"
     installDiskSelector:
       model: SSDPR-PX500*
     talosImageURL: factory.talos.dev/installer/9aecd1fecc916a37dd0fffaa6be113ad9ec4ff9fb6371a5dbb33af70ec2cb0de
@@ -35,16 +35,31 @@ nodes:
       intel.feature.node.kubernetes.io/gpu: "true"
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "58:47:ca:7d:51:87"
-        dhcp: false
-        addresses:
-          - 10.0.42.9/24
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 10.0.42.1
+          permanentAddr: "58:47:ca:7d:51:87"
+        dhcp: true
         mtu: 9000
         vip:
           ip: "10.0.42.21"
+
+        # - interface: bond0
+        #   mtu: 9000
+        #   bond:
+        #     mode: 802.3ad
+        #     lacpRate: fast
+        #     miimon: 100
+        #     xmitHashPolicy: layer3+4
+        #     deviceSelectors:
+        #       - driver: "i40e"
+        #         permanentAddr: "58:47:ca:7d:51:85"
+        #       - driver: "i40e"
+        #         permanentAddr: "58:47:ca:7d:51:86"
+
+        #   dhcp: true
+        # addresses:
+        #   - 10.0.42.5/24
+        # routes:
+        #   - network: 0.0.0.0/0
+        #     gateway: 10.0.42.1
 
   - hostname: "zordon.internal"
     ipAddress: "10.0.42.2"

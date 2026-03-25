@@ -25,3 +25,4 @@ Thumbs.db
 secrets.env
 talsecret.sops.yaml
 TODO.md
+kubernetes/apps/dev/
