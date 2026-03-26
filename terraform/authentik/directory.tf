@@ -17,7 +17,8 @@ locals {
     "mealie_admins",
     "family",
     "parents",
-    "kids"
+    "kids",
+    "backlogs_users"
   ]
 
   default_groups = [
@@ -66,7 +67,8 @@ resource "authentik_user" "zocimek" {
   groups = flatten(concat(
     local.default_groups,
     local.parents_groups,
-    local.admin_groups
+    local.admin_groups,
+    [authentik_group.group["backlogs_users"].id]
   ))
 }
 

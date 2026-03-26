@@ -10,6 +10,7 @@ locals {
     "outline",
     "paperless",
     "qui",
+    "simple-backlogs",
   ]
 }
 
@@ -309,3 +310,32 @@ module "paperless" {
 #   meta_icon       = "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/matrix.png"
 #   meta_launch_url = "https://opengist.pospiech.dev/oauth/openid-connect"
 # }
+
+######### Simple Backlogs #########
+  module "backlogs" {
+    source = "./modules/oidc-application"
+
+    name   = "Backlogs"
+    domain = "projects.pospiech.dev"
+    group  = "Development"
+
+    client_id     = module.onepassword_oauth["simple-backlogs"].fields["OIDC_CLIENT_ID"]
+    client_secret = module.onepassword_oauth["simple-backlogs"].fields["OIDC_CLIENT_SECRET"]
+
+    authentication_flow = authentik_flow.authentication.uuid
+    authorization_flow  = data.authentik_flow.default-provider-authorization-implicit-consent.id
+    invalidation_flow   = resource.authentik_flow.provider-invalidation.uuid
+
+    redirect_uris = [
+      "https://projects.pospiech.dev/api/v1/auth/oidc/callback",
+      "http://localhost:8000/api/v1/auth/oidc/callback"
+    ]
+
+    auth_groups = [
+      authentik_group.group["backlogs_users"].id,
+    ]
+
+    meta_icon        = "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/vikunja.png"
+    meta_description = "Project management & time tracking"
+    meta_launch_url  = "https://projects.pospiech.dev"
+  }
