@@ -28,7 +28,7 @@ spec:
           main:
             image:
               repository: registry.pospiech.dev/shopping-list/api
-              tag: RELEASE.2026-03-27T00-15-33Z
+              tag: RELEASE.2026-03-27T00-41-07Z
               pullPolicy: Always
             env:
               SERVER_PORT: 42000
