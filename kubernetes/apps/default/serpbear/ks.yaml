@@ -17,6 +17,8 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      VOLSYNC_PUID: "1001"
+      VOLSYNC_PGID: "1001"
   prune: true
   sourceRef:
     kind: GitRepository
