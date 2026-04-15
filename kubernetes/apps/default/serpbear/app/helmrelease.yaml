@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: towfiqi/serpbear
-              tag: 2
+              tag: 3.1.0
             env:
               NEXT_PUBLIC_APP_URL: "https://serpbear.pospiech.dev"
             envFrom:
