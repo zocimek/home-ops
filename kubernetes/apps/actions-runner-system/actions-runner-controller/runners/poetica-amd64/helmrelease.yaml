@@ -30,7 +30,7 @@ spec:
       spec:
         initContainers:
           - name: dind
-            image: docker:29-dind
+            image: public.ecr.aws/docker/library/docker:29-dind
             restartPolicy: Always
             command:
               - sh
