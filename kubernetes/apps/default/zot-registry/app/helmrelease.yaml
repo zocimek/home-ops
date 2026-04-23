@@ -47,14 +47,6 @@ spec:
       periodSeconds: 10
       failureThreshold: 60
 
-    # pod-level securityContext (sysctls belong here per the pod spec)
-    podSecurityContext:
-      sysctls:
-        - name: fs.inotify.max_user_instances
-          value: "512"
-        - name: fs.inotify.max_user_watches
-          value: "524288"
-
     # container-level securityContext
     securityContext:
       capabilities:
