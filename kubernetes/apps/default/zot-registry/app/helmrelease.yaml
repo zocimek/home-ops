@@ -14,7 +14,6 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: zot-registry
-        namespace: flux-system
   maxHistory: 2
   install:
     remediation:
