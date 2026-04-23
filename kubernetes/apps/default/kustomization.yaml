@@ -10,6 +10,7 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./artifact-keeper/ks.yaml
   - ./atuin/ks.yaml
   - ./backlogs/ks.yaml
   - ./bentopdf/ks.yaml
