@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: artifact-keeper-caddy
+data:
+  Caddyfile: |
+    {
+      auto_https off
+      admin off
+    }
+
+    (backend_routes) {
+      # API and health endpoints
+      reverse_proxy /api/* localhost:8080
+      reverse_proxy /health localhost:8080
+      reverse_proxy /livez localhost:8080
+      reverse_proxy /readyz localhost:8080
+      reverse_proxy /metrics localhost:8080
+      reverse_proxy /swagger-ui* localhost:8080
+      # OCI / Docker registry
+      reverse_proxy /v2 localhost:8080
+      reverse_proxy /v2/* localhost:8080
+      # Native package format handlers — route directly to backend
+      # so requests avoid the Next.js middleware proxy hop
+      reverse_proxy /maven/* localhost:8080
+      reverse_proxy /npm/* localhost:8080
+      reverse_proxy /pypi/* localhost:8080
+      reverse_proxy /nuget/* localhost:8080
+      reverse_proxy /cargo/* localhost:8080
+      reverse_proxy /gems/* localhost:8080
+      reverse_proxy /go/* localhost:8080
+      reverse_proxy /helm/* localhost:8080
+      reverse_proxy /debian/* localhost:8080
+      reverse_proxy /rpm/* localhost:8080
+      reverse_proxy /alpine/* localhost:8080
+      reverse_proxy /composer/* localhost:8080
+      reverse_proxy /conan/* localhost:8080
+      reverse_proxy /conda/* localhost:8080
+      reverse_proxy /swift/* localhost:8080
+      reverse_proxy /terraform/* localhost:8080
+      reverse_proxy /cocoapods/* localhost:8080
+      reverse_proxy /hex/* localhost:8080
+      reverse_proxy /pub/* localhost:8080
+      reverse_proxy /lfs/* localhost:8080
+      reverse_proxy /ivy/* localhost:8080
+      reverse_proxy /chef/* localhost:8080
+      reverse_proxy /puppet/* localhost:8080
+      reverse_proxy /ansible/* localhost:8080
+      reverse_proxy /cran/* localhost:8080
+      reverse_proxy /huggingface/* localhost:8080
+      reverse_proxy /jetbrains/* localhost:8080
+      reverse_proxy /vscode/* localhost:8080
+      reverse_proxy /proto/* localhost:8080
+      reverse_proxy /incus/* localhost:8080
+      reverse_proxy /ext/* localhost:8080
+    }
+
+    :8000 {
+      import backend_routes
+      reverse_proxy localhost:3000
+    }

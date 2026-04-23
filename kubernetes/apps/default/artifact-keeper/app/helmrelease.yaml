@@ -1,0 +1,201 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app artifact-keeper
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: artifact-keeper
+  interval: 30m
+  values:
+    fullnameOverride: *app
+    defaultPodOptions:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: {type: RuntimeDefault}
+
+    controllers:
+      artifact-keeper:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: Recreate
+        containers:
+          backend:
+            image:
+              repository: ghcr.io/artifact-keeper/artifact-keeper-backend
+              tag: "1.1.6"
+            env:
+              STORAGE_PATH: /data/storage
+              BACKUP_PATH: /data/backups
+              PLUGINS_DIR: /data/plugins
+              SCAN_WORKSPACE_PATH: /data/scan-workspace
+              RUST_LOG: info,artifact_keeper=info
+              ENVIRONMENT: production
+              CORS_ORIGINS: https://artifacts.pospiech.dev
+              HOST: 0.0.0.0
+              PORT: "8080"
+              MEILISEARCH_URL: http://localhost:7700
+              TRIVY_URL: http://localhost:8090
+              DEPENDENCY_TRACK_ENABLED: "false"
+              ALLOW_HTTP_INTEGRATIONS: "1"
+            envFrom:
+              - secretRef:
+                  name: artifact-keeper-secret
+              - secretRef:
+                  name: artifact-keeper-db-secret
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /livez
+                    port: 8080
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 6
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /readyz
+                    port: 8080
+                  initialDelaySeconds: 15
+                  periodSeconds: 15
+                  timeoutSeconds: 5
+                  failureThreshold: 6
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+
+          web:
+            image:
+              repository: ghcr.io/artifact-keeper/artifact-keeper-web
+              tag: "1.1.6"
+            env:
+              BACKEND_URL: http://localhost:8080
+              PORT: "3000"
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+
+          meilisearch:
+            image:
+              repository: docker.io/getmeili/meilisearch
+              tag: v1.12
+            env:
+              MEILI_NO_ANALYTICS: "true"
+              MEILI_ENV: production
+              MEILI_DB_PATH: /data/meilisearch
+              MEILI_HTTP_ADDR: 0.0.0.0:7700
+              MEILI_MASTER_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: artifact-keeper-secret
+                    key: MEILI_MASTER_KEY
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 7700
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 7700
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+
+          trivy:
+            image:
+              repository: ghcr.io/aquasecurity/trivy
+              tag: "0.69.3"
+            args:
+              - server
+              - --listen
+              - 0.0.0.0:8090
+              - --cache-dir
+              - /data/trivy-cache
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+
+          caddy:
+            image:
+              repository: docker.io/library/caddy
+              tag: 2-alpine
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+
+    service:
+      app:
+        primary: true
+        controller: artifact-keeper
+        ports:
+          http:
+            port: 8000
+
+    route:
+      app:
+        hostnames:
+          - "artifacts.pospiech.dev"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: 8000
+
+    persistence:
+      data:
+        existingClaim: *app
+        advancedMounts:
+          artifact-keeper:
+            backend:
+              - path: /data
+            meilisearch:
+              - path: /data
+            trivy:
+              - path: /data
+      caddyfile:
+        type: configMap
+        name: artifact-keeper-caddy
+        advancedMounts:
+          artifact-keeper:
+            caddy:
+              - subPath: Caddyfile
+                path: /etc/caddy/Caddyfile
+                readOnly: true
