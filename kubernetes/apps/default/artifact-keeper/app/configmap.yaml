@@ -6,8 +6,17 @@ metadata:
 data:
   Caddyfile: |
     {
-      auto_https off
+      auto_https disable_redirects
       admin off
+      servers {
+        # TLS is terminated upstream at the Envoy Gateway. Trust the
+        # X-Forwarded-* headers it sets (scheme, host, client IP) so the
+        # backend builds correct https:// realm URLs in the Docker
+        # registry WWW-Authenticate challenge. Without this, Caddy
+        # overwrites X-Forwarded-Proto with "http" (the scheme it sees
+        # on :8000) and docker push/pull fails with auth errors.
+        trusted_proxies static private_ranges
+      }
     }
 
     (backend_routes) {
