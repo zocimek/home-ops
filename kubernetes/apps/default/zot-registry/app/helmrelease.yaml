@@ -105,7 +105,7 @@ spec:
           },
           "extensions": {
             "search":  { "enable": true, "cve": { "updateInterval": "24h" } },
-            "trust":   { "enable": true, "cosign": true, "notation": "false" },
+            "trust":   { "enable": true, "cosign": true, "notation": false },
             "scrub":   { "enable": true, "interval": "24h" },
             "ui":      { "enable": true },
             "lint":    { "enable": true },
