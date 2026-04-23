@@ -80,11 +80,6 @@ spec:
       options: "SUPERUSER"
       password:
         type: AlphaNumeric
-    - name: artifact-keeper
-      databases:
-        - artifact-keeper
-      password:
-        type: AlphaNumeric
     - name: atuin
       databases:
         - atuin

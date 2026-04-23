@@ -10,7 +10,6 @@ components:
 
 resources:
   - ./namespace.yaml
-  - ./artifact-keeper/ks.yaml
   - ./atuin/ks.yaml
   - ./backlogs/ks.yaml
   - ./bentopdf/ks.yaml
@@ -33,3 +32,4 @@ resources:
   - ./vaultwarden/ks.yaml
   - ./wallos/ks.yaml
   - ./wheel/ks.yaml
+  - ./zot-registry/ks.yaml
