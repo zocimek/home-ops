@@ -11,10 +11,10 @@ spec:
       "name": "multus-vpn",
       "plugins": [
         {
-          "type": "macvlan",
+          "type": "ipvlan",
           "master": "ethSel0.800",
-          "mode": "private",
-          "capabilities": { "ips": true, "mac": true },
+          "mode": "l2",
+          "capabilities": { "ips": true },
           "ipam": {
             "type": "static",
             "routes": [
