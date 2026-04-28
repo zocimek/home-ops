@@ -43,6 +43,8 @@ nodes:
         vlans:
           - vlanId: 800
             mtu: 1500
+            addresses:
+              - 10.0.80.2/24
 
         # - interface: bond0
         #   mtu: 1500

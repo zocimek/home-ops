@@ -19,7 +19,8 @@ spec:
           [{
             "name": "multus-vpn",
             "namespace": "network",
-            "ips": ["10.0.80.10/24"]
+            "ips": ["10.0.80.10/24"],
+            "mac": "02:63:11:be:64:a6"
           }]
 
     controllers:
