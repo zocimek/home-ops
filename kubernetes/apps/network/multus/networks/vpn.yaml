@@ -14,6 +14,7 @@ spec:
           "type": "macvlan",
           "master": "ethSel0.800",
           "mode": "bridge",
+          "capabilities": { "ips": true, "mac": true },
           "ipam": {
             "type": "static",
             "routes": [
