@@ -19,7 +19,8 @@ spec:
       masquerade: true
       preallocateMaps: true
       tproxy: true
-      vlanBpfBypass: [800]
+      vlanBypass:
+        - 800
     bpfClockProbe: true
     bgpControlPlane:
       enabled: true
