@@ -40,6 +40,9 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.0.42.21"
+        vlans:
+          - vlanId: 800
+            mtu: 1500
 
         # - interface: bond0
         #   mtu: 1500
