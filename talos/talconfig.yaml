@@ -40,11 +40,6 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.0.42.21"
-        vlans:
-          - vlanId: 800
-            mtu: 1500
-            addresses:
-              - 10.0.80.2/24
 
         # - interface: bond0
         #   mtu: 1500
@@ -128,6 +123,11 @@ nodes:
           - network: 0.0.0.0/0
             gateway: 10.0.42.1
         mtu: 1500
+        vlans:
+          - vlanId: 800
+            mtu: 1500
+            addresses:
+              - 10.0.80.3/24
 
 patches:
   # Configure containerd

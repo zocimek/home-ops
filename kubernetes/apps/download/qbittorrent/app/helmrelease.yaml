@@ -32,7 +32,7 @@ spec:
 
         pod:
           nodeSelector:
-            kubernetes.io/hostname: goku
+            kubernetes.io/hostname: kirito
           securityContext:
             fsGroup: 2000
             fsGroupChangePolicy: "OnRootMismatch"
