@@ -13,7 +13,7 @@ spec:
         {
           "type": "ipvlan",
           "master": "ethSel0.800",
-          "mode": "l2",
+          "mode": "l3",
           "capabilities": { "ips": true },
           "ipam": {
             "type": "static",
