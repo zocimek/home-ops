@@ -37,12 +37,13 @@ nodes:
       - deviceSelector:
           permanentAddr: "58:47:ca:7d:51:87"
         dhcp: true
-        mtu: 9000
+        mtu: 1500
         vip:
           ip: "10.0.42.21"
         vlans:
           - vlanId: 800
-            mtu: 9000
+            mtu: 1500
+            dhcp: true
             addresses:
               - 10.0.80.2/24
 
