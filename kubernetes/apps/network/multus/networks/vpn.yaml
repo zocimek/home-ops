@@ -13,7 +13,7 @@ spec:
         {
           "type": "macvlan",
           "master": "ethSel0.800",
-          "mode": "bridge",
+          "mode": "private",
           "capabilities": { "ips": true, "mac": true },
           "ipam": {
             "type": "static",
