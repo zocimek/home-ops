@@ -48,7 +48,7 @@ spec:
             env:
               UMASK: "022"
               QBT_WEBUI_PORT: &port 8080
-              QBT_TORRENTING_PORT: &torrentPort 51820
+              QBT_TORRENTING_PORT: &torrentPort 59936
               QBT_Preferences__WebUI__AuthSubnetWhitelistEnabled: "true"
               QBT_Preferences__WebUI__AuthSubnetWhitelist: "192.168.100.0/24,192.168.3.19/32,10.42.0.0/16,10.0.42.0/24,10.0.80.0/24,127.0.0.0/8"
               XSEED_HOST: cross-seed.downloads.svc.cluster.local
