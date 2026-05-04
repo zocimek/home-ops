@@ -1,0 +1,81 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &name poetica-copilot
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: gha-runner-scale-set
+  values:
+    githubConfigUrl: https://github.com/poetica-pl
+    githubConfigSecret: poetica-copilot-secret
+    minRunners: 0
+    maxRunners: 4
+    containerMode:
+      type: kubernetes
+      kubernetesModeWorkVolumeClaim:
+        accessModes:
+          - "ReadWriteOnce"
+        storageClassName: openebs-hostpath
+        resources:
+          requests:
+            storage: 25Gi
+    controllerServiceAccount:
+      name: actions-runner-controller
+      namespace: actions-runner-system
+    template:
+      spec:
+        initContainers:
+          - name: dind
+            image: public.ecr.aws/docker/library/docker:29-dind
+            restartPolicy: Always
+            command:
+              - sh
+              - -c
+              - |
+                iptables -t mangle -A POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1400
+                ip6tables -t mangle -A POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1400 || true
+                exec dockerd --host=unix:///var/run/docker.sock --group=$(DOCKER_GROUP_GID) --mtu=1500 --dns=10.0.42.1
+            env:
+              - name: DOCKER_TLS_CERTDIR
+                value: ""
+              - name: DOCKER_GROUP_GID
+                value: "123"
+            securityContext:
+              privileged: true
+            volumeMounts:
+              - mountPath: /var/run
+                name: docker-sock
+              - mountPath: /var/lib/docker
+                name: docker-storage
+        containers:
+          - name: runner
+            image: ghcr.io/home-operations/actions-runner:2.333.1@sha256:1a7726bcaeba4e46fe07fe98e1805b4df78618a71e67758f932862b929f852d4
+            command:
+              - "/home/runner/run.sh"
+            securityContext:
+              supplementalGroups:
+                - 123
+            env:
+              - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
+                value: "false"
+              - name: DOCKER_HOST
+                value: "unix:///var/run/docker.sock"
+              - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
+                value: "20"
+              - name: NODE
+                valueFrom:
+                  fieldRef:
+                    fieldPath: status.hostIP
+            volumeMounts:
+              - mountPath: /var/run
+                name: docker-sock
+        serviceAccountName: *name
+        volumes:
+          - name: docker-sock
+            emptyDir: {}
+          - name: docker-storage
+            emptyDir: {}
