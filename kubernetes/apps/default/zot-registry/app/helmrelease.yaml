@@ -120,6 +120,7 @@ spec:
             "address": "0.0.0.0",
             "port": "5000",
             "externalUrl": "https://registry.pospiech.dev",
+            "compat": ["docker2s2"],
             "auth": {
               "htpasswd": { "path": "/secrets/users/htpasswd" }
             },
