@@ -56,7 +56,7 @@ spec:
                 name: docker-storage
         containers:
           - name: runner
-            image: ghcr.io/home-operations/actions-runner:2.333.1@sha256:1a7726bcaeba4e46fe07fe98e1805b4df78618a71e67758f932862b929f852d4
+            image: registry.pospiech.dev/gh-runners/poetica:rolling@sha256:a3d88344c815163a5fc300005c2e2ca1c4d53b6bc316c199cb255562e09b2234
             command:
               - "/home/runner/run.sh"
             env:
