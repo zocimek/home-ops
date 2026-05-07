@@ -125,6 +125,14 @@ spec:
             },
             "accessControl": {
               "repositories": {
+                "gh-runners/**": {
+                  "anonymousPolicy": ["read"],
+                  "policies": [
+                    { "users": ["readonly"], "actions": ["read"] },
+                    { "users": ["github"],   "actions": ["read", "create", "update"] }
+                  ],
+                  "defaultPolicy": ["read"]
+                },
                 "**": {
                   "policies": [
                     { "users": ["readonly"], "actions": ["read"] },
