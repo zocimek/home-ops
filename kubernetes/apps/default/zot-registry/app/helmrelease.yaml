@@ -60,7 +60,6 @@ spec:
       #   X.Y.Z-rc.*   -> keep 2 most recent
       #   X.Y.Z-alpha.* -> keep 1 most recent
       #   everything else -> kept only if pulled within 24h
-      # cosign signatures pruned via deleteReferrers
       config.json: |-
         {
           "storage": {
@@ -76,7 +75,6 @@ spec:
               "policies": [
                 {
                   "repositories": ["docker.io/**"],
-                  "deleteReferrers": true,
                   "deleteUntagged": true,
                   "keepTags": [
                     { "pulledWithin": "720h" }
@@ -84,7 +82,6 @@ spec:
                 },
                 {
                   "repositories": ["**"],
-                  "deleteReferrers": true,
                   "deleteUntagged": true,
                   "keepTags": [
                     { "patterns": ["^[0-9]+\\.[0-9]+\\.[0-9]+$"],            "mostRecentlyPushedCount": 3 },
