@@ -1,0 +1,6 @@
+mutation {
+  metadataClean(input: {
+    paths: ["/mnt/private/Porn"],
+    dryRun: false
+  })
+}
