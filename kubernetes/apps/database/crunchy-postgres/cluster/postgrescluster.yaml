@@ -190,10 +190,13 @@ spec:
         repo1-path: "/crunchy-pgo"
         repo1-s3-uri-style: path
 
-        repo2-retention-full-type: "time"
-        repo2-retention-full: "7"
-        repo2-path: "/crunchy-pgo"
-        repo2-s3-uri-style: path
+        # repo2 (Backblaze B2) temporarily removed - archive.info missing,
+        # blocked archive-push to all repos. Re-add after running
+        # pgbackrest stanza-create on a healthy cluster.
+        # repo2-retention-full-type: "time"
+        # repo2-retention-full: "7"
+        # repo2-path: "/crunchy-pgo"
+        # repo2-s3-uri-style: path
 
         start-fast: "y"
         # repo2-bundle: "y"
@@ -222,14 +225,17 @@ spec:
             differential: "0 1 * * 1-6" # Mon-Sat at 01:00
             incremental: "0 2-23 * * *" # Every hour except 01:00
 
-        - name: repo2 # B2
-          s3: &b2
-            bucket: "zocimek-hl-pg-backup"
-            endpoint: "s3.us-west-001.backblazeb2.com"
-            region: "us-west-001"
-          schedules:
-            full: "0 2 * * 0" # Sunday at 02:00
-            incremental: "0 2 * * 1-6/2" # Mon-Sat at 02:00, every 2nd day
+        # repo2 (Backblaze B2) temporarily removed - archive.info missing,
+        # blocked archive-push to all repos. Re-add after running
+        # pgbackrest stanza-create on a healthy cluster.
+        # - name: repo2 # B2
+        #   s3: &b2
+        #     bucket: "zocimek-hl-pg-backup"
+        #     endpoint: "s3.us-west-001.backblazeb2.com"
+        #     region: "us-west-001"
+        #   schedules:
+        #     full: "0 2 * * 0" # Sunday at 02:00
+        #     incremental: "0 2 * * 1-6/2" # Mon-Sat at 02:00, every 2nd day
 
   dataSource:
     pgbackrest:
