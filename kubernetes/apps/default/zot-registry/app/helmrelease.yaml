@@ -56,8 +56,10 @@ spec:
     mountConfig: true
     configFiles:
       # retention policy tuned to our release scheme (mirrors poetica PR #568):
-      #   X.Y.Z        -> keep 3 most recent
-      #   X.Y.Z-rc.*   -> keep 2 most recent
+      #   gh-runners/** rolling* -> always retained (self-hosted runner images, minRunners=0 so pulls are sparse)
+      #   gh-runners/** other    -> kept if pulled within 30d
+      #   X.Y.Z         -> keep 3 most recent
+      #   X.Y.Z-rc.*    -> keep 2 most recent
       #   X.Y.Z-alpha.* -> keep 1 most recent
       #   everything else -> kept only if pulled within 24h
       config.json: |-
@@ -78,6 +80,14 @@ spec:
                   "deleteUntagged": true,
                   "keepTags": [
                     { "pulledWithin": "720h" }
+                  ]
+                },
+                {
+                  "repositories": ["gh-runners/**"],
+                  "deleteUntagged": true,
+                  "keepTags": [
+                    { "patterns": ["^rolling(-.*)?$"] },
+                    { "patterns": [".*"], "pulledWithin": "720h" }
                   ]
                 },
                 {
