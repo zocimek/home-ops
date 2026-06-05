@@ -27,7 +27,7 @@ spec:
           run-migrations:
             image:
               repository: &image registry.pospiech.dev/simple-backlogs
-              tag: &version RELEASE.2026-06-04T09-56-10Z
+              tag: &version RELEASE.2026-06-05T17-31-28Z
               pullPolicy: IfNotPresent
             envFrom:
               - secretRef:
