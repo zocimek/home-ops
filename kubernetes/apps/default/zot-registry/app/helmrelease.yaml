@@ -58,10 +58,15 @@ spec:
       # retention policy tuned to our release scheme (mirrors poetica PR #568):
       #   gh-runners/** rolling* -> always retained (self-hosted runner images, minRunners=0 so pulls are sparse)
       #   gh-runners/** other    -> kept if pulled within 30d
-      #   X.Y.Z         -> keep 3 most recent
-      #   X.Y.Z-rc.*    -> keep 2 most recent
-      #   X.Y.Z-alpha.* -> keep 1 most recent
-      #   everything else -> kept only if pulled within 24h
+      #   X.Y.Z              -> keep 3 most recent
+      #   X.Y.Z-rc.*         -> keep 2 most recent
+      #   X.Y.Z-alpha.*      -> keep 1 most recent
+      #   RELEASE.*  (MinIO) -> keep 3 most recent
+      #   latest / X / X.Y   -> always retained (floating tags, overwritten in place)
+      #   sha-<gitsha>       -> keep 5 most recent
+      #   everything else    -> kept if pulled within 30d
+      # NOTE: cosign .sig tags and OCI referrers are NOT keepTags-evaluated; zot binds
+      #       them to their subject manifest and retains/removes them with the image.
       config.json: |-
         {
           "storage": {
@@ -97,7 +102,10 @@ spec:
                     { "patterns": ["^[0-9]+\\.[0-9]+\\.[0-9]+$"],            "mostRecentlyPushedCount": 3 },
                     { "patterns": ["^[0-9]+\\.[0-9]+\\.[0-9]+-rc\\..*$"],    "mostRecentlyPushedCount": 2 },
                     { "patterns": ["^[0-9]+\\.[0-9]+\\.[0-9]+-alpha\\..*$"], "mostRecentlyPushedCount": 1 },
-                    { "patterns": [".*"],                                    "pulledWithin": "24h" }
+                    { "patterns": ["^RELEASE\\..*$"],                        "mostRecentlyPushedCount": 3 },
+                    { "patterns": ["^latest$", "^[0-9]+$", "^[0-9]+\\.[0-9]+$"] },
+                    { "patterns": ["^sha-[0-9a-f]{7,40}$"],                  "mostRecentlyPushedCount": 5 },
+                    { "patterns": [".*"],                                    "pulledWithin": "720h" }
                   ]
                 }
               ]
