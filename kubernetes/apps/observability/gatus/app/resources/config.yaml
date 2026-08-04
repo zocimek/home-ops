@@ -97,7 +97,7 @@ endpoints:
 
   - name: poetica.pl (API)
     group: poetica.pl
-    url: https://poetica.pl/api/v1/content?limit=10
+    url: https://poetica.pl/api/v2/content?limit=10
     interval: 30s
     client:
       dns-resolver: tcp://1.1.1.1:53
