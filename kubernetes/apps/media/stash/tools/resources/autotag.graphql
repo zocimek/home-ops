@@ -1,0 +1,8 @@
+mutation {
+  metadataAutoTag(input: {
+    paths: ["/mnt/private/Porn"],
+    performers: ["*"],
+    studios: ["*"],
+    tags: ["*"]
+  })
+}
