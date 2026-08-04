@@ -17,9 +17,6 @@ configMapGenerator:
     files:
       - scripts/xseed.sh
       - scripts/post-process.sh
-  - name: qbittorrent-coredns
-    files:
-      - ./config/Corefile
 generatorOptions:
   annotations:
     kustomize.toolkit.fluxcd.io/substitute: disabled

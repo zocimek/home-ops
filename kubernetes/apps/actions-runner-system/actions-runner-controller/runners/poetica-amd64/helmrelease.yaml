@@ -28,6 +28,9 @@ spec:
       namespace: actions-runner-system
     template:
       spec:
+        securityContext:
+          supplementalGroups:
+            - 123
         initContainers:
           - name: dind
             image: public.ecr.aws/docker/library/docker:29-dind
@@ -53,12 +56,9 @@ spec:
                 name: docker-storage
         containers:
           - name: runner
-            image: ghcr.io/home-operations/actions-runner:2.333.1@sha256:1a7726bcaeba4e46fe07fe98e1805b4df78618a71e67758f932862b929f852d4
+            image: registry.pospiech.dev/gh-runners/poetica:rolling@sha256:0eabea4761c20970916b8266a968a0c2975c024a746c4ffb8d4b8b1502f3fbcf
             command:
               - "/home/runner/run.sh"
-            securityContext:
-              supplementalGroups:
-                - 123
             env:
               - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
                 value: "false"

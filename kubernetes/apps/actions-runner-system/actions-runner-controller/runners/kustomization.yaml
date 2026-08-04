@@ -7,3 +7,4 @@ resources:
   - ./home-ops
   - ./inzosoft-amd64
   - ./poetica-amd64
+  - ./poetica-copilot

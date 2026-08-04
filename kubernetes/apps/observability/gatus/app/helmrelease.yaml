@@ -20,7 +20,7 @@ spec:
           gatus-sidecar:
             image:
               repository: ghcr.io/home-operations/gatus-sidecar
-              tag: 0.0.13@sha256:40d549ea5ae89acac94bdf4cee1233e718a96c6e382c67f7e28de688511169d2
+              tag: 0.0.14@sha256:b77e0a1267708a555640b81dd8a9baa2a197c2f34647dc4ac053eb812d4b31cc
             args:
               - --auto-httproute
               - --enable-httproute
@@ -35,7 +35,7 @@ spec:
           app:
             image:
               repository: ghcr.io/twin/gatus
-              tag: v5.34.0@sha256:3fff895e77d35ee62e898860f4613755bc2344127d93e3f326429d40270e2115
+              tag: v5.36.0@sha256:c5f210d095fa78e6efaa20ffeb14803f2ba4f10615e16a6d12087697149617f0
             env:
               GATUS_CONFIG_PATH: /config
               GATUS_WEB_PORT: &port 80

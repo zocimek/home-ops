@@ -40,6 +40,12 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.0.42.21"
+        vlans:
+          - vlanId: 800
+            mtu: 1500
+            dhcp: true
+            addresses:
+              - 10.0.80.2/24
 
         # - interface: bond0
         #   mtu: 1500

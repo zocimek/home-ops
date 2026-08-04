@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: zot
-      version: 0.1.104
+      version: 0.1.112
       sourceRef:
         kind: HelmRepository
         name: zot-registry
@@ -56,11 +56,17 @@ spec:
     mountConfig: true
     configFiles:
       # retention policy tuned to our release scheme (mirrors poetica PR #568):
-      #   X.Y.Z        -> keep 3 most recent
-      #   X.Y.Z-rc.*   -> keep 2 most recent
-      #   X.Y.Z-alpha.* -> keep 1 most recent
-      #   everything else -> kept only if pulled within 24h
-      # cosign signatures pruned via deleteReferrers
+      #   gh-runners/** rolling* -> always retained (self-hosted runner images, minRunners=0 so pulls are sparse)
+      #   gh-runners/** other    -> kept if pulled within 30d
+      #   X.Y.Z              -> keep 3 most recent
+      #   X.Y.Z-rc.*         -> keep 2 most recent
+      #   X.Y.Z-alpha.*      -> keep 1 most recent
+      #   RELEASE.*  (MinIO) -> keep 3 most recent
+      #   latest / X / X.Y   -> always retained (floating tags, overwritten in place)
+      #   sha-<gitsha>       -> keep 5 most recent
+      #   everything else    -> kept if pulled within 30d
+      # NOTE: cosign .sig tags and OCI referrers are NOT keepTags-evaluated; zot binds
+      #       them to their subject manifest and retains/removes them with the image.
       config.json: |-
         {
           "storage": {
@@ -76,21 +82,30 @@ spec:
               "policies": [
                 {
                   "repositories": ["docker.io/**"],
-                  "deleteReferrers": true,
                   "deleteUntagged": true,
                   "keepTags": [
                     { "pulledWithin": "720h" }
                   ]
                 },
                 {
+                  "repositories": ["gh-runners/**"],
+                  "deleteUntagged": true,
+                  "keepTags": [
+                    { "patterns": ["^rolling(-.*)?$"] },
+                    { "patterns": [".*"], "pulledWithin": "720h" }
+                  ]
+                },
+                {
                   "repositories": ["**"],
-                  "deleteReferrers": true,
                   "deleteUntagged": true,
                   "keepTags": [
                     { "patterns": ["^[0-9]+\\.[0-9]+\\.[0-9]+$"],            "mostRecentlyPushedCount": 3 },
                     { "patterns": ["^[0-9]+\\.[0-9]+\\.[0-9]+-rc\\..*$"],    "mostRecentlyPushedCount": 2 },
                     { "patterns": ["^[0-9]+\\.[0-9]+\\.[0-9]+-alpha\\..*$"], "mostRecentlyPushedCount": 1 },
-                    { "patterns": [".*"],                                    "pulledWithin": "24h" }
+                    { "patterns": ["^RELEASE\\..*$"],                        "mostRecentlyPushedCount": 3 },
+                    { "patterns": ["^latest$", "^[0-9]+$", "^[0-9]+\\.[0-9]+$"] },
+                    { "patterns": ["^sha-[0-9a-f]{7,40}$"],                  "mostRecentlyPushedCount": 5 },
+                    { "patterns": [".*"],                                    "pulledWithin": "720h" }
                   ]
                 }
               ]
@@ -120,11 +135,20 @@ spec:
             "address": "0.0.0.0",
             "port": "5000",
             "externalUrl": "https://registry.pospiech.dev",
+            "compat": ["docker2s2"],
             "auth": {
               "htpasswd": { "path": "/secrets/users/htpasswd" }
             },
             "accessControl": {
               "repositories": {
+                "gh-runners/**": {
+                  "anonymousPolicy": ["read"],
+                  "policies": [
+                    { "users": ["readonly"], "actions": ["read"] },
+                    { "users": ["github"],   "actions": ["read", "create", "update"] }
+                  ],
+                  "defaultPolicy": ["read"]
+                },
                 "**": {
                   "policies": [
                     { "users": ["readonly"], "actions": ["read"] },
