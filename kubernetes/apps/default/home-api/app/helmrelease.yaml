@@ -28,7 +28,7 @@ spec:
           main:
             image:
               repository: registry.pospiech.dev/home/api
-              tag: RELEASE.2026-05-14T08-22-19Z
+              tag: RELEASE.2026-06-05T17-34-32Z
               pullPolicy: Always
             env:
               SERVER_PORT: 42000
