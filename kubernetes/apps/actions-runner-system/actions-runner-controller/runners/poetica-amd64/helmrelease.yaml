@@ -56,7 +56,26 @@ spec:
                 name: docker-storage
         containers:
           - name: runner
-            image: registry.pospiech.dev/gh-runners/poetica:rolling@sha256:0eabea4761c20970916b8266a968a0c2975c024a746c4ffb8d4b8b1502f3fbcf
+            # TEMPORARY: the upstream base image, not the custom
+            # `gh-runners/poetica` build.
+            #
+            # The custom image bakes in Flutter, the Android SDK, Node and
+            # Playwright, which makes it large enough that pushing it to
+            # registry.pospiech.dev exceeds the Cloudflare proxy's max body
+            # size — so it cannot currently be rebuilt. The pinned digest
+            # below stopped starting, which left this scale set with no
+            # listener and every `runs-on: poetica-amd64` job queued
+            # indefinitely.
+            #
+            # This is the exact image `inzosoft-amd64` and `poetica-copilot`
+            # already run here, so it is known good on this cluster. It
+            # restores the pool for every workflow that only needs Docker
+            # (build-frontend, build-backend, security-scan,
+            # check-contract-drift). It does NOT carry the baked toolchain,
+            # so `[test] mobile` and `e2e-live` stay broken until the custom
+            # image is republished to a registry without the body-size limit
+            # and this pin is pointed back at it.
+            image: ghcr.io/home-operations/actions-runner:2.336.0@sha256:281a9a090522fafbf4967f158b8c97d03552b1978b688893c5f7cb1944bc5fe5
             command:
               - "/home/runner/run.sh"
             env:
@@ -64,8 +83,11 @@ spec:
                 value: "false"
               - name: DOCKER_HOST
                 value: "unix:///var/run/docker.sock"
+              # 120s to match the two scale sets already running this image.
+              # The old 20s was tuned for the custom build, which started
+              # dockerd faster than the stock image does.
               - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
-                value: "20"
+                value: "120"
               - name: NODE
                 valueFrom:
                   fieldRef:
