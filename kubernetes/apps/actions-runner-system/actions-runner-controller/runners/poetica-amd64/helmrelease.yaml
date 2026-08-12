@@ -28,6 +28,8 @@ spec:
       namespace: actions-runner-system
     template:
       spec:
+        imagePullSecrets:
+          - name: poetica-amd64-ghcr
         securityContext:
           supplementalGroups:
             - 123
@@ -56,26 +58,18 @@ spec:
                 name: docker-storage
         containers:
           - name: runner
-            # TEMPORARY: the upstream base image, not the custom
-            # `gh-runners/poetica` build.
+            # Custom Poetica runner image: the upstream base plus Flutter, the
+            # Android SDK, Node and Playwright, so mobile-ci.yml and
+            # e2e-live.yaml do not reinstall them per job.
             #
-            # The custom image bakes in Flutter, the Android SDK, Node and
-            # Playwright, which makes it large enough that pushing it to
-            # registry.pospiech.dev exceeds the Cloudflare proxy's max body
-            # size — so it cannot currently be rebuilt. The pinned digest
-            # below stopped starting, which left this scale set with no
-            # listener and every `runs-on: poetica-amd64` job queued
-            # indefinitely.
+            # Published to GHCR rather than registry.pospiech.dev, whose
+            # Cloudflare proxy caps request bodies below this image's size —
+            # pushes failed there, which is how the previous pin went stale,
+            # stopped starting, and left this scale set without a listener.
             #
-            # This is the exact image `inzosoft-amd64` and `poetica-copilot`
-            # already run here, so it is known good on this cluster. It
-            # restores the pool for every workflow that only needs Docker
-            # (build-frontend, build-backend, security-scan,
-            # check-contract-drift). It does NOT carry the baked toolchain,
-            # so `[test] mobile` and `e2e-live` stay broken until the custom
-            # image is republished to a registry without the body-size limit
-            # and this pin is pointed back at it.
-            image: ghcr.io/home-operations/actions-runner:2.336.0@sha256:281a9a090522fafbf4967f158b8c97d03552b1978b688893c5f7cb1944bc5fe5
+            # The package is PRIVATE, so the pod needs the imagePullSecret
+            # declared below; there is no anonymous pull for it.
+            image: ghcr.io/poetica-pl/gh-runners/poetica:rolling@sha256:b325e6d18d2f3eeeadbb570f4c203e177e6e47f0c1bd823373c203435a07ecd2
             command:
               - "/home/runner/run.sh"
             env:
