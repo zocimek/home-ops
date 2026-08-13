@@ -69,7 +69,13 @@ spec:
             #
             # The package is PRIVATE, so the pod needs the imagePullSecret
             # declared below; there is no anonymous pull for it.
-            image: ghcr.io/poetica-pl/gh-runners/poetica:rolling@sha256:b325e6d18d2f3eeeadbb570f4c203e177e6e47f0c1bd823373c203435a07ecd2
+            #
+            # Bakes Flutter 3.44.9 / Dart 3.12.2. The Linux mobile-ci jobs call
+            # `flutter` straight from the image's /opt/flutter with no setup
+            # step, so this digest — not mobile-ci.yml's FLUTTER_VERSION, which
+            # only feeds the macOS jobs — decides the SDK every Linux mobile
+            # job runs against.
+            image: ghcr.io/poetica-pl/gh-runners/poetica:rolling@sha256:2c99de39af42d020d5947f427e1bed72d27bf3e65f3c5820481a6d56332d1a9f
             command:
               - "/home/runner/run.sh"
             env:
