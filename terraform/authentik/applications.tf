@@ -10,6 +10,7 @@ locals {
     "outline",
     "paperless",
     "qui",
+    "reactive-resume",
     "simple-backlogs",
   ]
 }
@@ -288,6 +289,35 @@ module "paperless" {
   meta_icon       = "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/paperless.png"
   meta_description = "Documents"
   meta_launch_url = "https://documents.pospiech.dev/accounts/oidc/sso/login/"
+}
+
+######### REACTIVE RESUME #########
+# The module derives the Authentik slug from lower(var.name), and the
+# HelmRelease points OAUTH_DISCOVERY_URL at .../application/o/reactive-resume/...
+# so the name has to stay hyphenated rather than "Reactive Resume".
+module "reactive-resume" {
+  source = "./modules/oidc-application"
+
+  name   = "reactive-resume"
+  domain = "resume.pospiech.dev"
+  group  = "Home"
+
+  client_id     = module.onepassword_oauth["reactive-resume"].fields["OIDC_CLIENT_ID"]
+  client_secret = module.onepassword_oauth["reactive-resume"].fields["OIDC_CLIENT_SECRET"]
+
+  auth_groups = [
+    authentik_group.group["users"].id
+  ]
+
+  authentication_flow = authentik_flow.authentication.uuid
+  authorization_flow  = data.authentik_flow.default-provider-authorization-implicit-consent.id
+  invalidation_flow   = resource.authentik_flow.provider-invalidation.uuid
+
+  redirect_uris = ["https://resume.pospiech.dev/api/auth/oauth2/callback/custom"]
+
+  meta_icon        = "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/reactive-resume.png"
+  meta_description = "Resume builder"
+  meta_launch_url  = "https://resume.pospiech.dev/auth/login"
 }
 
 ######### matrix #########

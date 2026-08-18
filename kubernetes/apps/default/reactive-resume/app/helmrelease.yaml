@@ -1,0 +1,144 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app reactive-resume
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: reactive-resume
+
+  values:
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+
+    controllers:
+      reactive-resume:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: Recreate
+
+        defaultContainerOptions:
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+        containers:
+          app:
+            image:
+              repository: ghcr.io/amruthpillai/reactive-resume
+              # yamllint disable-line rule:line-length
+              tag: v5.2.7@sha256:7208f385ec1298cac9fce3490e06e1cf51c3272a943b629dfb4880439689ad8e
+            env:
+              TZ: Europe/Warsaw
+              PORT: &port 3000
+              APP_URL: https://resume.pospiech.dev
+
+              # Uploads and cache live on the PVC, no S3 bucket in this cluster
+              LOCAL_STORAGE_PATH: /app/data
+
+              # AI agent workspace
+              REDIS_URL: redis://dragonfly.database.svc.cluster.local:6379/9
+
+              # Authentik OIDC
+              OAUTH_PROVIDER_NAME: Authentik
+              # yamllint disable-line rule:line-length
+              OAUTH_DISCOVERY_URL: https://auth.pospiech.dev/application/o/reactive-resume/.well-known/openid-configuration
+              OAUTH_SCOPES: openid profile email
+
+              # Email
+              SMTP_PORT: 465
+              SMTP_SECURE: "true"
+              SMTP_FROM: Reactive Resume <noreply@pospiech.dev>
+
+              # Feature flags
+              # Flip to "true" once your own account exists, otherwise OIDC
+              # first-login is blocked too.
+              FLAG_DISABLE_SIGNUPS: "false"
+              FLAG_DISABLE_EMAIL_AUTH: "false"
+              FLAG_DISABLE_IMAGE_PROCESSING: "false"
+              FLAG_SHOW_SPONSORS: "false"
+
+            envFrom:
+              - secretRef:
+                  name: reactive-resume
+              - secretRef:
+                  name: reactive-resume-db-secret
+
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: *port
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 30
+
+            resources:
+              requests:
+                cpu: 25m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+
+    route:
+      app:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            url: https://resume.pospiech.dev/api/health
+        hostnames:
+          - resume.pospiech.dev
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+
+    persistence:
+      data:
+        existingClaim: *app
+        globalMounts:
+          - path: /app/data
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
