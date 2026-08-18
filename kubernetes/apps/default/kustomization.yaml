@@ -16,10 +16,12 @@ resources:
   - ./cyberchef/ks.yaml
   - ./excalidraw/ks.yaml
   - ./gitea/ks.yaml
+  - ./gokapi/ks.yaml
   - ./home-api/ks.yaml
   - ./karakeep/ks.yaml
   - ./listmonk/ks.yaml
   - ./mealie/ks.yaml
+  - ./mindwtr/ks.yaml
   - ./opengist/ks.yaml
   - ./openspeedtest/ks.yaml
   - ./outline/ks.yaml

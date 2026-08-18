@@ -1,0 +1,168 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app mindwtr
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: mindwtr
+
+  values:
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+
+    controllers:
+      # Sync server. Holds the data, so this is the controller with the PVC.
+      cloud:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: Recreate
+
+        defaultContainerOptions:
+          securityContext: &sc
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+        containers:
+          app:
+            image:
+              repository: ghcr.io/dongdongbh/mindwtr-cloud
+              # yamllint disable-line rule:line-length
+              tag: 1.2.1@sha256:3d5987d3fec4dba7fe39039ded25b6c80600e0fb8f5e56514dc75d9bff614929
+            env:
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: mindwtr
+            probes:
+              liveness: &cloudProbe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &cloudPort 8787
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+              readiness: *cloudProbe
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 512Mi
+
+      # Static PWA build served by nginx.
+      app:
+        annotations:
+          reloader.stakater.com/auto: "true"
+
+        defaultContainerOptions:
+          securityContext: *sc
+
+        containers:
+          app:
+            image:
+              repository: ghcr.io/dongdongbh/mindwtr-app
+              # yamllint disable-line rule:line-length
+              tag: 1.2.1@sha256:870fad3d88ff8692ed3498f8cc1194cda4a62e3c8b52a5903b6baa323654b0a2
+            env:
+              TZ: Europe/Warsaw
+            probes:
+              liveness: &appProbe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: &appPort 5173
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+              readiness: *appProbe
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 256Mi
+
+    service:
+      cloud:
+        controller: cloud
+        ports:
+          http:
+            port: *cloudPort
+      app:
+        controller: app
+        primary: true
+        ports:
+          http:
+            port: *appPort
+
+    route:
+      app:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            url: https://tasks.pospiech.dev
+        hostnames:
+          - tasks.pospiech.dev
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *appPort
+      cloud:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            url: https://tasks-sync.pospiech.dev/health
+        hostnames:
+          - tasks-sync.pospiech.dev
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: cloud
+                port: *cloudPort
+
+    persistence:
+      data:
+        existingClaim: *app
+        advancedMounts:
+          cloud:
+            app:
+              - path: /app/cloud_data
+      # nginx needs a writable cache and pid dir under a read-only root.
+      tmp:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 16Mi
+        advancedMounts:
+          app:
+            app:
+              - path: /var/cache/nginx
+                subPath: cache
+              - path: /var/run
+                subPath: run
