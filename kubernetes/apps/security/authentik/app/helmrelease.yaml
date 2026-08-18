@@ -62,7 +62,7 @@ spec:
                 cpu: "1000m"
                 memory: "2Gi"
             probes:
-              liveness: &probe
+              liveness:
                 enabled: true
                 custom: true
                 spec:
@@ -71,8 +71,8 @@ spec:
                     port: &port 9000
                   initialDelaySeconds: 15
                   periodSeconds: 20
-                  timeoutSeconds: 1
-                  failureThreshold: 3
+                  timeoutSeconds: 5
+                  failureThreshold: 6
               readiness:
                 enabled: true
                 custom: true
@@ -82,9 +82,21 @@ spec:
                     port: *port
                   initialDelaySeconds: 15
                   periodSeconds: 20
-                  timeoutSeconds: 1
-                  failureThreshold: 3
-              startup: *probe
+                  timeoutSeconds: 5
+                  failureThreshold: 6
+              # Startup gets its own spec so a slow boot (migrations) is not
+              # judged by the liveness budget.
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /-/health/live/
+                    port: *port
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 30
       worker:
         type: deployment
         replicas: 1
@@ -111,6 +123,8 @@ spec:
                 cpu: "1000m"
                 memory: "2Gi"
             probes:
+              # "ak healthcheck" forks a full Django process, so it needs a far
+              # more generous timeout than an HTTP probe.
               liveness: &workerProbe
                 enabled: true
                 custom: true
@@ -120,11 +134,22 @@ spec:
                       - ak
                       - healthcheck
                   initialDelaySeconds: 15
-                  periodSeconds: 20
-                  timeoutSeconds: 1
-                  failureThreshold: 3
+                  periodSeconds: 30
+                  timeoutSeconds: 15
+                  failureThreshold: 6
               readiness: *workerProbe
-              startup: *workerProbe
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - ak
+                      - healthcheck
+                  initialDelaySeconds: 15
+                  periodSeconds: 15
+                  timeoutSeconds: 15
+                  failureThreshold: 20
 
     service:
       authentik:
