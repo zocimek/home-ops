@@ -24,7 +24,7 @@ spec:
 
   # https://github.com/chkpwd/cdpgvecto.rs/pkgs/container/cdpgvecto.rs
   # https://github.com/1Solon/Home-Server-Configuration/blob/main/kubernetes/infra/databases/postgres/clusters/vector-cluster.yaml
-  image: ghcr.io/drag0n141/cdpgvectorchord:0.4.3@sha256:99de325b21fa4b98c9efd2b07a3ced730004bfb0d244ad45b30ef326ad3c8e9d
+  image: ghcr.io/drag0n141/cdpgvectorchord:1.1.1@sha256:0a0456cebc5434f54d7d4f24caf6b526c0cf9da79fbe5d49aedb5369a526df6a
 
   service:
     type: LoadBalancer
