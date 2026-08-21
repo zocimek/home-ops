@@ -92,6 +92,9 @@ spec:
           identifier: *app
 
     defaultPodOptions:
+      # Cluster discovery lists pods through the API, so it needs the token.
+      # app-template 4 mounted it by default; 5 does not.
+      automountServiceAccountToken: true
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
