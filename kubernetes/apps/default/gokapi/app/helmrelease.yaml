@@ -1,0 +1,116 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app gokapi
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: gokapi
+
+  values:
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      # Upstream deprecated DOCKER_NONROOT in favour of running the container
+      # as an explicit uid, which is what this does.
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+
+    controllers:
+      gokapi:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: Recreate
+
+        containers:
+          app:
+            image:
+              repository: docker.io/f0rc3/gokapi
+              # yamllint disable-line rule:line-length
+              tag: v2.2.4@sha256:43cd93b9e1f02d760923f67f6e74e1c4d4a9cccb9b08fa42ad60770333f231eb
+            env:
+              TZ: Europe/Warsaw
+              GOKAPI_PORT: &port 53842
+              GOKAPI_CONFIG_DIR: /app/config
+              GOKAPI_DATA_DIR: /app/data
+              TMPDIR: /app/data/tmp
+
+              # Envoy reaches the pod from the cluster network, not 127.0.0.1,
+              # so without this every request is attributed to the proxy and
+              # rate limiting misfires.
+              GOKAPI_TRUSTED_PROXIES: 10.42.0.0/16
+              # All *.pospiech.dev ingress arrives via the Cloudflare tunnel.
+              GOKAPI_USE_CLOUDFLARE: "true"
+              # Cloudflare's free plan rejects request bodies over 100 MB, so
+              # chunks must stay below that regardless of GOKAPI_MAX_FILESIZE.
+              GOKAPI_CHUNK_SIZE_MB: 95
+              GOKAPI_MAX_FILESIZE: 10240
+              GOKAPI_MAX_MEMORY_UPLOAD: 128
+
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: *port
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+              readiness: *probe
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 1Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+
+    route:
+      app:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            url: https://share.pospiech.dev
+        hostnames:
+          - share.pospiech.dev
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+
+    persistence:
+      # Uploaded files plus the SQLite database live under data; the setup
+      # wizard writes config.json under config. Both must survive a restart.
+      data:
+        existingClaim: *app
+        globalMounts:
+          - path: /app/data
+            subPath: data
+          - path: /app/config
+            subPath: config

@@ -1,6 +1,7 @@
 locals {
   oauth_apps = [
     "gitea",
+    "gokapi",
     "grafana",
     "immich",
     "karakeep",
@@ -48,6 +49,35 @@ module "gitea" {
   meta_icon       = "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/gitea.png"
   meta_description = "Version control"
   meta_launch_url = "https://gitea.pospiech.dev/user/oauth2/Authentik"
+}
+
+######### GOKAPI #########
+# Gokapi has no OAuth environment variables: provider URL, client ID and
+# client secret are entered in its first-run web setup wizard and stored in
+# config.json on the PVC. This block only creates the Authentik side.
+module "gokapi" {
+  source = "./modules/oidc-application"
+
+  name   = "Gokapi"
+  domain = "share.pospiech.dev"
+  group  = "Home"
+
+  client_id     = module.onepassword_oauth["gokapi"].fields["OIDC_CLIENT_ID"]
+  client_secret = module.onepassword_oauth["gokapi"].fields["OIDC_CLIENT_SECRET"]
+
+  auth_groups = [
+    authentik_group.group["users"].id
+  ]
+
+  authentication_flow = authentik_flow.authentication.uuid
+  authorization_flow  = data.authentik_flow.default-provider-authorization-implicit-consent.id
+  invalidation_flow   = resource.authentik_flow.provider-invalidation.uuid
+
+  redirect_uris = ["https://share.pospiech.dev/oauth-callback"]
+
+  # dashboard-icons has no gokapi entry, so meta_icon is left at its default.
+  meta_description = "File sharing"
+  meta_launch_url  = "https://share.pospiech.dev"
 }
 
 ######### GRAFANA #########
