@@ -137,6 +137,11 @@ spec:
             identifier: gatus
           subjects:
             - identifier: gatus
+    defaultPodOptions:
+      # Endpoint auto-discovery watches services through the API, so it needs
+      # the token. app-template 4 mounted it by default; 5 does not.
+      automountServiceAccountToken: true
+
     serviceAccount:
       gatus: {}
     persistence:

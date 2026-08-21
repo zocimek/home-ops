@@ -87,5 +87,10 @@ spec:
           subjects:
             - identifier: multus
 
+    defaultPodOptions:
+      # The CNI plugin reads NetworkAttachmentDefinitions through the API, so
+      # it needs the token. app-template 4 mounted it by default; 5 does not.
+      automountServiceAccountToken: true
+
     serviceAccount:
       multus: {}
