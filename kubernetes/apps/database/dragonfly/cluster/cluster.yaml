@@ -1,6 +1,30 @@
 ---
 # yamllint disable-line rule:line-length
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/dragonflydb.io/dragonfly_v1alpha1.json
+#
+# Shared Redis, reachable at dragonfly.database.svc.cluster.local:6379.
+#
+# Logical database allocation. Claim the next free index here in the same
+# commit that adds the consumer: nothing enforces uniqueness, so two apps
+# pointed at the same index silently share a keyspace and evict each other.
+#
+#   0  reserved  clients that omit an index land here, so leave it unused
+#   1  searxng
+#   2  immich           via REDIS_DBINDEX
+#   3  cryptgeon
+#   4  authentik        via AUTHENTIK_REDIS__DB
+#   5  outline
+#   6  free
+#   7  paperless
+#   8  gitea
+#   9  reactive-resume
+#
+# Note that immich and authentik set their index through a dedicated env var
+# rather than a redis:// URL, so grepping only for ":6379/" will miss them.
+#
+# open-webui is deliberately absent: it runs a dedicated instance built from
+# components/dragonfly and consumes no index on this one.
+#
 apiVersion: dragonflydb.io/v1alpha1
 kind: Dragonfly
 metadata:
