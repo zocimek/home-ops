@@ -11,16 +11,9 @@ locals {
     "outline",
     "paperless",
     "qui",
+    "konflate",
     "reactive-resume",
     "simple-backlogs",
-  ]
-
-  # konflate's OIDC pair lives in the Poetica.pl vault, not Kubernetes: the
-  # konflate that consumes it runs in the poetica cluster, whose
-  # ClusterSecretStore is scoped to that vault. Terraform has to read the same
-  # item or the two halves drift and the login fails with invalid_client.
-  oauth_apps_poetica = [
-    "konflate",
   ]
 }
 
@@ -29,14 +22,6 @@ module "onepassword_oauth" {
 
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
   vault  = "Kubernetes"
-  item   = each.key
-}
-
-module "onepassword_oauth_poetica" {
-  for_each = toset(local.oauth_apps_poetica)
-
-  source = "github.com/bjw-s/terraform-1password-item?ref=main"
-  vault  = "Poetica.pl"
   item   = each.key
 }
 
@@ -425,6 +410,13 @@ module "reactive-resume" {
 # SecurityPolicy pins the issuer to .../application/o/konflate/ - so the name has
 # to stay lowercase "konflate". Its /hooks route is deliberately outside the
 # policy, so GitHub webhook delivery never reaches this application.
+#
+# The pair is read from the Kubernetes vault like every other app here, but the
+# konflate that consumes it runs in the poetica cluster, whose
+# ClusterSecretStore is scoped to Poetica.pl - so the same pair has to exist in
+# BOTH vaults. `just gen-oauth konflate Kubernetes,Poetica.pl` writes one
+# generated pair to both; copying it by hand risks a mismatch that surfaces
+# only as invalid_client at login.
 module "konflate" {
   source = "./modules/oidc-application"
 
@@ -432,8 +424,8 @@ module "konflate" {
   domain = "konflate.poetica.pl"
   group  = "Infrastructure"
 
-  client_id     = module.onepassword_oauth_poetica["konflate"].fields["OIDC_CLIENT_ID"]
-  client_secret = module.onepassword_oauth_poetica["konflate"].fields["OIDC_CLIENT_SECRET"]
+  client_id     = module.onepassword_oauth["konflate"].fields["OIDC_CLIENT_ID"]
+  client_secret = module.onepassword_oauth["konflate"].fields["OIDC_CLIENT_SECRET"]
 
   authentication_flow = authentik_flow.authentication.uuid
   authorization_flow  = data.authentik_flow.default-provider-authorization-implicit-consent.id
