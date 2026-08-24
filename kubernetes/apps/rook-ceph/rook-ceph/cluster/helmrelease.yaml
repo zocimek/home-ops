@@ -18,6 +18,17 @@ spec:
   driftDetection:
     mode: disabled
   values:
+    # Pinned so a Rook chart bump cannot drag a Ceph MAJOR along with it.
+    # Unpinned, the chart default decides: v1.19.5 defaults to Ceph v19.2.3
+    # (squid) but v1.20.6 defaults to v20.2.4 (tentacle), so #903 would have
+    # upgraded Rook AND Ceph in one merge.
+    #
+    # Rook 1.20 supports both - supportedVersions = [Squid, Tentacle], minimum
+    # 19.2.0 - so staying on 19.2.3 across the Rook upgrade is fully supported
+    # and lets the Ceph major move separately, on its own change.
+    cephImage:
+      repository: quay.io/ceph/ceph
+      tag: v19.2.6
     clusterName: "home-ops"
     operatorNamespace: "rook-ceph"
     monitoring:
