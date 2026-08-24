@@ -136,6 +136,13 @@ spec:
               - /bin/meilisearch
             env:
               MEILI_NO_ANALYTICS: true
+              # Meilisearch will not migrate its on-disk database silently:
+              # v1.53.1 refuses to start against a v1.44.0 database unless this
+              # is set. Stabilizing dumpless upgrade in v1.51.0 RENAMED
+              # --experimental-dumpless-upgrade to --upgrade-db, it did not make
+              # the migration automatic. No-op when no migration is pending, so
+              # it stays set for the next upgrade.
+              MEILI_UPGRADE_DB: true
               MEILI_MASTER_KEY:
                 valueFrom:
                   secretKeyRef:
