@@ -32,7 +32,11 @@ spec:
           main:
             image: &img
               repository: ghcr.io/goauthentik/server
-              tag: 2026.2.3
+              # One release series at a time: authentik refuses to start
+              # across a skip. 2026.2.3 -> 2026.8.0 (#867) crashlooped for
+              # exactly this reason; 2026.5.6 landed in #910 and migrated
+              # cleanly, which is what makes this step legal.
+              tag: 2026.8.0
             args:
               - server
             env: &env
