@@ -37,7 +37,7 @@ spec:
             image:
               repository: ghcr.io/koenkk/zigbee2mqtt
               # yamllint disable-line rule:line-length
-              tag: 2.10.1@sha256:67c26dcf8346aced02fe1380a6afd1b57268bcef10faae3f6057c13d5d3dfa80
+              tag: 2.13.0@sha256:4fb4db4d49a217bed6d0204f454ce809febc565bbe051b85c556ee2bcef73d8c
             env:
               TZ: Europe/Warsaw
               ZIGBEE2MQTT_DATA: /config
