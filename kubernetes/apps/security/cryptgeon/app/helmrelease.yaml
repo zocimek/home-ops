@@ -37,7 +37,7 @@ spec:
             image:
               repository: cupcakearmy/cryptgeon
               # yamllint disable-line rule:line-length
-              tag: 2.9.1
+              tag: 2.9.3
 
             env:
               REDIS: redis://dragonfly.database.svc.cluster.local:6379/3
