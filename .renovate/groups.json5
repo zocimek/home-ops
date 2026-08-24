@@ -86,22 +86,77 @@
     {
       description: "Immich Group",
       groupName: "Immich",
-      matchPackagePatterns: ["immich"],
       matchDatasources: ["docker"],
+      matchPackageNames: ["/immich/"],
       group: {
         commitMessageTopic: "{{{groupName}}} group",
       },
       minimumGroupSize: 2,
     },
     {
-      description: "Immich Group",
-      groupName: "Immich",
-      matchPackagePatterns: ["immich"],
+      description: "Shlink Group",
+      groupName: "shlink",
       matchDatasources: ["docker"],
+      matchPackageNames: ["/shlinkio/"],
       group: {
         commitMessageTopic: "{{{groupName}}} group",
       },
       minimumGroupSize: 2,
+    },
+    {
+      description: "Dragonfly Group",
+      groupName: "dragonfly",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/dragonflydb/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      minimumGroupSize: 2,
+    },
+    {
+      description: "Prometheus Group",
+      groupName: "prometheus",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/prometheus-community/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      minimumGroupSize: 2,
+    },
+    {
+      // The chart's init-app-ini script is written against its own appVersion,
+      // and these are two managers (helm + helm-values docker). Left ungrouped
+      // they drift, which is how the release sat broken from May to August
+      // with "flag provided but not defined: -o". minimumGroupSize 1 so a lone
+      // update still carries the group name and is obvious in review.
+      description: "Gitea Group - chart and image must move together",
+      groupName: "gitea",
+      matchPackageNames: ["gitea", "gitea/gitea"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      minimumGroupSize: 1,
+    },
+    {
+      // One PR for the whole toolchain rather than one per tool.
+      description: "Mise Group",
+      groupName: "mise",
+      matchManagers: ["mise"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      minimumGroupSize: 1,
+    },
+    {
+      // authentik uses CalVer, so Renovate reads 2026.2.3 -> 2026.8.0 as an
+      // ordinary minor bump and jumps straight to latest. authentik itself
+      // refuses to start across a skipped release series, so each one has to
+      // land on its own: separateMultipleMinor raises 2026.5 and 2026.8 as
+      // distinct PRs instead of one leap.
+      description: "Authentik - one release series per PR",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/goauthentik/"],
+      separateMultipleMinor: true,
     },
   ],
 }
