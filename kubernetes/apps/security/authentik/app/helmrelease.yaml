@@ -32,7 +32,12 @@ spec:
           main:
             image: &img
               repository: ghcr.io/goauthentik/server
-              tag: 2026.8.0
+              # 2026.5 before 2026.8. authentik refuses to start across a
+              # skipped release series - "Major version skips are not allowed"
+              # - and #867 jumped 2026.2.3 straight to 2026.8.0, so the new
+              # pods crashlooped while the old 2026.2.3 one kept serving.
+              # Move to 2026.8.x only once this is running and migrated.
+              tag: 2026.5.6
             args:
               - server
             env: &env
