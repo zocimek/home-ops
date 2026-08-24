@@ -41,7 +41,7 @@ spec:
             image:
               repository: ghcr.io/amruthpillai/reactive-resume
               # yamllint disable-line rule:line-length
-              tag: v5.2.7@sha256:7208f385ec1298cac9fce3490e06e1cf51c3272a943b629dfb4880439689ad8e
+              tag: v5.2.8@sha256:475da52a8d7ae9e6bf757f90a40c08f1023f13c39bedf3697a10cd5665e6bf1d
             env:
               TZ: Europe/Warsaw
               PORT: &port 3000

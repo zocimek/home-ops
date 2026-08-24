@@ -10,7 +10,12 @@ spec:
     spec:
       # renovate: registryUrl=https://dl.gitea.io/charts/
       chart: gitea
-      version: 12.0.0
+      # Keep in lockstep with image.tag below - the chart's init-app-ini script
+      # is written against its own appVersion. 12.0.0 ships gitea 1.23.8, whose
+      # environment-to-ini takes -o; 1.26 removed that flag, so the image -
+      # which Renovate bumps independently - failed init with "flag provided
+      # but not defined: -o" and the release had been rolling back since May.
+      version: 12.7.0
       sourceRef:
         kind: HelmRepository
         name: gitea
@@ -37,7 +42,7 @@ spec:
 
     image:
       repository: gitea/gitea
-      tag: 1.26.1
+      tag: 1.27.2
       rootless: false
 
     containerSecurityContext:
