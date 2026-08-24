@@ -147,5 +147,16 @@
       },
       minimumGroupSize: 1,
     },
+    {
+      // authentik uses CalVer, so Renovate reads 2026.2.3 -> 2026.8.0 as an
+      // ordinary minor bump and jumps straight to latest. authentik itself
+      // refuses to start across a skipped release series, so each one has to
+      // land on its own: separateMultipleMinor raises 2026.5 and 2026.8 as
+      // distinct PRs instead of one leap.
+      description: "Authentik - one release series per PR",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/goauthentik/"],
+      separateMultipleMinor: true,
+    },
   ],
 }
