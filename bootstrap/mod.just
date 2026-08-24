@@ -4,14 +4,27 @@ set shell := ['bash', '-euo', 'pipefail', '-c']
 
 bootstrap_dir := justfile_dir() + '/bootstrap'
 kubernetes_dir := justfile_dir() + '/kubernetes'
-controller := `talosctl config info -o yaml | yq -e '.endpoints[0]'`
-nodes := `talosctl config info -o yaml | yq -e '.nodes | join (" ")'`
+# Evaluated at PARSE time, for every recipe in the tree - including ones with
+# nothing to do with Talos. Unguarded, an unset TALOSCONFIG or an unselected
+# context aborts `just` entirely ("no context is set"), so even `just
+# gen-oauth` fails. Swallow it here; require-talos turns it back into a
+# readable error for the recipes that genuinely need a value.
+controller := `talosctl config info -o yaml 2>/dev/null | yq -e '.endpoints[0]' 2>/dev/null || true`
+nodes := `talosctl config info -o yaml 2>/dev/null | yq -e '.nodes | join (" ")' 2>/dev/null || true`
 
 [private]
 default: talos k8s (kubeconfig "node") wait namespaces resources crds apps kubeconfig
 
+# Without this the swallowed backticks above would hand these recipes an empty
+# string, and `talosctl -n ""` fails far from the actual cause.
+[private]
+require-talos:
+    if [[ -z "{{ controller }}" || -z "{{ nodes }}" ]]; then \
+        just log fatal "No Talos context - export TALOSCONFIG (mise does it in this repo) or run: talosctl config context home-ops"; \
+    fi
+
 [doc('Install Talos')]
-talos:
+talos: require-talos
     just log info "Running stage..." "stage" "$0"
     for n in {{ nodes }}; do \
         if ! op=$(just talos apply-node "$n" --insecure 2>&1); then \
@@ -24,7 +37,7 @@ talos:
     done
 
 [doc('Install Kubernetes')]
-k8s:
+k8s: require-talos
     just log info "Running stage..." "stage" "$0"
     until op=$(talosctl -n "{{ controller }}" bootstrap 2>&1 || true) && [[ "$op" == *"AlreadyExists"* ]]; do \
         just log info "Kubernetes bootstrap in progress. Retrying in 5 seconds..." "stage" "$0"; \
@@ -32,7 +45,7 @@ k8s:
     done
 
 [doc('Fetch kubeconfig')]
-kubeconfig lb="cilium":
+kubeconfig lb="cilium": require-talos
     just log info "Running stage..." "stage" "$0"
     if ! talosctl kubeconfig -n "{{ controller }}" -f --force-context-name home-ops {{ justfile_dir() }}; then \
         just log fatal "Failed to fetch kubeconfig" "stage" "$0"; \

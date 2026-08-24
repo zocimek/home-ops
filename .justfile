@@ -30,11 +30,24 @@ gen-oauth app vault="Kubernetes" force="false":
         just log fatal 'Not signed in to 1Password - run: eval $(op signin)'
     fi
 
-    # Authentik's own generator uses a 40-character client id and a
-    # 128-character secret. Matching those lengths keeps a generated provider
-    # indistinguishable from one created in the UI.
-    client_id="$(openssl rand -hex 20)"
-    client_secret="$(openssl rand -hex 64)"
+    # Matches authentik/lib/generators.py: client_id is generate_id(40) and
+    # client_secret is generate_client_secret() -> generate_id(128), both drawn
+    # from string.ascii_letters + string.digits. That is base62, NOT hex - a
+    # hex value is valid but visibly unlike anything Authentik issues.
+    # (generate_key() does include punctuation, but no OAuth2 field uses it.)
+    gen_id() {
+        local length="$1" out
+        # cut rather than `head -c`: head closes the pipe early, which under
+        # pipefail surfaces as a SIGPIPE failure from openssl.
+        out="$(openssl rand -base64 "$(( length * 3 ))" | LC_ALL=C tr -dc 'A-Za-z0-9' | cut -c "1-${length}")"
+        if [[ "${#out}" -ne "$length" ]]; then
+            just log fatal "Generated a short value - openssl or tr misbehaved"
+        fi
+        printf '%s' "$out"
+    }
+
+    client_id="$(gen_id 40)"
+    client_secret="$(gen_id 128)"
 
     # Fetched once, never echoed - it carries every existing field value.
     item_json="$(op item get "{{ app }}" --vault "{{ vault }}" --format json 2>/dev/null || true)"
