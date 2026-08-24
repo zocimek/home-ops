@@ -117,8 +117,12 @@ spec:
               repository: docker.io/getmeili/meilisearch
               tag: v1.53.1
             args:
+              # No --experimental-dumpless-upgrade: Meilisearch stabilized
+              # dumpless upgrade in v1.51.0 and removed the flag with it, so
+              # v1.53.1 exits with "unexpected argument". The behaviour the
+              # flag gated is now the default, so dropping it keeps
+              # upgrade-in-place rather than losing it.
               - /bin/meilisearch
-              - --experimental-dumpless-upgrade
             env:
               MEILI_NO_ANALYTICS: true
               MEILI_MASTER_KEY:
