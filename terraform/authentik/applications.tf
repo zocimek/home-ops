@@ -14,6 +14,14 @@ locals {
     "reactive-resume",
     "simple-backlogs",
   ]
+
+  # konflate's OIDC pair lives in the Poetica.pl vault, not Kubernetes: the
+  # konflate that consumes it runs in the poetica cluster, whose
+  # ClusterSecretStore is scoped to that vault. Terraform has to read the same
+  # item or the two halves drift and the login fails with invalid_client.
+  oauth_apps_poetica = [
+    "konflate",
+  ]
 }
 
 module "onepassword_oauth" {
@@ -21,6 +29,14 @@ module "onepassword_oauth" {
 
   source = "github.com/bjw-s/terraform-1password-item?ref=main"
   vault  = "Kubernetes"
+  item   = each.key
+}
+
+module "onepassword_oauth_poetica" {
+  for_each = toset(local.oauth_apps_poetica)
+
+  source = "github.com/bjw-s/terraform-1password-item?ref=main"
+  vault  = "Poetica.pl"
   item   = each.key
 }
 
@@ -399,3 +415,36 @@ module "reactive-resume" {
     meta_description = "Project management & time tracking"
     meta_launch_url  = "https://projects.pospiech.dev"
   }
+
+######### KONFLATE #########
+# Fronts the konflate reviewing Poetica-pl/poetica, which has no auth of its own
+# and would otherwise expose that private repo's rendered manifests. The gate is
+# an Envoy Gateway SecurityPolicy in the poetica cluster, not an auth proxy.
+#
+# The module derives the Authentik slug from lower(var.name), and that
+# SecurityPolicy pins the issuer to .../application/o/konflate/ - so the name has
+# to stay lowercase "konflate". Its /hooks route is deliberately outside the
+# policy, so GitHub webhook delivery never reaches this application.
+module "konflate" {
+  source = "./modules/oidc-application"
+
+  name   = "konflate"
+  domain = "konflate.poetica.pl"
+  group  = "Infrastructure"
+
+  client_id     = module.onepassword_oauth_poetica["konflate"].fields["OIDC_CLIENT_ID"]
+  client_secret = module.onepassword_oauth_poetica["konflate"].fields["OIDC_CLIENT_SECRET"]
+
+  authentication_flow = authentik_flow.authentication.uuid
+  authorization_flow  = data.authentik_flow.default-provider-authorization-implicit-consent.id
+  invalidation_flow   = resource.authentik_flow.provider-invalidation.uuid
+
+  redirect_uris = ["https://konflate.poetica.pl/oauth2/callback"]
+
+  auth_groups = [
+    authentik_group.group["admins"].id,
+  ]
+
+  meta_description = "Rendered Flux diffs for poetica pull requests"
+  meta_launch_url  = "https://konflate.poetica.pl"
+}
