@@ -67,6 +67,25 @@ spec:
                 group: helm.toolkit.fluxcd.io
                 kind: HelmRelease
                 name: rook-ceph-cluster
+            - # authentik migrations outlive an upgrade window, and rolling
+              # back part-way through one leaves the schema ahead of the code.
+              # Leaving a failed upgrade in place is safer: the Deployment is
+              # RollingUpdate, so pods that never go Ready never replace the
+              # running ones, and the failure stays visible.
+              patch: |-
+                apiVersion: helm.toolkit.fluxcd.io/v2
+                kind: HelmRelease
+                metadata:
+                  name: _
+                spec:
+                  upgrade:
+                    remediation:
+                      retries: 0
+                      remediateLastFailure: false
+              target:
+                group: helm.toolkit.fluxcd.io
+                kind: HelmRelease
+                name: authentik
             - patch: |-
                 apiVersion: helm.toolkit.fluxcd.io/v2
                 kind: HelmRelease
