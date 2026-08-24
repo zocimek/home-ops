@@ -1,0 +1,40 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/renovate-operator.mogenius.com/renovatejob_v1alpha1.json
+apiVersion: renovate-operator.mogenius.com/v1alpha1
+kind: RenovateJob
+metadata:
+  name: github
+spec:
+  # Same cadence the GitHub Actions workflow ran on before this took over.
+  schedule: 0 * * * *
+  parallelism: 3
+  skipForks: true
+  discoveryFilters:
+    - zocimek/*
+    - Poetica-pl/*
+  provider:
+    name: github
+  image: ghcr.io/renovatebot/renovate:44.41.0
+  # The operator signs a JWT from these and refreshes the installation token
+  # itself, so no long-lived token is stored anywhere.
+  githubAppReference:
+    secretName: renovate-github-app
+    appIdSecretKey: APP_ID
+    installationIdSecretKey: INSTALL_ID
+    pemSecretKey: PEM
+  # Only carries RENOVATE_HOST_RULES; the platform token comes from the App.
+  secretRef: renovate-secret
+  extraEnv:
+    - name: LOG_LEVEL
+      value: info
+    - name: RENOVATE_INTERNAL_CHECKS_FILTER
+      value: strict
+    - name: RENOVATE_PLATFORM_COMMIT
+      value: "true"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 2Gi
