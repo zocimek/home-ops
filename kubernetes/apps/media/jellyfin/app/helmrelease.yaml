@@ -28,7 +28,7 @@ spec:
           app:
             image:
               repository: jellyfin/jellyfin
-              tag: 10.11.8
+              tag: 10.11.11
             env:
               TZ: Europe/Warsaw
 
