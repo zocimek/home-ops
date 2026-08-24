@@ -28,7 +28,7 @@ spec:
     # and lets the Ceph major move separately, on its own change.
     cephImage:
       repository: quay.io/ceph/ceph
-      tag: v19.2.3
+      tag: v19.2.6
     clusterName: "home-ops"
     operatorNamespace: "rook-ceph"
     monitoring:
