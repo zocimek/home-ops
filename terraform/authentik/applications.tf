@@ -433,8 +433,11 @@ module "konflate" {
 
   redirect_uris = ["https://konflate.poetica.pl/oauth2/callback"]
 
+  # data.authentik_group.admins, not authentik_group.group["..."]: the
+  # superuser group is Authentik's built-in "authentik Admins", looked up
+  # rather than managed here, so it has no entry in local.groups.
   auth_groups = [
-    authentik_group.group["admins"].id,
+    data.authentik_group.admins.id,
   ]
 
   meta_description = "Rendered Flux diffs for poetica pull requests"
