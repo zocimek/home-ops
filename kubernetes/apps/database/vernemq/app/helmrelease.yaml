@@ -30,7 +30,7 @@ spec:
           app:
             image:
               repository: docker.io/vernemq/vernemq
-              tag: 2.1.2-alpine
+              tag: 2.2.0-alpine
             env:
               MY_POD_NAME:
                 valueFrom:
@@ -182,6 +182,18 @@ spec:
     serviceMonitor:
       app:
         serviceName: '{{ .Release.Name }}-http'
+        # app-template 5.x defaults jobLabel to app.kubernetes.io/name, which
+        # on this Service resolves to "vernemq" - renaming the Prometheus job
+        # from "vernemq-http" and silently breaking
+        # absent(up{job="vernemq-http"}) in prometheusrule.yaml, which would
+        # then fire critical forever.
+        #
+        # app.kubernetes.io/service resolves to "vernemq-http", so the job name
+        # is unchanged by the upgrade. It is also the more precise label here:
+        # this ServiceMonitor deliberately targets the -http sub-service, and
+        # vernemq has three Services that would otherwise all report as
+        # job="vernemq".
+        jobLabel: app.kubernetes.io/service
         endpoints:
           - port: http
             scheme: http
