@@ -1,0 +1,53 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: renovate-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: renovate-operator
+  interval: 1h
+  values:
+    fullnameOverride: renovate-operator
+
+    config:
+      # Keep finished Jobs for a week so the UI can still show a run, but stop
+      # them piling up in the namespace forever (chart default is -1).
+      deleteSuccessfulJobs: false
+      jobTTLSecondsAfterFinished: 604800
+      logStorage:
+        # Single replica, so the in-process store is enough. Buffered logs are
+        # lost on restart; the Job pods above are the durable copy.
+        mode: memory
+
+    # No gatus annotation needed - the sidecar runs with --auto-httproute, so
+    # this route is picked up on its own.
+    route:
+      enabled: true
+      hostnames:
+        - renovate.pospiech.dev
+      parentRefs:
+        - name: envoy-internal
+          namespace: network
+          sectionName: https
+
+    # Cron-driven only. Enabling this would need a publicly reachable endpoint
+    # for github.com to deliver to.
+    webhook:
+      enabled: false
+
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+      dashboard:
+        enabled: true
+
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
