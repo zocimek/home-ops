@@ -93,6 +93,32 @@ spec:
         osd:
           limits:
             memory: 8Gi
+      # Ceph flags cipher `aes` as HEALTH_ERR (AUTH_INSECURE_SERVICE_KEY_TYPE).
+      # The monmap already has auth_service_cipher/auth_preferred_cipher aes256k,
+      # so rotation produces aes256k without naming keyType here - but keyType is
+      # a no-op anyway unless keyRotationPolicy is set, which is why nothing had
+      # rotated on its own. The operator logging "enabling cephx key rotation"
+      # only means it is willing to, not that a policy asked it to.
+      #
+      # Generation 2, not 1: keys predate the per-group generation counter, and
+      # rotation only fires when the value exceeds the current generation.
+      #
+      # allowedCiphers is deliberately NOT set. Restricting auth to aes256k while
+      # the CSI keys are still aes locks out the clients that mount the PVs, so it
+      # can only follow a CSI rotation, which needs kernel 7.0 first. Until then
+      # AUTH_INSECURE_CLIENT_KEY_TYPE / KEYS_ALLOWED / KEYS_CREATABLE stay as
+      # warnings and the cluster sits at HEALTH_WARN, not HEALTH_ERR.
+      security:
+        cephx:
+          daemon:
+            keyRotationPolicy: KeyGeneration
+            keyGeneration: 2
+          # CSI stays on `aes`: aes256k needs the in-kernel Ceph client from
+          # Linux 7.0 and all four nodes run 6.18.29-talos. Rotating these would
+          # lock the kernel mounts out of every RBD/CephFS volume in the cluster.
+          # This is the chart default, restated so a chart bump cannot move it.
+          csi:
+            keyType: aes
       storage:
         useAllNodes: false
         useAllDevices: false
