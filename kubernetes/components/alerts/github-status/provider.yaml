@@ -6,7 +6,7 @@ metadata:
   name: github-status
 spec:
   type: github
-  address: https://github.com/zocimek/homelab
+  address: https://github.com/zocimek/home-ops
   secretRef:
     # yamllint disable-line rule:new-line-at-end-of-file
     name: github-status-token-secret
