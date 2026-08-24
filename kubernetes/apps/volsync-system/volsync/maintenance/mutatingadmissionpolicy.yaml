@@ -26,7 +26,14 @@ spec:
           - jobs
   matchConditions:
     - name: has-kopia-maint-job-name-prefix
+      # has() first, because matchConstraints selects EVERY batch/v1 Job in the
+      # cluster and failurePolicy is Fail. A Job created with generateName has
+      # no metadata.name at admission time, so a bare .startsWith() errors with
+      # "no such key: name" and that error denies the CREATE outright - which
+      # blocked renovate-operator's discovery Jobs, and would block anything
+      # else using generateName.
       expression: >
+        has(object.metadata.name) &&
         object.metadata.name.startsWith("kopia-maint-")
     - name: repository-volume-does-not-exist
       expression: >
