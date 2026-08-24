@@ -1,0 +1,46 @@
+---
+# Restores cross-namespace access to the Dragonfly client port.
+#
+# dragonfly-operator v1.6.0 "hardened" the NetworkPolicy it manages (#514) so
+# the 6379 rule became `from: [{podSelector: {}}]` - a bare podSelector with no
+# namespaceSelector, which means the database namespace ONLY. Every client
+# outside it is cut off.
+#
+# Nothing appeared to break at first because Cilium policy is stateful:
+# established connections survived, so the damage only shows when a client
+# restarts. cryptgeon was the canary. authentik, outline, paperless,
+# reactive-resume, searxng and immich were all one restart away.
+#
+# NetworkPolicies are additive - traffic is allowed if ANY policy allows it -
+# so this sits alongside the operator's own policy rather than fighting it.
+# The operator keeps managing its policy; this re-opens 6379 to exactly the
+# namespaces that need it, which is still narrower than the pre-v1.6.0
+# behaviour of allowing everything.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: dragonfly-allow-clients
+spec:
+  podSelector:
+    matchLabels:
+      app: dragonfly
+      app.kubernetes.io/name: dragonfly
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 6379
+          protocol: TCP
+      from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: default
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: security
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: llm
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: media
