@@ -6,6 +6,17 @@ metadata:
   name: karakeep
 spec:
   interval: 30m
+  # meilisearch's v1.44 -> v1.53 dumpless upgrade runs past the 5m the
+  # cluster-wide patch grants every HelmRelease, so #914's fix could not land:
+  # Helm applied the corrected args, meilisearch began migrating, the wait
+  # timed out, and remediation rolled back to the release that still carries
+  # the removed --experimental-dumpless-upgrade flag. Releases v42 failed and
+  # v43 went pending-rollback on a loop.
+  #
+  # Only the timeout works here - cluster-apps patches upgrade.remediation
+  # over every HelmRelease - so the remediation half lives in
+  # kubernetes/flux/cluster/ks.yaml, as it does for authentik.
+  timeout: 30m
   chartRef:
     kind: OCIRepository
     name: karakeep
