@@ -103,8 +103,15 @@ spec:
             - apiGroups: [""]
               resources: ["events"]
               verbs: ["create", "patch"]
+            # configmaps is required from operator v1.6.0, which added custom
+            # probes read from a ConfigMap. Without it the manager's informer
+            # never syncs and it exits after exactly 2m with "timed out
+            # waiting for cache to be synced". Upstream fixed this in their
+            # own chart in v1.6.1; this RBAC is hand-rolled, so the fix has to
+            # be made here. Verbs match upstream config/rbac/role.yaml, which
+            # groups configmaps with pods and services.
             - apiGroups: [""]
-              resources: ["pods"]
+              resources: ["configmaps", "pods"]
               verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
             - apiGroups: [""]
               resources: ["services"]
