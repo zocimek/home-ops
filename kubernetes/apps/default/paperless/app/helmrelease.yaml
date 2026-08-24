@@ -7,6 +7,19 @@ metadata:
   namespace: default
 spec:
   interval: 30m
+  # paperless-ngx v3 replaces the Whoosh search backend with tantivy, so the
+  # whole search index is rebuilt on first start, on top of the usual Django
+  # migrations. That runs well past the 5m the cluster-wide patch grants
+  # every HelmRelease.
+  #
+  # This is a StatefulSet, which makes a rollback worse than for the
+  # Deployment cases: the pod is replaced in place, so there is no previous
+  # version left serving while the new one works - reverting mid-rebuild just
+  # restarts the whole thing.
+  #
+  # Only the timeout can live here; cluster-apps patches upgrade.remediation
+  # over every HelmRelease, so that half is in kubernetes/flux/cluster/ks.yaml.
+  timeout: 30m
   chartRef:
     kind: OCIRepository
     name: paperless
