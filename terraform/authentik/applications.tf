@@ -11,6 +11,7 @@ locals {
     "outline",
     "paperless",
     "qui",
+    "konflate",
     "reactive-resume",
     "simple-backlogs",
   ]
@@ -399,3 +400,46 @@ module "reactive-resume" {
     meta_description = "Project management & time tracking"
     meta_launch_url  = "https://projects.pospiech.dev"
   }
+
+######### KONFLATE #########
+# Fronts the konflate reviewing Poetica-pl/poetica, which has no auth of its own
+# and would otherwise expose that private repo's rendered manifests. The gate is
+# an Envoy Gateway SecurityPolicy in the poetica cluster, not an auth proxy.
+#
+# The module derives the Authentik slug from lower(var.name), and that
+# SecurityPolicy pins the issuer to .../application/o/konflate/ - so the name has
+# to stay lowercase "konflate". Its /hooks route is deliberately outside the
+# policy, so GitHub webhook delivery never reaches this application.
+#
+# The pair is read from the Kubernetes vault like every other app here, but the
+# konflate that consumes it runs in the poetica cluster, whose
+# ClusterSecretStore is scoped to Poetica.pl - so the same pair has to exist in
+# BOTH vaults. `just gen-oauth konflate Kubernetes,Poetica.pl` writes one
+# generated pair to both; copying it by hand risks a mismatch that surfaces
+# only as invalid_client at login.
+module "konflate" {
+  source = "./modules/oidc-application"
+
+  name   = "konflate"
+  domain = "konflate.poetica.pl"
+  group  = "Infrastructure"
+
+  client_id     = module.onepassword_oauth["konflate"].fields["OIDC_CLIENT_ID"]
+  client_secret = module.onepassword_oauth["konflate"].fields["OIDC_CLIENT_SECRET"]
+
+  authentication_flow = authentik_flow.authentication.uuid
+  authorization_flow  = data.authentik_flow.default-provider-authorization-implicit-consent.id
+  invalidation_flow   = resource.authentik_flow.provider-invalidation.uuid
+
+  redirect_uris = ["https://konflate.poetica.pl/oauth2/callback"]
+
+  # data.authentik_group.admins, not authentik_group.group["..."]: the
+  # superuser group is Authentik's built-in "authentik Admins", looked up
+  # rather than managed here, so it has no entry in local.groups.
+  auth_groups = [
+    data.authentik_group.admins.id,
+  ]
+
+  meta_description = "Rendered Flux diffs for poetica pull requests"
+  meta_launch_url  = "https://konflate.poetica.pl"
+}
