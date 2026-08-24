@@ -1,0 +1,62 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: konflate
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: konflate
+  interval: 1h
+  values:
+    config:
+      repo: github://zocimek/home-ops
+      # Flux spec.path values here are root-relative (./kubernetes/...), so
+      # flate renders from the repo root.
+      clusterPath: ""
+      publicUrl: https://konflate.pospiech.dev
+      # Write-back. Both need the App credentials from the secret; without
+      # them the flags are inert.
+      statusChecks: true
+      prComments: true
+      # Read-only /mcp endpoint so a review agent can query the rendered diff.
+      mcp: true
+      # HEADs each newly referenced image tag and flags any that don't exist -
+      # catches a typo before it ImagePullBackOffs in-cluster.
+      verifyImages: true
+
+    secret:
+      existingSecret: konflate-secret
+
+    # Without this the caches, git mirror and rendered diffs live in an
+    # emptyDir and every restart re-renders every open PR from cold.
+    persistence:
+      enabled: true
+      storageClass: ceph-block
+      size: 5Gi
+
+    deploymentAnnotations:
+      reloader.stakater.com/auto: "true"
+
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: envoy-external
+          namespace: network
+          sectionName: https
+      hostnames:
+        - konflate.pospiech.dev
+
+    monitoring:
+      serviceMonitor:
+        enabled: true
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        # Drives GOMEMLIMIT at 90%, so the GC reclaims before the kernel
+        # OOM-kills a large render.
+        memory: 1Gi

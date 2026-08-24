@@ -1,0 +1,83 @@
+---
+# Two jobs, one per GitHub App. Beyond the credential separation, this is also
+# forced by GitHub: an App installation access token is scoped to a SINGLE
+# installation, so one job could never have discovered both accounts - the
+# filter that didn't match its installation would have found nothing, silently.
+#
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/renovate-operator.mogenius.com/renovatejob_v1alpha1.json
+apiVersion: renovate-operator.mogenius.com/v1alpha1
+kind: RenovateJob
+metadata:
+  name: github-zocimek
+spec:
+  # Same cadence the GitHub Actions workflow ran on before this took over.
+  schedule: 0 * * * *
+  parallelism: 3
+  skipForks: true
+  discoveryFilters:
+    - zocimek/*
+  provider:
+    name: github
+  image: ghcr.io/renovatebot/renovate:44.41.0
+  # The operator signs a JWT from these and refreshes the installation token
+  # itself, so no long-lived token is stored anywhere.
+  githubAppReference:
+    secretName: renovate-github-app-zocimek
+    appIdSecretKey: APP_ID
+    installationIdSecretKey: INSTALL_ID
+    pemSecretKey: PEM
+  # Only carries RENOVATE_HOST_RULES; the platform token comes from the App.
+  secretRef: renovate-secret
+  extraEnv:
+    - name: LOG_LEVEL
+      value: info
+    - name: RENOVATE_INTERNAL_CHECKS_FILTER
+      value: strict
+    - name: RENOVATE_PLATFORM_COMMIT
+      value: "true"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 2Gi
+
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/renovate-operator.mogenius.com/renovatejob_v1alpha1.json
+apiVersion: renovate-operator.mogenius.com/v1alpha1
+kind: RenovateJob
+metadata:
+  name: github-poetica
+spec:
+  # Offset half an hour so the two discovery runs don't collide.
+  schedule: 30 * * * *
+  parallelism: 3
+  skipForks: true
+  discoveryFilters:
+    - Poetica-pl/*
+  provider:
+    name: github
+  image: ghcr.io/renovatebot/renovate:44.41.0
+  githubAppReference:
+    secretName: renovate-github-app-poetica
+    appIdSecretKey: APP_ID
+    installationIdSecretKey: INSTALL_ID
+    pemSecretKey: PEM
+  secretRef: renovate-secret
+  # Repeated rather than anchored - a YAML anchor's scope is one document, and
+  # these are two.
+  extraEnv:
+    - name: LOG_LEVEL
+      value: info
+    - name: RENOVATE_INTERNAL_CHECKS_FILTER
+      value: strict
+    - name: RENOVATE_PLATFORM_COMMIT
+      value: "true"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 2Gi
