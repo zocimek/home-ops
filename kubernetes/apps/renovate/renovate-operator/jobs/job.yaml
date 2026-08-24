@@ -1,11 +1,8 @@
 ---
-# Two jobs, not one, because a GitHub App installation access token is scoped
-# to a SINGLE installation. One App installed on both the personal account and
-# the Poetica-pl org is two installations with two ids, and a token minted for
-# one cannot see the other's repositories - a single job would have silently
-# discovered nothing for whichever filter didn't match its INSTALL_ID.
-#
-# Same App, same PEM, same Secret: only installationIdSecretKey differs.
+# Two jobs, one per GitHub App. Beyond the credential separation, this is also
+# forced by GitHub: an App installation access token is scoped to a SINGLE
+# installation, so one job could never have discovered both accounts - the
+# filter that didn't match its installation would have found nothing, silently.
 #
 # yamllint disable-line rule:line-length
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/renovate-operator.mogenius.com/renovatejob_v1alpha1.json
@@ -26,9 +23,9 @@ spec:
   # The operator signs a JWT from these and refreshes the installation token
   # itself, so no long-lived token is stored anywhere.
   githubAppReference:
-    secretName: renovate-github-app
+    secretName: renovate-github-app-zocimek
     appIdSecretKey: APP_ID
-    installationIdSecretKey: INSTALL_ID_ZOCIMEK
+    installationIdSecretKey: INSTALL_ID
     pemSecretKey: PEM
   # Only carries RENOVATE_HOST_RULES; the platform token comes from the App.
   secretRef: renovate-secret
@@ -64,9 +61,9 @@ spec:
     name: github
   image: ghcr.io/renovatebot/renovate:44.41.0
   githubAppReference:
-    secretName: renovate-github-app
+    secretName: renovate-github-app-poetica
     appIdSecretKey: APP_ID
-    installationIdSecretKey: INSTALL_ID_POETICA
+    installationIdSecretKey: INSTALL_ID
     pemSecretKey: PEM
   secretRef: renovate-secret
   # Repeated rather than anchored - a YAML anchor's scope is one document, and
