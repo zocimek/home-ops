@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: loki-kubernetes-logs
+spec:
+  allowCrossNamespaceImport: true
+  folder: Logs
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - datasourceName: Loki
+      inputName: DS_LOKI
+  url: https://grafana.com/api/dashboards/15141/revisions/1/download

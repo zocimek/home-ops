@@ -125,6 +125,11 @@ spec:
     grafana:
       enabled: false
       forceDeployDashboards: true
+      operator:
+        dashboardsConfigMapRefEnabled: true
+        folder: Kubernetes
+        matchLabels:
+          dashboards: grafana
     additionalPrometheusRulesMap:
       dockerhub-rules:
         groups:

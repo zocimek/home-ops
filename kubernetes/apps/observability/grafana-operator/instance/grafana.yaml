@@ -1,0 +1,139 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafana_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  labels:
+    dashboards: grafana
+spec:
+  # Admin credentials come from the grafana-admin-secret ExternalSecret below, which
+  # the operator also reads back off the deployment to talk to the Grafana API.
+  disableDefaultAdminSecret: true
+  config:
+    analytics:
+      check_for_updates: "false"
+      check_for_plugin_updates: "false"
+      reporting_enabled: "false"
+
+    auth:
+      oauth_auto_login: "false"
+      oauth_allow_insecure_email_lookup: "true"
+      signout_redirect_url: https://auth.pospiech.dev/application/o/grafana/end-session/
+
+    auth.anonymous:
+      enabled: "true"
+      org_id: "1"
+      org_name: Main Org.
+      org_role: Viewer
+
+    auth.basic:
+      enabled: "false"
+
+    auth.generic_oauth:
+      enabled: "true"
+      name: Authentik
+      icon: signin
+      scopes: openid profile email groups
+      empty_scopes: "false"
+      api_url: https://auth.pospiech.dev/application/o/userinfo/
+      auth_url: https://auth.pospiech.dev/application/o/authorize/
+      token_url: https://auth.pospiech.dev/application/o/token/
+      login_attribute_path: preferred_username
+      groups_attribute_path: groups
+      name_attribute_path: name
+      role_attribute_path: contains(groups[*], 'grafana_admins') && 'Admin' || 'Viewer'
+      auth_style: InParams
+      use_pkce: "true"
+      skip_org_role_sync: "true"
+
+    date_formats:
+      use_browser_locale: "true"
+
+    explore:
+      enabled: "true"
+
+    log:
+      mode: console
+
+    metrics:
+      enabled: "true"
+
+    news:
+      news_feed_enabled: "false"
+
+    plugins:
+      plugin_admin_enabled: "false"
+      allow_loading_unsigned_plugins: natel-discrete-panel,pr0ps-trackmap-panel,panodata-map-panel
+
+    security:
+      angular_support_enabled: "true"
+
+    server:
+      enable_gzip: "true"
+      root_url: https://grafana.pospiech.dev
+  deployment:
+    spec:
+      strategy:
+        type: Recreate
+      template:
+        spec:
+          containers:
+            - name: grafana
+              env:
+                - name: GF_SECURITY_ADMIN_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: admin-user
+                - name: GF_SECURITY_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: admin-password
+                - name: GF_AUTH_GENERIC_OAUTH_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-secret
+                      key: GF_AUTH_GENERIC_OAUTH_CLIENT_ID
+                - name: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-secret
+                      key: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities: { drop: ["ALL"] }
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 472
+            runAsGroup: 472
+            fsGroup: 472
+            fsGroupChangePolicy: OnRootMismatch
+          volumes:
+            - name: grafana-data
+              persistentVolumeClaim:
+                claimName: grafana-pvc
+            - name: tmp
+              emptyDir: {}
+  httpRoute:
+    spec:
+      hostnames:
+        - grafana.pospiech.dev
+      parentRefs:
+        - name: envoy-external
+          namespace: network
+          sectionName: https
+  persistentVolumeClaim:
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: ceph-block
+  disableDefaultSecurityContext: All
