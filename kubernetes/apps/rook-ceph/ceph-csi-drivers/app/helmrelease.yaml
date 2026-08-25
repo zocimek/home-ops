@@ -12,9 +12,10 @@ spec:
       chart: ceph-csi-drivers
       version: 1.0.4
       sourceRef:
+        # No namespace: the ks targetNamespace rewrites the HelmRepository into
+        # rook-ceph, so this must resolve against the HelmRelease's own namespace
         kind: HelmRepository
         name: ceph-csi-operator
-        namespace: flux-system
       interval: 1h
   values:
     # Rook-compatible values, see
