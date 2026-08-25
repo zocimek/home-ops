@@ -22,6 +22,14 @@ spec:
               tag: 2.37.0@sha256:63a0f819019837d873d7bcce4edb9cf847bba36295983722486640bc4d11769b
             env:
               NODE_OPTIONS: "--max-old-space-size=3584"
+              # n8n 2.x defaults this above zero, which switches SQLite into WAL
+              # mode. Auto-checkpoint (1000 pages, ~4Mi) then failed to keep up
+              # with execution pruning and the WAL grew to 47Gi against a 1.6Gi
+              # database, filling the volume - at which point no checkpoint could
+              # run at all, because a checkpoint needs free space to write into.
+              # Pinning zero restores journal mode, which has no WAL to grow.
+              DB_SQLITE_POOL_SIZE: 0
+              # Only ever compacted the database; it cannot touch the WAL
               DB_SQLITE_VACUUM_ON_STARTUP: true
               EXECUTIONS_DATA_PRUNE: true
               EXECUTIONS_DATA_MAX_AGE: 7

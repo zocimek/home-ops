@@ -17,7 +17,9 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 50Gi
+      # Headroom to fold a 47Gi WAL back into the database. The checkpoint needs
+      # the WAL and the growing database to coexist, so peak use is ~51Gi.
+      VOLSYNC_CAPACITY: 60Gi
   prune: true
   sourceRef:
     kind: GitRepository
