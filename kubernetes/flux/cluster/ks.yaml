@@ -103,6 +103,23 @@ spec:
                 group: helm.toolkit.fluxcd.io
                 kind: HelmRelease
                 name: karakeep
+            - # A paperless v3 index rebuild outlives the upgrade window, and
+              # this is a StatefulSet - rolling back restarts the rebuild
+              # rather than falling back to something that still works.
+              patch: |-
+                apiVersion: helm.toolkit.fluxcd.io/v2
+                kind: HelmRelease
+                metadata:
+                  name: _
+                spec:
+                  upgrade:
+                    remediation:
+                      retries: 0
+                      remediateLastFailure: false
+              target:
+                group: helm.toolkit.fluxcd.io
+                kind: HelmRelease
+                name: paperless
             - patch: |-
                 apiVersion: helm.toolkit.fluxcd.io/v2
                 kind: HelmRelease
