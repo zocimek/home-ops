@@ -19,7 +19,7 @@ spec:
     - zocimek/*
   provider:
     name: github
-  image: ghcr.io/renovatebot/renovate:44.42.0
+  image: ghcr.io/renovatebot/renovate:44.42.2
   # The operator signs a JWT from these and refreshes the installation token
   # itself, so no long-lived token is stored anywhere.
   githubAppReference:
@@ -59,7 +59,7 @@ spec:
     - Poetica-pl/*
   provider:
     name: github
-  image: ghcr.io/renovatebot/renovate:44.42.0
+  image: ghcr.io/renovatebot/renovate:44.42.2
   githubAppReference:
     secretName: renovate-github-app-poetica
     appIdSecretKey: APP_ID
