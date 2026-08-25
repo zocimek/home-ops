@@ -39,8 +39,24 @@ spec:
               fallthrough in-addr.arpa ip6.arpa
           - name: autopath
             parameters: "@kubernetes"
+          # PUBLIC names only — the split-horizon zones are carved out into
+          # their own server block below and must not reach these upstreams.
+          #
+          # 10.0.42.1 is the router, pinned by Talos as the node's only
+          # nameserver (talos/patches/global/machine-network.yaml) and also the
+          # default gateway. A wobble there took external DNS down with it,
+          # failing CI on ENETUNREACH / "Name or service not known". The public
+          # resolvers behind it keep public names answering through a blip.
+          #
+          # policy sequential, not the default random: the router stays first on
+          # every query, so 1.1.1.1 is only ever consulted when the router fails
+          # at the transport level. forward advances to the next upstream only
+          # on a transport error — an rcode such as SERVFAIL is returned to the
+          # client untouched (plugin/forward/forward.go, ServeDNS).
           - name: forward
-            parameters: . /etc/resolv.conf
+            parameters: . 10.0.42.1 1.1.1.1 9.9.9.9
+            configBlock: |-
+              policy sequential
           - name: cache
             configBlock: |-
               prefetch 20
@@ -50,6 +66,36 @@ spec:
           - name: loadbalance
           - name: prometheus
             parameters: 0.0.0.0:9153
+          - name: log
+            configBlock: |-
+              class error
+
+      # Split-horizon zones: the router answers these with internal 10.0.42.x
+      # addresses (resume.pospiech.dev -> 10.0.42.201, k8s.pospiech.local ->
+      # 10.0.42.21) that no public resolver knows. They therefore get the
+      # router and nothing else.
+      #
+      # Falling these back to 1.1.1.1 would be worse than not failing over at
+      # all: the public answer is NXDOMAIN, which the cache plugin stores as a
+      # denial for up to the SOA minimum, so a brief router blip would keep
+      # internal names dead long after the router came back. Router-only means
+      # an outage yields a timeout or SERVFAIL instead — neither is cached as a
+      # denial, so these names recover the moment the router does.
+      - zones:
+          - zone: pospiech.dev
+            scheme: dns://
+            use_tcp: true
+          - zone: pospiech.local
+            scheme: dns://
+            use_tcp: true
+        port: 53
+        plugins:
+          - name: errors
+          - name: forward
+            parameters: . 10.0.42.1
+          - name: cache
+          - name: loop
+          - name: reload
           - name: log
             configBlock: |-
               class error
