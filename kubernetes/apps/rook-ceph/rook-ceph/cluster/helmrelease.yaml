@@ -77,6 +77,38 @@ spec:
         urlPrefix: /
         ssl: false
         prometheusEndpoint: http://prometheus-operated.observability.svc.cluster.local:9090
+      # The four AUTH_INSECURE_* checks are the expected steady state while the
+      # CSI keys stay on cipher aes, which they must until the nodes reach Linux
+      # kernel 7.0. Rook's own docs expect this to "last years", and Ceph's docs
+      # call muting "typical" here - its QA suite mutes the client check whenever
+      # tests use the kernel client. CVE-2025-30156 is already resolved by the
+      # mon/mgr/osd/mds rotation in #935 plus the Ceph 20 upgrade in #937.
+      #
+      # Without this, CephClusterWarningState fires continuously for months and
+      # trains us to ignore the one alert that says Ceph is unwell.
+      #
+      # ROTATING_SERVICE_KEY_TYPE is currently clear but muted anyway: it
+      # reappears for two to three hours after every daemon key rotation while
+      # the service tokens re-mint, and that transient should not page.
+      #
+      # Rook mutes with `ceph health mute --sticky`, so these stay hidden even if
+      # the entity count GROWS - a sixth insecure key would not resurface. That is
+      # acceptable only because Rook creates the CSI keys itself, with the keyType
+      # pinned in security.cephx below.
+      #
+      # To undo, set `policy: unmute`. Do NOT just delete this block: Rook only
+      # iterates over declared entries (cephstatus.go), so a removed key is never
+      # reconciled away and the mute would persist in Ceph forever.
+      healthCheck:
+        muteHealthWarning:
+          AUTH_INSECURE_CLIENT_KEY_TYPE:
+            policy: mute
+          AUTH_INSECURE_KEYS_ALLOWED:
+            policy: mute
+          AUTH_INSECURE_KEYS_CREATABLE:
+            policy: mute
+          AUTH_INSECURE_ROTATING_SERVICE_KEY_TYPE:
+            policy: mute
       mgr:
         count: 2
         activeStandby: true
