@@ -1,0 +1,113 @@
+logging {
+	level  = "warn"
+	format = "logfmt"
+}
+
+// Restrict discovery to pods scheduled on this node so every DaemonSet replica
+// tails only its own node's files and no log line is shipped twice.
+discovery.kubernetes "pods" {
+	role = "pod"
+
+	selectors {
+		role  = "pod"
+		field = "spec.nodeName=" + sys.env("NODE_NAME")
+	}
+}
+
+discovery.relabel "pod_logs" {
+	targets = discovery.kubernetes.pods.targets
+
+	rule {
+		source_labels = ["__meta_kubernetes_namespace"]
+		action        = "replace"
+		target_label  = "namespace"
+	}
+
+	rule {
+		source_labels = ["__meta_kubernetes_pod_name"]
+		action        = "replace"
+		target_label  = "pod"
+	}
+
+	rule {
+		source_labels = ["__meta_kubernetes_pod_container_name"]
+		action        = "replace"
+		target_label  = "container"
+	}
+
+	rule {
+		source_labels = ["__meta_kubernetes_pod_node_name"]
+		action        = "replace"
+		target_label  = "node"
+	}
+
+	// "app" is what the per-application Loki alert rules match on. The rules are
+	// ordered least to most specific and the regex skips pods missing the label,
+	// so app.kubernetes.io/name wins wherever it is set.
+	rule {
+		source_labels = ["__meta_kubernetes_pod_label_k8s_app"]
+		regex         = "(.+)"
+		action        = "replace"
+		target_label  = "app"
+	}
+
+	rule {
+		source_labels = ["__meta_kubernetes_pod_label_app"]
+		regex         = "(.+)"
+		action        = "replace"
+		target_label  = "app"
+	}
+
+	rule {
+		source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+		regex         = "(.+)"
+		action        = "replace"
+		target_label  = "app"
+	}
+
+	rule {
+		source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]
+		separator     = "/"
+		action        = "replace"
+		target_label  = "job"
+		replacement   = "$1"
+	}
+
+	// /var/log/pods/<namespace>_<pod>_<uid>/<container>/<n>.log
+	rule {
+		source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
+		separator     = "/"
+		action        = "replace"
+		target_label  = "__path__"
+		replacement   = "/var/log/pods/*$1/*.log"
+	}
+}
+
+local.file_match "pod_logs" {
+	path_targets = discovery.relabel.pod_logs.output
+}
+
+loki.source.file "pod_logs" {
+	targets    = local.file_match.pod_logs.targets
+	forward_to = [loki.process.pod_logs.receiver]
+}
+
+loki.process "pod_logs" {
+	// containerd writes "<timestamp> <stream> <flag> <line>"; stage.cri unpacks
+	// that envelope and rejoins lines the runtime split at 16 KiB.
+	stage.cri { }
+
+	stage.static_labels {
+		values = {
+			cluster = "home-ops",
+		}
+	}
+
+	forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+	endpoint {
+		url = "http://loki-headless.observability.svc.cluster.local:3100/loki/api/v1/push"
+	}
+}

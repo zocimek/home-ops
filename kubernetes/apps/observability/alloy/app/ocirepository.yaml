@@ -3,12 +3,12 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: grafana
+  name: alloy
 spec:
   interval: 5m
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 10.5.15
-  url: oci://ghcr.io/grafana/helm-charts/grafana
+    tag: 1.12.0
+  url: oci://ghcr.io/home-operations/charts-mirror/alloy

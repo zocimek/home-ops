@@ -1,0 +1,30 @@
+logging {
+	level  = "warn"
+	format = "logfmt"
+}
+
+// Cluster events are watched through the API server, so this collector runs as a
+// single replica rather than alongside the per-node DaemonSet.
+loki.source.kubernetes_events "cluster_events" {
+	job_name   = "integrations/kubernetes/eventhandler"
+	log_format = "logfmt"
+
+	forward_to = [loki.process.cluster_events.receiver]
+}
+
+loki.process "cluster_events" {
+	stage.static_labels {
+		values = {
+			cluster = "home-ops",
+			app     = "kubernetes-events",
+		}
+	}
+
+	forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+	endpoint {
+		url = "http://loki-headless.observability.svc.cluster.local:3100/loki/api/v1/push"
+	}
+}
