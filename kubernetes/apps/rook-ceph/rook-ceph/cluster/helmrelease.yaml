@@ -35,7 +35,7 @@ spec:
     # target, now or when 21 stabilises, until Rook supports it.
     cephImage:
       repository: quay.io/ceph/ceph
-      tag: v20.2.4
+      tag: v21.1.0
     clusterName: "home-ops"
     operatorNamespace: "rook-ceph"
     monitoring:
