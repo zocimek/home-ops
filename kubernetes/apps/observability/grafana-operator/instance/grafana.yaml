@@ -27,8 +27,12 @@ spec:
       org_name: Main Org.
       org_role: Viewer
 
+    # grafana-operator drives the Grafana HTTP API with the admin credentials over
+    # HTTP Basic. With basic auth off those requests fall through to the anonymous
+    # Viewer below and folder/dashboard creation fails with 403, so this has to stay
+    # enabled even though the chart-based install could get away without it.
     auth.basic:
-      enabled: "false"
+      enabled: "true"
 
     auth.generic_oauth:
       enabled: "true"
