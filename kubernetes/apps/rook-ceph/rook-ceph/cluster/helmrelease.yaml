@@ -120,11 +120,31 @@ spec:
           daemon:
             keyRotationPolicy: KeyGeneration
             keyGeneration: 2
-          # CSI stays on `aes`: aes256k needs the in-kernel Ceph client from
-          # Linux 7.0 and all four nodes run 6.18.29-talos. Rotating these would
-          # lock the kernel mounts out of every RBD/CephFS volume in the cluster.
-          # This is the chart default, restated so a chart bump cannot move it.
+          # CSI stays on the `aes` CIPHER: aes256k needs the in-kernel Ceph
+          # client from Linux 7.0 and all four nodes run 6.18.29-talos, so
+          # changing the type would lock the kernel mounts out of every
+          # RBD/CephFS volume. Rook documents this as safe once the daemons
+          # issue aes256k service tickets, and expects it to "last years".
+          #
+          # The KEY MATERIAL still rotates. These keys are original and have
+          # never been rotated, and Rook lists regular aes rotation as a
+          # CVE-2025-30156 mitigation for exactly this case - "rotating keys
+          # during any Ceph or Rook version update is a good starting point".
+          #
+          # keepPriorKeyCountMax 1 keeps the previous key active so in-flight PV
+          # connections survive; rotated CSI keys only apply to new mounts.
           csi:
+            keyRotationPolicy: KeyGeneration
+            keyGeneration: 2
+            keepPriorKeyCountMax: 1
+            keyType: aes
+          # Same cipher reasoning, though nothing consumes this key today - there
+          # is no CephRBDMirror in the cluster. Rotated for the same
+          # never-rotated-material reason. The type is stated explicitly because
+          # Rook warns it must stay `aes` if any future peer cannot do aes256k.
+          rbdMirrorPeer:
+            keyRotationPolicy: KeyGeneration
+            keyGeneration: 2
             keyType: aes
       storage:
         useAllNodes: false
