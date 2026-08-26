@@ -49,7 +49,10 @@ spec:
       role_attribute_path: contains(groups[*], 'grafana_admins') && 'Admin' || 'Viewer'
       auth_style: InParams
       use_pkce: "true"
-      skip_org_role_sync: "true"
+      # Must stay false: skipping org role sync makes Grafana never evaluate
+      # role_attribute_path above, so everyone lands on the default Viewer role
+      # no matter which groups Authentik returns.
+      skip_org_role_sync: "false"
 
     date_formats:
       use_browser_locale: "true"
