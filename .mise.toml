@@ -8,7 +8,10 @@ SOPS_AGE_KEY_FILE = "{{config_root}}/age.key"
 [tools]
 "python" = "3.14.7"
 "pipx:makejinja" = "2.8.2"
-"aqua:cilium/cilium-cli" = "0.20.0"
+# Pinned back from 0.20.0: upstream retracted that GitHub release but left the
+# tag in place, and aqua installs from releases, so 0.20.0 404s on install and
+# fails every mise-based CI job. Restore once cilium republishes the release.
+"aqua:cilium/cilium-cli" = "0.19.7"
 "aqua:budimanjojo/talhelper" = "3.1.17"
 "aqua:cli/cli" = "2.98.0"
 "aqua:cue-lang/cue" = "0.17.1"
