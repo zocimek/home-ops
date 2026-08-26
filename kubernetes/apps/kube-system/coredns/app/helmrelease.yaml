@@ -39,6 +39,24 @@ spec:
               fallthrough in-addr.arpa ip6.arpa
           - name: autopath
             parameters: "@kubernetes"
+          # The cluster is IPv4-only (podSubnets 10.42.0.0/16), so no pod can
+          # route to an AAAA answer — but upstream still hands them out for
+          # dual-stacked public names. glibc sorts those last per RFC 6724 and
+          # is fine; Go's resolver does not, so a Go client can pick the IPv6
+          # address and die on ENETUNREACH. That is how the one remote kustomize
+          # resource in the tree (the dragonfly-operator CRD fetched from
+          # raw.githubusercontent.com by apps/database/dragonfly) intermittently
+          # failed the Image Pull workflow.
+          #
+          # rcode NOERROR with no answer section is NODATA: clients fall through
+          # to the A record instead of being handed an unroutable address. This
+          # also shadows AAAA for cluster.local — template runs ahead of
+          # kubernetes in the plugin chain — which costs nothing here, as the
+          # only dual-stacked Services are headless with IPv4-only endpoints.
+          - name: template
+            parameters: ANY AAAA
+            configBlock: |-
+              rcode NOERROR
           # PUBLIC names only — the split-horizon zones are carved out into
           # their own server block below and must not reach these upstreams.
           #
@@ -91,6 +109,14 @@ spec:
         port: 53
         plugins:
           - name: errors
+          # Same NODATA-for-AAAA rule as the public block above. The router
+          # only overrides the split-horizon names; anything else under these
+          # zones it forwards upstream, where a CDN-fronted record answers with
+          # AAAA that no pod here can reach.
+          - name: template
+            parameters: ANY AAAA
+            configBlock: |-
+              rcode NOERROR
           - name: forward
             parameters: . 10.0.42.1
           - name: cache
