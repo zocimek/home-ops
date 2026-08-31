@@ -11,12 +11,12 @@ SOPS_AGE_KEY_FILE = "{{config_root}}/age.key"
 # Pinned back from 0.20.0: upstream retracted that GitHub release but left the
 # tag in place, and aqua installs from releases, so 0.20.0 404s on install and
 # fails every mise-based CI job. Restore once cilium republishes the release.
-"aqua:cilium/cilium-cli" = "0.19.7"
+"aqua:cilium/cilium-cli" = "0.20.0"
 "aqua:budimanjojo/talhelper" = "3.1.17"
 "aqua:cli/cli" = "2.98.0"
 "aqua:cue-lang/cue" = "0.17.1"
-"aqua:cloudflare/cloudflared" = "2026.8.2"
-"aqua:FiloSottile/age" = "1.3.1"
+"aqua:cloudflare/cloudflared" = "2026.8.3"
+"aqua:FiloSottile/age" = "1.3.2"
 "aqua:helmfile/helmfile" = "1.7.4"
 "aqua:getsops/sops" = "3.13.3"
 "aqua:fluxcd/flux2" = "2.9.4"
