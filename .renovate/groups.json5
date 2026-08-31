@@ -124,6 +124,19 @@
       minimumGroupSize: 2,
     },
     {
+      // mindwtr-cloud (API) and mindwtr-app (PWA) are cut from one repo and
+      // share a version, so they always bump together - see #997/#998, the
+      // same 1.2.1 -> 1.2.5 bump split across two PRs.
+      description: "Mindwtr Group",
+      groupName: "mindwtr",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/dongdongbh/mindwtr-/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      minimumGroupSize: 2,
+    },
+    {
       // The chart's init-app-ini script is written against its own appVersion,
       // and these are two managers (helm + helm-values docker). Left ungrouped
       // they drift, which is how the release sat broken from May to August
