@@ -57,14 +57,15 @@ spec:
       rbd:
         enabled: true
         name: rook-ceph.rbd.csi.ceph.com
-        # Without this the chart applies the default, "none", and the operator
-        # drops the csi-snapshotter sidecar from the rbd controllerplugin. The
-        # snapshot-controller still creates VolumeSnapshotContents, nothing
-        # ever gives them a status, and every volsync backup of a ceph-block
-        # PVC stalls waiting for readyToUse. volumeSnapshot rather than
-        # cephfs's volumeGroupSnapshot: volsync takes plain VolumeSnapshots,
-        # and there is no evidence rbd carried group snapshots before.
-        snapshotPolicy: volumeSnapshot
+        # Both fields have to be stated. The chart's defaults are grpcTimeout
+        # 30 and snapshotPolicy none, and "none" makes the operator drop the
+        # csi-snapshotter sidecar from the rbd controllerplugin. Nothing
+        # errors when that happens: snapshot-controller keeps creating
+        # VolumeSnapshotContents, no sidecar ever gives them a status, and
+        # every volsync backup of a ceph-block PVC stalls on readyToUse.
+        # 30s is also tight for snapshotting a large RBD image.
+        grpcTimeout: 150
+        snapshotPolicy: volumeGroupSnapshot
         log:
           rotation:
             enabled: false
@@ -73,7 +74,9 @@ spec:
       cephfs:
         enabled: true
         name: rook-ceph.cephfs.csi.ceph.com
-        # Already set on the live cephfs Driver CR
+        # As above; this driver kept its snapshotPolicy through the adoption,
+        # so it was the one whose backups went on working.
+        grpcTimeout: 150
         snapshotPolicy: volumeGroupSnapshot
         log:
           rotation:
