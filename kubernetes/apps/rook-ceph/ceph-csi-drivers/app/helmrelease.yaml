@@ -57,6 +57,14 @@ spec:
       rbd:
         enabled: true
         name: rook-ceph.rbd.csi.ceph.com
+        # Without this the chart applies the default, "none", and the operator
+        # drops the csi-snapshotter sidecar from the rbd controllerplugin. The
+        # snapshot-controller still creates VolumeSnapshotContents, nothing
+        # ever gives them a status, and every volsync backup of a ceph-block
+        # PVC stalls waiting for readyToUse. volumeSnapshot rather than
+        # cephfs's volumeGroupSnapshot: volsync takes plain VolumeSnapshots,
+        # and there is no evidence rbd carried group snapshots before.
+        snapshotPolicy: volumeSnapshot
         log:
           rotation:
             enabled: false
