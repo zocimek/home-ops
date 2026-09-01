@@ -1,0 +1,33 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app homelab-manager
+spec:
+  components:
+    - ../../../../components/volsync
+  dependsOn:
+    - name: onepassword
+      namespace: external-secrets
+    - name: volsync
+      namespace: volsync-system
+  interval: 30m
+  path: "./kubernetes/apps/default/homelab-manager/app"
+  postBuild:
+    substitute:
+      APP: *app
+      # The container has no USER and would otherwise run as root; the
+      # HelmRelease pins it to 1000, so the volsync mover has to match or it
+      # cannot read the PVC it is backing up.
+      VOLSYNC_PUID: "1000"
+      VOLSYNC_PGID: "1000"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: default
+  wait: false
+  retryInterval: 1m
+  timeout: 5m

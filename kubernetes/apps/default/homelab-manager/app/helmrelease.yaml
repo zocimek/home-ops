@@ -1,0 +1,106 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app homelab-manager
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: homelab-manager
+  values:
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+
+    controllers:
+      homelab-manager:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              # Upstream repository is spelled "Manger"; the published image
+              # path carries that typo, so it is not a mistake here.
+              repository: ghcr.io/spillebulle/homelab-manger
+              # yamllint disable-line rule:line-length
+              tag: 0.8.5@sha256:909578dc51dddc63d6536fdfb9edab05cda5ad341da5772109383f8014b5d048
+            env:
+              TZ: Europe/Warsaw
+              # DB_PATH defaults to /data/homelab.db, which is where the
+              # persistence block mounts. The same directory also holds the
+              # themes library and the OUI cache.
+              POLL_INTERVAL: 60
+              METRICS_RETENTION_DAYS: 30
+            envFrom:
+              - secretRef:
+                  name: homelab-manager-secret
+            probes:
+              # /healthz is unauthenticated and pings the DB, so it doubles as
+              # a real readiness signal. initialDelaySeconds covers init_db
+              # plus the auth bootstrap on a first, empty volume - upstream's
+              # own healthcheck allows the same grace via start-period.
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: &port 8080
+                  initialDelaySeconds: 20
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+              readiness: *probe
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                # Polls every device on a timer and keeps a SQLAlchemy session
+                # per adapter, so it sits above the static apps here.
+                memory: 512Mi
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+
+    route:
+      app:
+        hostnames:
+          - homelab-manager.pospiech.dev
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
+
+    persistence:
+      data:
+        existingClaim: *app
+        globalMounts:
+          - path: /data
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
