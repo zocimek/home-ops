@@ -28,7 +28,7 @@ spec:
           wallos:
             image:
               repository: ghcr.io/ellite/wallos
-              tag: 5.4.5
+              tag: 5.5.0
             env:
               TZ: "Europe/Warsaw"
             resources:
