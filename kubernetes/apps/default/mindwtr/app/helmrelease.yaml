@@ -42,7 +42,7 @@ spec:
             image:
               repository: ghcr.io/dongdongbh/mindwtr-cloud
               # yamllint disable-line rule:line-length
-              tag: 1.2.5@sha256:240ff4fa4066f8d8616d8aa28b7a41aa95f08f820d0b4e2bc7395da732c9b6dd
+              tag: 1.2.7@sha256:39b44049fb33eda68243e2950f50665ad8d1fb35f0f52b5effc04668bc63b643
             env:
               TZ: Europe/Warsaw
             envFrom:
@@ -81,7 +81,7 @@ spec:
             image:
               repository: ghcr.io/dongdongbh/mindwtr-app
               # yamllint disable-line rule:line-length
-              tag: 1.2.5@sha256:7096d5facad7dba3dfdbf4316c548a78decdb48f69b64a8834ef5dcb0d5c944e
+              tag: 1.2.7@sha256:f0194cb2e1e95832534047029220ec62c7c6b655bce0119df8651193a2b593c0
             env:
               TZ: Europe/Warsaw
             probes:
